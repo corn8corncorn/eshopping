@@ -17,10 +17,11 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = "com.example.demo") 
+@ComponentScan(basePackages = "com.example.demo")
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @Bean
@@ -38,6 +39,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public SpringTemplateEngine templateEngine() {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(templateResolver());
+        templateEngine.setMessageSource(messageSource());
+        templateEngine.addDialect(new SpringSecurityDialect());
         templateEngine.setEnableSpringELCompiler(true);
         return templateEngine;
     }
@@ -55,7 +58,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/resources/**")
                 .addResourceLocations("/resources/");
     }
-    
+
     // ------------------------------
     // 國際化 (i18n) 設定
     // ------------------------------
@@ -64,9 +67,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
         ResourceBundleMessageSource source = new ResourceBundleMessageSource();
         source.setBasename("messages");  // 對應 messages.properties、messages_zh_TW.properties
         source.setDefaultEncoding("UTF-8");
+        source.setCacheSeconds(3600); // 快取1小時
+        source.setUseCodeAsDefaultMessage(true); // 如果找不到對應的key，使用key作為預設值
         return source;
     }
-    
+
     @Bean
     public LocaleResolver localeResolver() {
         CookieLocaleResolver resolver = new CookieLocaleResolver();
@@ -75,7 +80,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
         resolver.setCookieMaxAge(4800);
         return resolver;
     }
-    
+
+    @Bean
     public LocaleChangeInterceptor localeChangeInterceptor() {
         LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
         interceptor.setParamName("lang"); // 用 ?lang=zh_TW 切換語系

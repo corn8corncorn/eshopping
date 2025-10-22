@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>新增商品</title>
+</head>
+<body>
+  <h1>新增商品</h1>
+
+  <form th:action="@{/products/save}" method="post" th:object="${product}">
+    <div>
+      <label for="name">名稱</label>
+      <input id="name" type="text" th:field="*{name}" required />
+    </div>
+
+    <div>
+      <label for="type">類型</label>
+      <input id="type" type="text" th:field="*{type}" required />
+    </div>
+
+    <div>
+      <label for="price">價格</label>
+      <input id="price" type="number" step="1" th:field="*{price}" required />
+    </div>
+
+    <div>
+      <label for="description">描述</label>
+      <textarea id="description" th:field="*{description}" rows="4"></textarea>
+    </div>
+
+    <div>
+      <label for="imageUrl">圖片連結</label>
+      <input id="imageUrl" type="text" th:field="*{imageUrl}" />
+    </div>
+
+    <div>
+      <label for="status">狀態</label>
+      <select id="status" th:field="*{status}">
+        <option th:value="ACTIVE">上架中</option>
+        <option th:value="INACTIVE">已下架</option>
+        <option th:value="OUT_OF_STOCK">缺貨中</option>
+      </select>
+    </div>
+
+    <div>
+      <button type="submit">儲存</button>
+      <a th:href="@{/products}">取消</a>
+    </div>
+  </form>
+</body>
+</html>

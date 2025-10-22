@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>編輯客戶資料</title>
+</head>
+<body>
+    <h1>編輯客戶資料</h1>
+    
+    <div>
+        <a th:href="@{/home}">返回首頁</a>
+        <a th:href="@{/customers/profile}">查看資料</a>
+    </div>
+    
+    <form th:action="@{/customers/update}" method="post" th:object="${customer}">
+        <input type="hidden" th:field="*{id}">
+        
+        <div>
+            <label for="fullName">姓名：</label>
+            <input type="text" id="fullName" th:field="*{fullName}" required>
+        </div>
+        
+        <div>
+            <label for="phone">電話：</label>
+            <input type="tel" id="phone" th:field="*{phone}">
+        </div>
+        
+        <div>
+            <label for="address">地址：</label>
+            <textarea id="address" th:field="*{address}" rows="3"></textarea>
+        </div>
+        
+        <div>
+            <label for="city">城市：</label>
+            <input type="text" id="city" th:field="*{city}">
+        </div>
+        
+        <div>
+            <label for="postalCode">郵遞區號：</label>
+            <input type="text" id="postalCode" th:field="*{postalCode}">
+        </div>
+        
+        <div>
+            <label for="country">國家：</label>
+            <input type="text" id="country" th:field="*{country}">
+        </div>
+        
+        <button type="submit">更新資料</button>
+    </form>
+</body>
+</html>

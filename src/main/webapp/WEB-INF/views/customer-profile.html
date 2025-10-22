@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客戶資料</title>
+</head>
+<body>
+    <h1>我的客戶資料</h1>
+    
+    <div>
+        <a th:href="@{/home}">返回首頁</a>
+        <a th:href="@{/customers/edit}">編輯資料</a>
+    </div>
+    
+    <div th:if="${customer}">
+        <h2>個人資訊</h2>
+        
+        <table border="1">
+            <tr>
+                <th>項目</th>
+                <th>內容</th>
+            </tr>
+            <tr>
+                <td>用戶名稱</td>
+                <td th:text="${customer.user.username}"></td>
+            </tr>
+            <tr>
+                <td>姓名</td>
+                <td th:text="${customer.fullName}"></td>
+            </tr>
+            <tr>
+                <td>電話</td>
+                <td th:text="${customer.phone}"></td>
+            </tr>
+            <tr>
+                <td>地址</td>
+                <td th:text="${customer.address}"></td>
+            </tr>
+            <tr>
+                <td>城市</td>
+                <td th:text="${customer.city}"></td>
+            </tr>
+            <tr>
+                <td>郵遞區號</td>
+                <td th:text="${customer.postalCode}"></td>
+            </tr>
+            <tr>
+                <td>國家</td>
+                <td th:text="${customer.country}"></td>
+            </tr>
+        </table>
+    </div>
+    
+    <div th:unless="${customer}">
+        <p>尚未建立客戶資料。</p>
+        <a th:href="@{/customers/edit}">建立客戶資料</a>
+    </div>
+</body>
+</html>

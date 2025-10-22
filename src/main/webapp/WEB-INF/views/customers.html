@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客戶管理</title>
+</head>
+<body>
+    <h1>客戶管理</h1>
+    
+    <div>
+        <a th:href="@{/home}">返回首頁</a>
+        <a th:href="@{/users}">用戶管理</a>
+        <a th:href="@{/products}">商品管理</a>
+    </div>
+    
+    <h2>客戶清單</h2>
+    
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>用戶名稱</th>
+                <th>姓名</th>
+                <th>電話</th>
+                <th>城市</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="customer : ${customers}">
+                <td th:text="${customer.id}"></td>
+                <td th:text="${customer.user.username}"></td>
+                <td th:text="${customer.fullName}"></td>
+                <td th:text="${customer.phone}"></td>
+                <td th:text="${customer.city}"></td>
+                <td>
+                    <a th:href="@{'/customers/edit/' + ${customer.id}}">編輯</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

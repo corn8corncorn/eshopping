@@ -131,6 +131,26 @@
 			<version>5.7.2</version>
 		</dependency>
 
+		<!-- Bean Validation (JSR-380) for @Valid/@NotBlank 等註解 -->
+		<dependency>
+			<groupId>org.hibernate.validator</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>6.2.5.Final</version>
+		</dependency>
+		<!-- EL 實作（Hibernate Validator 在 Java 11 需 EL 支援） -->
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.el</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+
+		<!-- Thymeleaf Extras for Spring Security (enables #authorization / sec:* in views) -->
+		<dependency>
+			<groupId>org.thymeleaf.extras</groupId>
+			<artifactId>thymeleaf-extras-springsecurity5</artifactId>
+			<version>3.0.4.RELEASE</version>
+		</dependency>
+
 		<!-- 可選：Logback-core（logback-classic 已自動包含） -->
 
 	</dependencies>

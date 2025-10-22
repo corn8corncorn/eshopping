@@ -1,48 +1,57 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dao.ProductDAO;
-import com.example.demo.model.Product;
-import com.example.demo.service.ProductService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
+
+import com.example.demo.dao.ProductDAO;
+import com.example.demo.model.Product;
+import com.example.demo.service.ProductService;
 
 @Service
 @Transactional
 public class ProductServiceImpl implements ProductService {
 
 	@Autowired
-	private ProductDAO productReposity;
+	private ProductDAO productRepository;
 
 	@Override
-	public List<Product> getAllProducts() {
-		return productReposity.findAll();
+	public List<Product> getAll() {
+		// 取得所有商品
+		return productRepository.getAll();
 	}
 
 	@Override
-	public Product getProductById(Long id) {
-		return productReposity.findById(id);
+	public Product getById(Long id) {
+		// 依 ID 取得商品
+		return productRepository.getById(id);
 	}
 
 	@Override
 	public void saveProduct(Product product) {
-		productReposity.save(product);
+		// 新增商品
+		productRepository.save(product);
 	}
 
 	@Override
 	public void updateProduct(Long id, Product updateProduct) {
-		Product existingProduct = productReposity.findById(id);
+		Product existingProduct = productRepository.getById(id);
 		if (existingProduct != null) {
 			existingProduct.setName(updateProduct.getName());
 			existingProduct.setType(updateProduct.getType());
 			existingProduct.setPrice(updateProduct.getPrice());
-			productReposity.save(existingProduct);
+			existingProduct.setDescription(updateProduct.getDescription());
+			existingProduct.setImageUrl(updateProduct.getImageUrl());
+			existingProduct.setStatus(updateProduct.getStatus());
+			productRepository.save(existingProduct);
 		}
 	}
 
 	@Override
-	public void deletProduct(Long id) {
-		productReposity.delete(id);
+	public void deleteProduct(Long id) {
+		// 刪除商品
+		productRepository.delete(id);
 	}
 }

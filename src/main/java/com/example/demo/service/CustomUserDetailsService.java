@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
-import com.example.demo.model.User;
+import java.util.Collection;
+import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,8 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Collections;
+import com.example.demo.model.User;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -19,12 +20,13 @@ public class CustomUserDetailsService implements UserDetailsService {
     private UserService userService;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userService.getUserByEmail(email);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // 以使用者名稱進行查詢（與目前系統的登入邏輯一致）
+        User user = userService.getByUsername(username);
         if (user == null) {
-            throw new UsernameNotFoundException("User not found with email: " + email);
+            throw new UsernameNotFoundException("User not found with username: " + username);
         }
-        
+
         return new CustomUserPrincipal(user);
     }
 
@@ -37,7 +39,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
-            return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
+            // 根據用戶角色設定權限
+            String role = "ROLE_" + user.getRole().name();
+            return Collections.singletonList(new SimpleGrantedAuthority(role));
         }
 
         @Override
@@ -47,7 +51,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         @Override
         public String getUsername() {
-            return user.getEmail();
+            return user.getUsername();
         }
 
         @Override
@@ -67,7 +71,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         @Override
         public boolean isEnabled() {
-            return true;
+            return Boolean.TRUE.equals(user.getEnabled());
         }
 
         public User getUser() {

@@ -1,44 +1,51 @@
 package com.example.demo.dao.impl;
 
-import com.example.demo.dao.ProductDAO;
-import com.example.demo.model.Product;
+import java.util.List;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.example.demo.dao.ProductDAO;
+import com.example.demo.model.Product;
 
 @Repository
 public class ProductDAOImpl implements ProductDAO{
-	
+
 	@Autowired
 	private SessionFactory sessionFactory;
-	
-	private Session getCurrrentSession() {
+
+	/**
+	 * 取得目前的 Hibernate Session
+	 */
+	private Session getCurrentSession() {
 		return sessionFactory.getCurrentSession();
 	}
-	
+
 	@Override
-	public List<Product> findAll() {
-		return getCurrrentSession().createQuery("FROM Product", Product.class).list();
+	public List<Product> getAll() {
+		// 查詢所有商品
+		return getCurrentSession().createQuery("FROM Product", Product.class).list();
 	}
-	
+
 	@Override
-	public Product findById(Long id) {
-		return getCurrrentSession().get(Product.class, id);
+	public Product getById(Long id) {
+		// 依 ID 取得商品
+		return getCurrentSession().get(Product.class, id);
 	}
-	
+
 	@Override
 	public void save(Product product) {
-		getCurrrentSession().saveOrUpdate(product);
+		// 新增或更新商品
+		getCurrentSession().saveOrUpdate(product);
 	}
-	
+
 	@Override
 	public void delete(Long id) {
-		Product product = getCurrrentSession().get(Product.class, id);
+		Product product = getCurrentSession().get(Product.class, id);
 		if (product != null) {
-			getCurrrentSession().delete(product);
+			getCurrentSession().delete(product);
 		}
 	}
 }
