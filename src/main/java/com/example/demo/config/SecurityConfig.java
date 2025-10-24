@@ -19,31 +19,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-            .authorizeRequests()
-                .antMatchers("/", "/home", "/register", "/login", "/forgot-password", "/reset-password", "/css/**", "/js/**", "/images/**").permitAll()
-                .antMatchers("/users/**", "/customers").hasRole("ADMIN")
-                .antMatchers("/products/**").hasAnyRole("ADMIN", "USER")
-                .antMatchers("/customers/edit", "/customers/profile").hasRole("USER")
-                .anyRequest().authenticated()
-            .and()
-            .formLogin()
-                .loginPage("/login")
-                .defaultSuccessUrl("/home", true)
-                .failureUrl("/login?error=true")
-                .permitAll()
-            .and()
-            .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/home")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
-                .permitAll()
-            .and()
-            .csrf().disable(); // 暫時關閉CSRF以便測試
-    }
+//    @Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//        http
+//            .authorizeRequests()
+//                .antMatchers("/", "/home", "/register", "/login", "/forgot-password", "/reset-password", "/css/**", "/js/**", "/images/**").permitAll()
+//                .antMatchers("/users/**", "/customers").hasRole("ADMIN")
+//                .antMatchers("/products/**").hasAnyRole("ADMIN", "USER")
+//                .antMatchers("/customers/edit", "/customers/profile").hasRole("USER")
+//                .anyRequest().authenticated()
+//            .and()
+//            .formLogin()
+//                .loginPage("/login")
+//                .defaultSuccessUrl("/home", true)
+//                .failureUrl("/login?error=true")
+//                .permitAll()
+//            .and()
+//            .logout()
+//                .logoutUrl("/logout")
+//                .logoutSuccessUrl("/home")
+//                .invalidateHttpSession(true)
+//                .deleteCookies("JSESSIONID")
+//                .permitAll()
+//            .and()
+//            .csrf().disable(); // 暫時關閉CSRF以便測試
+//    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
