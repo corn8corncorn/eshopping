@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" th:href="@{/resources/css/loginReg.css}">
     <title>登入 - 電子商城</title>
 </head>
 <body>
@@ -15,21 +16,23 @@
     <div th:if="${success}" th:text="${success}"></div>
     
     <!-- 登入表單 -->
-    <form th:action="@{/login}" method="post" th:object="${userLoginDTO}">
-        <div>
-            <label for="username">使用者名稱：</label>
-            <input type="text" id="username" th:field="*{username}" required>
-            <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
-        </div>
-        
-        <div>
-            <label for="password">密碼：</label>
-            <input type="password" id="password" th:field="*{password}" required>
-            <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
-        </div>
-        
-        <button type="submit">登入</button>
-    </form>
+    <div class="loginRegForm">
+        <form th:action="@{/login}" method="post" th:object="${userLoginDTO}">
+            <div>
+                <label for="username">使用者名稱：</label>
+                <input type="text" id="username" th:field="*{username}" required>
+                <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+            </div>
+            
+            <div>
+                <label for="password">密碼：</label>
+                <input type="password" id="password" th:field="*{password}" required>
+                <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+            </div>
+            
+            <button type="submit">登入</button>
+        </form>
+    </div>
     
     <p>還沒有帳號？ <a th:href="@{/register}">立即註冊</a></p>
     

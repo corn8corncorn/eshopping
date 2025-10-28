@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.demo.dto.UserLoginDTO;
 import com.example.demo.dto.UserRegistrationDTO;
 import com.example.demo.model.User;
-import com.example.demo.service.UserService;
 import com.example.demo.service.CustomerService;
+import com.example.demo.service.UserService;
 
 /**
  * 認證控制器
@@ -26,7 +26,7 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
-    
+
     @Autowired
     private CustomerService customerService;
 
@@ -45,7 +45,7 @@ public class AuthController {
         if (error != null) {
             model.addAttribute("error", "登入失敗，請檢查您的帳號和密碼");
         }
-        
+
         // 如果有成功參數，表示註冊成功，顯示成功訊息
         if (success != null) {
             model.addAttribute("success", "註冊成功！請使用您的帳號和密碼登入");
@@ -115,13 +115,13 @@ public class AuthController {
         try {
             // 呼叫 Service 層進行註冊，包含密碼加密和資料驗證
             User savedUser = userService.registerUser(newUser);
-            
+
             // 為新用戶建立客戶資料
             customerService.createCustomerForUser(savedUser, userRegistrationDTO.getUsername());
-            
+
             // 註冊成功，重定向到登入頁面並顯示成功訊息
             return "redirect:/login?success=true";
-            
+
         } catch (IllegalArgumentException ex) {
             // 如果註冊失敗，顯示錯誤訊息並返回註冊頁面
             model.addAttribute("error", ex.getMessage());

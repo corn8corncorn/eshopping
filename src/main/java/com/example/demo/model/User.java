@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Enumerated;
 import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -37,22 +37,22 @@ public class User {
 
     @Column(name = "is_enabled")
     private Boolean enabled = true;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private UserRole role = UserRole.USER;
-    
+
     // 用戶角色枚舉
     public enum UserRole {
         ADMIN("管理員"),
         USER("一般用戶");
-        
+
         private final String description;
-        
+
         UserRole(String description) {
             this.description = description;
         }
-        
+
         public String getDescription() {
             return description;
         }
@@ -128,11 +128,11 @@ public class User {
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
-    
+
     public UserRole getRole() {
         return role;
     }
-    
+
     public void setRole(UserRole role) {
         this.role = role;
     }

@@ -1,0 +1,73 @@
+@charset "UTF-8";
+body {
+    background-image: url("../images/bg.jpg"); /* 或網路圖片 */
+	background-repeat: no-repeat;
+	background-size: cover;          /* 填滿畫面 */
+	background-position: center;     /* 置中對齊 */
+	background-attachment: fixed;    /* ❗背景固定不動 */
+}
+
+.loginRegForm {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    width: 600px;
+    height: 300px;
+    background-color: rgba(158, 154, 154, 0.5); 
+    border-radius: 10px;
+    position: absolute;
+    top: 50%;
+    left: 65%;
+    transform: translate(-50%, -50%);
+}
+.loginRegForm:hover {
+	background-color: rgba(158, 154, 154, 0.6);
+}
+.loginRegForm label {
+    display: inline-block;
+    width: 80px;
+    text-align: right;
+    margin-right: 10px;
+    color: white;
+    font-weight: bold;
+}
+
+.loginRegForm input {
+    width: 200px;
+    height: 25px;
+    border-radius: 5px;
+    text-align: center;
+    color: #c29678;
+    font-weight: bold;
+}
+.loginRegForm input::placeholder {
+  text-align: center;
+}
+.loginRegForm button {
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.loginRegForm > h2 {
+    color: white;
+}
+
+.margin-5 {
+    margin: 5px;
+}
+
+.loginRegButton {
+    width: 70px;
+    height: 40px;
+    background-color: #FFFFFF;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.loginRegButton:hover {
+    background-color: #52618f;
+    color: #FFFFFF;
+    font-weight: bold;
+}
