@@ -134,6 +134,56 @@ public class OrderController {
     }
 
     /**
+     * 顯示訂單確認頁面
+     * 訂單建立成功後的確認頁面
+     * 
+     * @param orderId 訂單ID
+     * @param model 用於傳遞訂單資料到前端頁面
+     * @return 訂單確認頁面模板名稱
+     */
+    @GetMapping("/confirmation/{orderId}")
+    public String orderConfirmation(@PathVariable("orderId") Long orderId, Model model) {
+        logger.info("進入訂單確認頁面 - orderId: {}", orderId);
+        
+        try {
+            // 從資料庫查詢訂單（Flash 屬性會在重定向後自動添加到 Model）
+            Order order = orderService.getById(orderId);
+            
+            if (order == null) {
+                logger.warn("訂單不存在 - orderId: {}", orderId);
+                model.addAttribute("error", "訂單不存在");
+                return "redirect:/orders/my";
+            }
+
+            // 檢查權限：只能查看自己的訂單，管理員可以查看所有訂單
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
+                User currentUser = userService.getByUsername(auth.getName());
+                Customer customer = customerService.getByUser(currentUser);
+                
+                boolean isAdmin = auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+                
+                if (!isAdmin && (customer == null || !order.getCustomer().getId().equals(customer.getId()))) {
+                    logger.warn("無權限查看此訂單 - orderId: {}", orderId);
+                    model.addAttribute("error", "您沒有權限查看此訂單");
+                    return "redirect:/orders/my";
+                }
+            }
+
+            model.addAttribute("order", order);
+            logger.info("訂單確認頁面載入完成 - orderId: {}, orderNumber: {}", orderId, order.getOrderNumber());
+            
+        } catch (Exception e) {
+            logger.error("載入訂單確認頁面時發生錯誤 - orderId: {}", orderId, e);
+            model.addAttribute("error", "載入訂單確認頁面失敗：" + e.getMessage());
+            return "redirect:/orders/my";
+        }
+        
+        return "order-confirmation";
+    }
+
+    /**
      * 顯示訂單詳情頁面
      * 根據訂單ID獲取訂單詳情並顯示
      * 
@@ -357,9 +407,11 @@ public class OrderController {
             cartService.clearCart(cart.getId());
             logger.info("訂單建立成功並清空購物車 - orderId: {}, orderNumber: {}", order.getId(), order.getOrderNumber());
 
+            // 重定向到訂單確認頁面
             redirectAttributes.addFlashAttribute("success", "訂單建立成功！訂單編號：" + order.getOrderNumber());
-            redirectAttributes.addAttribute("id", order.getId());
-            return "redirect:/orders/{id}";
+            redirectAttributes.addFlashAttribute("order", order);
+            redirectAttributes.addAttribute("orderId", order.getId());
+            return "redirect:/orders/confirmation/{orderId}";
             
         } catch (Exception e) {
             logger.error("建立訂單時發生錯誤", e);

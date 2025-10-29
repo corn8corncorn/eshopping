@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>訂單確認</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background-color: #fff;
+            padding: 15px 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header h1 {
+            margin: 0;
+            color: #333;
+        }
+        .nav {
+            margin-top: 10px;
+        }
+        .nav a {
+            margin-right: 15px;
+            text-decoration: none;
+            color: #007bff;
+        }
+        .nav a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .confirmation-card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .success-icon {
+            font-size: 64px;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        .success-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        .order-number {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 2px solid #28a745;
+        }
+        .order-number-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .order-number-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            font-family: monospace;
+        }
+        .message {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        .order-summary {
+            background-color: #f8f9fa;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        .order-summary h3 {
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+        .summary-label {
+            color: #666;
+        }
+        .summary-value {
+            font-weight: bold;
+            color: #333;
+        }
+        .summary-total {
+            font-size: 20px;
+            color: #28a745;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid #28a745;
+        }
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .info-box {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #0c5460;
+        }
+        .info-box h4 {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>訂單確認</h1>
+            <nav class="nav">
+                <a th:href="@{/home}">首頁</a>
+                <a th:href="@{/shop}">商品展示</a>
+                <a th:href="@{/orders/my}">我的訂單</a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="confirmation-card">
+            <div class="success-icon">✓</div>
+            <h2 class="success-title">訂單建立成功！</h2>
+            
+            <p class="message">
+                感謝您的購買！您的訂單已成功建立，我們將盡快處理您的訂單。
+            </p>
+
+            <div class="order-number">
+                <div class="order-number-label">訂單編號</div>
+                <div class="order-number-value" th:text="${order != null ? order.orderNumber : 'N/A'}">ORDER-123456789</div>
+            </div>
+
+            <!-- 訂單摘要 -->
+            <div th:if="${order != null}" class="order-summary">
+                <h3>訂單資訊</h3>
+                
+                <div class="summary-row">
+                    <span class="summary-label">訂單日期：</span>
+                    <span class="summary-value" th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}">日期</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">收件人：</span>
+                    <span class="summary-value" th:text="${order.recipientName}">收件人</span>
+                </div>
+                <div class="summary-row" th:if="${order.recipientPhone != null && !order.recipientPhone.isEmpty()}">
+                    <span class="summary-label">收件電話：</span>
+                    <span class="summary-value" th:text="${order.recipientPhone}">電話</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">收件地址：</span>
+                    <span class="summary-value" th:text="${order.shippingAddress}">地址</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">付款方式：</span>
+                    <span class="summary-value" 
+                          th:text="${order.paymentMethod != null ? order.paymentMethod.description : 'N/A'}">付款方式</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">訂單狀態：</span>
+                    <span class="summary-value" 
+                          th:text="${order.status != null ? order.status.description : 'N/A'}">訂單狀態</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">付款狀態：</span>
+                    <span class="summary-value" 
+                          th:text="${order.paymentStatus != null ? order.paymentStatus.description : 'N/A'}">付款狀態</span>
+                </div>
+                <div class="summary-row summary-total">
+                    <span>訂單總金額：</span>
+                    <span th:text="${#numbers.formatDecimal(order.finalAmount, 0, 2)} + ' 元'">總金額</span>
+                </div>
+            </div>
+
+            <!-- 訊息提示 -->
+            <div th:if="${success}" class="info-box">
+                <h4>✓ 成功訊息</h4>
+                <p th:text="${success}"></p>
+            </div>
+
+            <!-- 操作按鈕 -->
+            <div class="actions">
+                <a th:href="@{'/orders/' + ${order != null ? order.id : ''}}" class="btn btn-primary">查看訂單詳情</a>
+                <a th:href="@{/orders/my}" class="btn btn-success">我的訂單列表</a>
+                <a th:href="@{/shop}" class="btn btn-secondary">繼續購物</a>
+            </div>
+
+            <!-- 注意事項 -->
+            <div class="info-box" style="margin-top: 30px; text-align: left;">
+                <h4>📋 後續步驟</h4>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>我們已透過郵件發送訂單確認信給您</li>
+                    <li>訂單狀態會透過系統通知您</li>
+                    <li>您可以在「我的訂單」中隨時查看訂單狀態</li>
+                    <li>如有任何問題，請聯繫客服</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
