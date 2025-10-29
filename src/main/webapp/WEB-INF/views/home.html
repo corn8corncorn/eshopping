@@ -2,46 +2,366 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>首頁</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{home.title}">歡迎來到電商網站</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background-color: #fff;
+            padding: 15px 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            margin: 0;
+            color: #333;
+        }
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .nav a {
+            text-decoration: none;
+            color: #007bff;
+            padding: 5px 10px;
+        }
+        .nav a:hover {
+            text-decoration: underline;
+        }
+        .cart-icon {
+            position: relative;
+            display: inline-block;
+            text-decoration: none;
+            color: #007bff;
+            padding: 8px 12px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+        }
+        .cart-icon:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .welcome-section {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .search-bar {
+            margin: 20px 0;
+        }
+        .search-bar form {
+            display: flex;
+            gap: 10px;
+            max-width: 600px;
+        }
+        .search-bar input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .search-bar button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .category-tag {
+            padding: 8px 16px;
+            background-color: #f0f0f0;
+            border-radius: 20px;
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.3s;
+        }
+        .category-tag:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        .product-section {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .product-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            color: inherit;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .product-image {
+            width: 100%;
+            height: 150px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .product-info {
+            padding: 15px;
+        }
+        .product-name {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        .product-price {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .more-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .more-link a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .more-link a:hover {
+            text-decoration: underline;
+        }
+        .lang-switch {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+    </style>
 </head>
 <body>
-    <h1 th:text="#{home.title}">歡迎來到電商網站</h1>
-    
-    <!-- 登入狀態顯示 -->
-    <div th:if="${isLoggedIn}">
-        <p th:text="#{message.welcome}">歡迎，<span th:text="${username}"></span>！</p>
-        <form th:action="@{/logout}" method="post" style="display: inline;">
-            <button type="submit" th:text="#{button.logout}">登出</button>
-        </form>
+    <div class="header">
+        <div class="header-content">
+            <h1 th:text="#{home.title}">歡迎來到電商網站</h1>
+            <nav class="nav">
+                <a th:href="@{/home}" th:text="#{nav.home}">首頁</a>
+                <a th:href="@{/shop}">商品展示</a>
+                <a th:href="@{/products}" th:text="#{nav.products}">商品管理</a>
+                <a th:href="@{/cart}" class="cart-icon">
+                    購物車
+                    <span th:if="${cartItemCount != null && cartItemCount > 0}" 
+                          class="cart-badge" 
+                          th:text="${cartItemCount}">0</span>
+                </a>
+                <a th:href="@{/orders/my}">我的訂單</a>
+                <span th:if="${isLoggedIn}">
+                    <span th:text="${'歡迎，' + username}">歡迎</span>
+                    <form th:action="@{/logout}" method="post" style="display: inline;">
+                        <button type="submit" th:text="#{button.logout}">登出</button>
+                    </form>
+                </span>
+                <span th:unless="${isLoggedIn}">
+                    <a th:href="@{/login}" th:text="#{button.login}">登入</a>
+                    <a th:href="@{/register}" th:text="#{button.register}">註冊</a>
+                </span>
+                <span th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                    <a th:href="@{/users}" th:text="#{nav.user.management}">用戶管理</a>
+                    <a th:href="@{/customers}" th:text="#{nav.customer.management}">客戶管理</a>
+                    <a th:href="@{/orders}">訂單管理</a>
+                </span>
+            </nav>
+        </div>
     </div>
-    
-    <div th:unless="${isLoggedIn}">
-        <p th:text="#{message.login.required}">請先登入以使用完整功能</p>
-        <a th:href="@{/login}" th:text="#{button.login}">登入</a> |
-        <a th:href="@{/register}" th:text="#{button.register}">註冊</a>
+
+    <div class="container">
+        <!-- 歡迎區塊和搜尋 -->
+        <div class="welcome-section">
+            <h2>歡迎來到我們的電商網站！</h2>
+            <p th:if="${!isLoggedIn}">請先登入以使用完整功能</p>
+            <p th:if="${isLoggedIn}" th:text="${'歡迎，' + username + '！'}">歡迎</p>
+            
+            <!-- 全局搜尋欄 -->
+            <div class="search-bar">
+                <form th:action="@{/shop}" method="get">
+                    <input type="text" name="search" placeholder="搜尋商品名稱或描述..." required>
+                    <button type="submit">搜尋</button>
+                </form>
+            </div>
+            
+            <!-- 商品分類 -->
+            <div th:if="${categories != null && !categories.isEmpty()}">
+                <h3 style="margin-bottom: 10px;">商品分類：</h3>
+                <div class="categories">
+                    <a th:each="category : ${categories}" 
+                       th:href="@{'/shop?type=' + ${category}}" 
+                       class="category-tag"
+                       th:text="${category}">分類</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 熱門商品 -->
+        <div th:if="${hotProducts != null && !hotProducts.isEmpty()}" class="product-section">
+            <h2 class="section-title">🔥 熱門商品</h2>
+            <div class="products-grid">
+                <a th:each="product : ${hotProducts}" 
+                   th:href="@{'/shop/product/' + ${product.id}}" 
+                   class="product-card">
+                    <div class="product-image">
+                        <img th:if="${product.imageUrl != null && !product.imageUrl.isEmpty()}" 
+                             th:src="${product.imageUrl}" 
+                             th:alt="${product.name}"
+                             onerror="this.style.display='none'; this.parentElement.innerHTML='無圖片';">
+                        <span th:if="${product.imageUrl == null || product.imageUrl.isEmpty()}">無圖片</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name" th:text="${product.name}">商品名稱</div>
+                        <div class="product-price" th:text="${#numbers.formatDecimal(product.price, 0, 0) + ' 元'}">價格</div>
+                    </div>
+                </a>
+            </div>
+            <div class="more-link">
+                <a th:href="@{/shop}">查看更多商品 →</a>
+            </div>
+        </div>
+
+        <!-- 最新商品 -->
+        <div th:if="${latestProducts != null && !latestProducts.isEmpty()}" class="product-section">
+            <h2 class="section-title">🆕 最新商品</h2>
+            <div class="products-grid">
+                <a th:each="product : ${latestProducts}" 
+                   th:href="@{'/shop/product/' + ${product.id}}" 
+                   class="product-card">
+                    <div class="product-image">
+                        <img th:if="${product.imageUrl != null && !product.imageUrl.isEmpty()}" 
+                             th:src="${product.imageUrl}" 
+                             th:alt="${product.name}"
+                             onerror="this.style.display='none'; this.parentElement.innerHTML='無圖片';">
+                        <span th:if="${product.imageUrl == null || product.imageUrl.isEmpty()}">無圖片</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name" th:text="${product.name}">商品名稱</div>
+                        <div class="product-price" th:text="${#numbers.formatDecimal(product.price, 0, 0) + ' 元'}">價格</div>
+                    </div>
+                </a>
+            </div>
+            <div class="more-link">
+                <a th:href="@{/shop}">查看更多商品 →</a>
+            </div>
+        </div>
+
+        <!-- 推薦商品 -->
+        <div th:if="${recommendedProducts != null && !recommendedProducts.isEmpty()}" class="product-section">
+            <h2 class="section-title">⭐ 推薦商品</h2>
+            <div class="products-grid">
+                <a th:each="product : ${recommendedProducts}" 
+                   th:href="@{'/shop/product/' + ${product.id}}" 
+                   class="product-card">
+                    <div class="product-image">
+                        <img th:if="${product.imageUrl != null && !product.imageUrl.isEmpty()}" 
+                             th:src="${product.imageUrl}" 
+                             th:alt="${product.name}"
+                             onerror="this.style.display='none'; this.parentElement.innerHTML='無圖片';">
+                        <span th:if="${product.imageUrl == null || product.imageUrl.isEmpty()}">無圖片</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name" th:text="${product.name}">商品名稱</div>
+                        <div class="product-price" th:text="${#numbers.formatDecimal(product.price, 0, 0) + ' 元'}">價格</div>
+                    </div>
+                </a>
+            </div>
+            <div class="more-link">
+                <a th:href="@{/shop}">查看更多商品 →</a>
+            </div>
+        </div>
+
+        <!-- 語言切換 -->
+        <div class="lang-switch">
+            <a th:href="@{/?lang=en}" th:text="#{lang.english}">English</a> |
+            <a th:href="@{/?lang=zh_TW}" th:text="#{lang.chinese}">繁體中文</a>
+        </div>
     </div>
-    
-    <hr>
-    
-    <!-- 導航選單 -->
-    <nav>
-        <a th:href="@{/home}" th:text="#{nav.home}">首頁</a> |
-        <a th:href="@{/shop}">商品展示</a> |
-        <a th:href="@{/products}" th:text="#{nav.products}">商品管理</a> |
-        <a th:href="@{/cart}">購物車</a> |
-        <a th:href="@{/orders/my}">我的訂單</a> |
-        <a th:href="@{/customers/edit}" th:text="#{nav.edit.profile}">編輯客戶資料</a> |
-        <a th:href="@{/customers/profile}" th:text="#{nav.view.profile}">查看客戶資料</a>
-        <span th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
-            | <a th:href="@{/users}" th:text="#{nav.user.management}">用戶管理</a>
-            | <a th:href="@{/customers}" th:text="#{nav.customer.management}">客戶管理</a>
-            | <a th:href="@{/orders}">訂單管理</a>
-        </span>
-    </nav>
-    
-    <hr>
-    
-    <!-- 語言切換 -->
-    <a th:href="@{/?lang=en}" th:text="#{lang.english}">English</a> |
-    <a th:href="@{/?lang=zh_TW}" th:text="#{lang.chinese}">繁體中文</a>
 </body>
+</html>
