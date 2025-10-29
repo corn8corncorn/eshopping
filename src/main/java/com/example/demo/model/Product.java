@@ -32,6 +32,18 @@ public class Product {
 	@Column(name = "price", precision = 10, scale = 0)
 	private BigDecimal price;
 
+	/**
+	 * 商品庫存數量
+	 */
+	@Column(name = "stock_quantity", nullable = false)
+	private Integer stockQuantity = 0;
+
+	/**
+	 * 最小庫存警告數量
+	 */
+	@Column(name = "min_stock_threshold")
+	private Integer minStockThreshold = 10;
+
 	@Column(name = "description", columnDefinition = "TEXT")
 	private String description;
 
@@ -59,6 +71,18 @@ public class Product {
 		this.name = name;
 		this.type = type;
 		this.price = price;
+	}
+
+	/**
+	 * 建構子（包含庫存）
+	 * @param name 商品名稱
+	 * @param type 商品類型
+	 * @param price 商品價格
+	 * @param stockQuantity 庫存數量
+	 */
+	public Product(String name, String type, BigDecimal price, Integer stockQuantity) {
+		this(name, type, price);
+		this.stockQuantity = stockQuantity;
 	}
 
 	// 枚舉類(商品狀態)
@@ -145,10 +169,82 @@ public class Product {
 		this.status = status;
 	}
 
+	public Integer getStockQuantity() {
+		return stockQuantity;
+	}
+
+	public void setStockQuantity(Integer stockQuantity) {
+		this.stockQuantity = stockQuantity;
+		// 自動更新商品狀態
+		updateStatusBasedOnStock();
+	}
+
+	public Integer getMinStockThreshold() {
+		return minStockThreshold;
+	}
+
+	public void setMinStockThreshold(Integer minStockThreshold) {
+		this.minStockThreshold = minStockThreshold;
+	}
+
+	/**
+	 * 增加庫存
+	 * @param quantity 增加的數量
+	 */
+	public void addStock(Integer quantity) {
+		if (quantity > 0) {
+			this.stockQuantity += quantity;
+			updateStatusBasedOnStock();
+		}
+	}
+
+	/**
+	 * 減少庫存
+	 * @param quantity 減少的數量
+	 * @return 是否成功減少庫存
+	 */
+	public boolean reduceStock(Integer quantity) {
+		if (quantity > 0 && this.stockQuantity >= quantity) {
+			this.stockQuantity -= quantity;
+			updateStatusBasedOnStock();
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 檢查是否有足夠庫存
+	 * @param quantity 需要的數量
+	 * @return 是否有足夠庫存
+	 */
+	public boolean hasEnoughStock(Integer quantity) {
+		return this.stockQuantity >= quantity;
+	}
+
+	/**
+	 * 檢查庫存是否低於警告閾值
+	 * @return 是否庫存不足
+	 */
+	public boolean isLowStock() {
+		return this.stockQuantity <= this.minStockThreshold;
+	}
+
+	/**
+	 * 根據庫存數量自動更新商品狀態
+	 */
+	private void updateStatusBasedOnStock() {
+		if (this.stockQuantity <= 0) {
+			this.status = ProductStatus.OUT_OF_STOCK;
+		} else if (this.status == ProductStatus.OUT_OF_STOCK) {
+			this.status = ProductStatus.ACTIVE;
+		}
+	}
+
 	@Override
 	public String toString() {
 		return "Product [id=" + id + ", name=" + name + ", description=" + description + ", imageUrl=" + imageUrl
-				+ ", type=" + type + ", price=" + price + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
+				+ ", type=" + type + ", price=" + price + ", stockQuantity=" + stockQuantity + ", status=" + status 
+				+ ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
 	}
 
 }
