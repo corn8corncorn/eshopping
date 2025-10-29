@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>結帳</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            margin-bottom: 30px;
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .checkout-container {
+            display: flex;
+            gap: 30px;
+        }
+        .checkout-form {
+            flex: 2;
+        }
+        .order-summary {
+            flex: 1;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            height: fit-content;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="tel"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 80px;
+            resize: vertical;
+        }
+        .required {
+            color: red;
+        }
+        .btn {
+            padding: 12px 24px;
+            margin: 10px 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .order-summary h3 {
+            margin-top: 0;
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .summary-total {
+            font-size: 20px;
+            font-weight: bold;
+            color: #28a745;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid #28a745;
+        }
+        .cart-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        .actions {
+            margin-top: 30px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>結帳</h1>
+        <nav>
+            <a th:href="@{/cart}">購物車</a> |
+            <a th:href="@{/products}">商品列表</a> |
+            <a th:href="@{/home}">首頁</a>
+        </nav>
+    </div>
+
+    <!-- 錯誤訊息 -->
+    <div th:if="${error}" class="message error" th:text="${error}"></div>
+
+    <div th:if="${cart != null && cart.cartItems != null && !cart.cartItems.isEmpty()}">
+        <div class="checkout-container">
+            <!-- 結帳表單 -->
+            <div class="checkout-form">
+                <h2>收件人資訊</h2>
+                <form th:action="@{/orders/create}" method="post">
+                    <div class="form-group">
+                        <label for="recipientName">收件人姓名 <span class="required">*</span></label>
+                        <input type="text" id="recipientName" name="recipientName" 
+                               th:value="${recipientName != null ? recipientName : ''}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recipientPhone">收件人電話</label>
+                        <input type="tel" id="recipientPhone" name="recipientPhone" 
+                               th:value="${recipientPhone != null ? recipientPhone : ''}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="shippingAddress">收件地址 <span class="required">*</span></label>
+                        <textarea id="shippingAddress" name="shippingAddress" required
+                                  th:text="${shippingAddress != null ? shippingAddress : ''}"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="shippingCity">城市</label>
+                        <input type="text" id="shippingCity" name="shippingCity">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="shippingPostalCode">郵遞區號</label>
+                        <input type="text" id="shippingPostalCode" name="shippingPostalCode">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="paymentMethod">付款方式 <span class="required">*</span></label>
+                        <select id="paymentMethod" name="paymentMethod" required>
+                            <option value="">請選擇付款方式</option>
+                            <option th:each="method : ${paymentMethods}" 
+                                    th:value="${method.name()}" 
+                                    th:text="${method.description}"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">訂單備註</label>
+                        <textarea id="notes" name="notes"></textarea>
+                    </div>
+
+                    <div class="actions">
+                        <button type="submit" class="btn btn-success">確認訂單</button>
+                        <a th:href="@{/cart}" class="btn btn-secondary">返回購物車</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 訂單摘要 -->
+            <div class="order-summary">
+                <h3>訂單摘要</h3>
+                
+                <div th:each="item : ${cart.cartItems}" class="cart-item">
+                    <div style="font-weight: bold;" th:text="${item.productName}">商品名稱</div>
+                    <div style="font-size: 14px; color: #666;">
+                        數量：<span th:text="${item.quantity}">1</span> × 
+                        <span th:text="${#numbers.formatDecimal(item.price, 0, 2)}">價格</span> 元
+                    </div>
+                    <div style="text-align: right; margin-top: 5px;">
+                        <strong th:text="${#numbers.formatDecimal(item.subtotal, 0, 2)} + ' 元'">小計</strong>
+                    </div>
+                </div>
+
+                <div class="summary-item">
+                    <span>商品總計：</span>
+                    <span th:text="${#numbers.formatDecimal(cart.totalAmount, 0, 2)} + ' 元'">商品總計</span>
+                </div>
+                <div class="summary-item">
+                    <span>運費：</span>
+                    <span>0 元</span>
+                </div>
+                <div class="summary-total">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>應付總額：</span>
+                        <span th:text="${#numbers.formatDecimal(cart.totalAmount, 0, 2)} + ' 元'">總金額</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">
+                    <div style="font-size: 14px; color: #666;">
+                        商品總數：<span th:text="${cart.totalItems}">0</span> 件
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${cart == null || cart.cartItems == null || cart.cartItems.isEmpty()}">
+        <div style="text-align: center; padding: 40px;">
+            <h2>購物車是空的</h2>
+            <p>無法進行結帳，請先將商品加入購物車。</p>
+            <a th:href="@{/products}" class="btn btn-primary">前往商品列表</a>
+        </div>
+    </div>
+</body>
+</html>
+

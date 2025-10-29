@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>訂單詳情</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            margin-bottom: 30px;
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .order-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .info-card {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .info-card h3 {
+            margin-top: 0;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .status-PENDING { background-color: #ffc107; color: #000; }
+        .status-CONFIRMED { background-color: #17a2b8; color: #fff; }
+        .status-PROCESSING { background-color: #007bff; color: #fff; }
+        .status-SHIPPED { background-color: #6f42c1; color: #fff; }
+        .status-DELIVERED { background-color: #28a745; color: #fff; }
+        .status-CANCELLED { background-color: #dc3545; color: #fff; }
+        .status-RETURNED { background-color: #6c757d; color: #fff; }
+        .payment-status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .payment-status-PENDING { background-color: #ffc107; color: #000; }
+        .payment-status-PAID { background-color: #28a745; color: #fff; }
+        .payment-status-FAILED { background-color: #dc3545; color: #fff; }
+        .payment-status-REFUNDED { background-color: #6c757d; color: #fff; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .order-summary {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .summary-row:last-child {
+            border-bottom: none;
+            font-size: 20px;
+            font-weight: bold;
+            color: #28a745;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid #28a745;
+        }
+        .btn {
+            padding: 8px 16px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+        .admin-actions {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #fff3cd;
+            border-radius: 5px;
+            border: 1px solid #ffc107;
+        }
+        .admin-actions h3 {
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>訂單詳情</h1>
+        <nav>
+            <a th:href="@{/home}">首頁</a> |
+            <a th:href="@{/orders/my}">我的訂單</a> |
+            <a th:href="@{/products}">商品列表</a>
+        </nav>
+    </div>
+
+    <!-- 訊息提示 -->
+    <div th:if="${success}" class="message success" th:text="${success}"></div>
+    <div th:if="${error}" class="message error" th:text="${error}"></div>
+
+    <div th:if="${order != null}">
+        <!-- 訂單基本資訊 -->
+        <div class="order-info">
+            <div class="info-card">
+                <h3>訂單資訊</h3>
+                <div class="info-row">
+                    <span>訂單編號：</span>
+                    <strong th:text="${order.orderNumber}">訂單編號</strong>
+                </div>
+                <div class="info-row">
+                    <span>訂單日期：</span>
+                    <span th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}">訂單日期</span>
+                </div>
+                <div class="info-row">
+                    <span>訂單狀態：</span>
+                    <span class="status" 
+                          th:classappend="${'status-' + order.status.name()}"
+                          th:text="${order.status.description}">訂單狀態</span>
+                </div>
+                <div class="info-row">
+                    <span>付款狀態：</span>
+                    <span class="payment-status" 
+                          th:classappend="${'payment-status-' + order.paymentStatus.name()}"
+                          th:text="${order.paymentStatus.description}">付款狀態</span>
+                </div>
+                <div class="info-row">
+                    <span>付款方式：</span>
+                    <span th:text="${order.paymentMethod != null ? order.paymentMethod.description : 'N/A'}">付款方式</span>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h3>收件人資訊</h3>
+                <div class="info-row">
+                    <span>收件人姓名：</span>
+                    <strong th:text="${order.recipientName}">收件人姓名</strong>
+                </div>
+                <div class="info-row" th:if="${order.recipientPhone != null && !order.recipientPhone.isEmpty()}">
+                    <span>收件人電話：</span>
+                    <span th:text="${order.recipientPhone}">收件人電話</span>
+                </div>
+                <div class="info-row">
+                    <span>收件地址：</span>
+                    <span th:text="${order.shippingAddress}">收件地址</span>
+                </div>
+                <div class="info-row" th:if="${order.shippingCity != null && !order.shippingCity.isEmpty()}">
+                    <span>城市：</span>
+                    <span th:text="${order.shippingCity}">城市</span>
+                </div>
+                <div class="info-row" th:if="${order.shippingPostalCode != null && !order.shippingPostalCode.isEmpty()}">
+                    <span>郵遞區號：</span>
+                    <span th:text="${order.shippingPostalCode}">郵遞區號</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 訂單項目 -->
+        <h2>訂單項目</h2>
+        <table th:if="${orderItems != null && !orderItems.isEmpty()}">
+            <thead>
+                <tr>
+                    <th>商品名稱</th>
+                    <th>單價</th>
+                    <th>數量</th>
+                    <th class="text-right">小計</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="item : ${orderItems}">
+                    <td>
+                        <strong th:text="${item.productName}">商品名稱</strong>
+                    </td>
+                    <td th:text="${#numbers.formatDecimal(item.price, 0, 2)} + ' 元'">單價</td>
+                    <td th:text="${item.quantity}">數量</td>
+                    <td class="text-right" th:text="${#numbers.formatDecimal(item.subtotal, 0, 2)} + ' 元'">小計</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 訂單摘要 -->
+        <div class="order-summary">
+            <div class="summary-row">
+                <span>商品總計：</span>
+                <span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 2)} + ' 元'">商品總計</span>
+            </div>
+            <div class="summary-row" th:if="${order.shippingFee != null && order.shippingFee.compareTo(java.math.BigDecimal.ZERO) > 0}">
+                <span>運費：</span>
+                <span th:text="${#numbers.formatDecimal(order.shippingFee, 0, 2)} + ' 元'">運費</span>
+            </div>
+            <div class="summary-row" th:if="${order.discountAmount != null && order.discountAmount.compareTo(java.math.BigDecimal.ZERO) > 0}">
+                <span>折扣：</span>
+                <span th:text="${'-' + #numbers.formatDecimal(order.discountAmount, 0, 2)} + ' 元'">折扣</span>
+            </div>
+            <div class="summary-row">
+                <span>應付總額：</span>
+                <span th:text="${#numbers.formatDecimal(order.finalAmount, 0, 2)} + ' 元'">應付總額</span>
+            </div>
+        </div>
+
+        <!-- 訂單備註 -->
+        <div th:if="${order.notes != null && !order.notes.isEmpty()}" style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
+            <strong>訂單備註：</strong>
+            <p th:text="${order.notes}">備註</p>
+        </div>
+
+        <!-- 用戶操作 -->
+        <div style="margin-top: 30px;">
+            <a th:href="@{/orders/my}" class="btn btn-primary">返回訂單列表</a>
+            <span th:if="${order.status.name() == 'PENDING'}">
+                <form th:action="@{'/orders/' + ${order.id} + '/cancel'}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-danger" 
+                            onclick="return confirm('確定要取消此訂單嗎？')">取消訂單</button>
+                </form>
+            </span>
+        </div>
+
+        <!-- 管理員操作 -->
+        <div th:if="${#authorization.expression('hasRole(''ADMIN'')')}" class="admin-actions">
+            <h3>管理員操作</h3>
+            <form th:action="@{'/orders/' + ${order.id} + '/update-status'}" method="post" style="margin-bottom: 20px;">
+                <div class="form-group">
+                    <label for="status">更新訂單狀態：</label>
+                    <select id="status" name="status" required>
+                        <option value="" th:selected="${order.status == null}">請選擇狀態</option>
+                        <option th:each="status : ${T(com.example.demo.model.Order$OrderStatus).values()}" 
+                                th:value="${status.name()}" 
+                                th:text="${status.description}"
+                                th:selected="${order.status == status}"></option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-info">更新訂單狀態</button>
+            </form>
+            <form th:action="@{'/orders/' + ${order.id} + '/update-payment-status'}" method="post">
+                <div class="form-group">
+                    <label for="paymentStatus">更新付款狀態：</label>
+                    <select id="paymentStatus" name="paymentStatus" required>
+                        <option value="" th:selected="${order.paymentStatus == null}">請選擇付款狀態</option>
+                        <option th:each="status : ${T(com.example.demo.model.Order$PaymentStatus).values()}" 
+                                th:value="${status.name()}" 
+                                th:text="${status.description}"
+                                th:selected="${order.paymentStatus == status}"></option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-info">更新付款狀態</button>
+            </form>
+        </div>
+    </div>
+
+    <div th:if="${order == null}">
+        <div style="text-align: center; padding: 40px;">
+            <h2>訂單不存在</h2>
+            <a th:href="@{/orders/my}" class="btn btn-primary">返回訂單列表</a>
+        </div>
+    </div>
+</body>
+</html>
+

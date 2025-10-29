@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${isMyOrders != null && isMyOrders ? '我的訂單' : '訂單列表'}">訂單列表</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            margin-bottom: 30px;
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-PENDING { background-color: #ffc107; color: #000; }
+        .status-CONFIRMED { background-color: #17a2b8; color: #fff; }
+        .status-PROCESSING { background-color: #007bff; color: #fff; }
+        .status-SHIPPED { background-color: #6f42c1; color: #fff; }
+        .status-DELIVERED { background-color: #28a745; color: #fff; }
+        .status-CANCELLED { background-color: #dc3545; color: #fff; }
+        .status-RETURNED { background-color: #6c757d; color: #fff; }
+        .payment-status {
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+        .payment-status-PENDING { background-color: #ffc107; color: #000; }
+        .payment-status-PAID { background-color: #28a745; color: #fff; }
+        .payment-status-FAILED { background-color: #dc3545; color: #fff; }
+        .payment-status-REFUNDED { background-color: #6c757d; color: #fff; }
+        .btn {
+            padding: 6px 12px;
+            margin: 2px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .empty-orders {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 th:text="${isMyOrders != null && isMyOrders ? '我的訂單' : '訂單列表'}">訂單列表</h1>
+        <nav>
+            <a th:href="@{/home}">首頁</a> |
+            <a th:href="@{/products}">商品列表</a> |
+            <a th:href="@{/cart}">購物車</a>
+            <span th:if="${isMyOrders == null || !isMyOrders}">
+                | <a th:href="@{/orders/my}">我的訂單</a>
+            </span>
+            <span th:if="${isMyOrders != null && isMyOrders}">
+                | <a th:href="@{/orders}">所有訂單（管理員）</a>
+            </span>
+        </nav>
+    </div>
+
+    <!-- 訊息提示 -->
+    <div th:if="${success}" class="message success" th:text="${success}"></div>
+    <div th:if="${error}" class="message error" th:text="${error}"></div>
+
+    <div th:if="${orders != null && !orders.isEmpty()}">
+        <table>
+            <thead>
+                <tr>
+                    <th>訂單編號</th>
+                    <th>訂單日期</th>
+                    <th th:if="${isMyOrders == null || !isMyOrders}">客戶</th>
+                    <th>訂單狀態</th>
+                    <th>付款狀態</th>
+                    <th>付款方式</th>
+                    <th class="text-right">訂單金額</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="order : ${orders}">
+                    <td>
+                        <strong th:text="${order.orderNumber}">訂單編號</strong>
+                    </td>
+                    <td th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm')}">訂單日期</td>
+                    <td th:if="${isMyOrders == null || !isMyOrders}" 
+                        th:text="${order.customer != null ? order.customer.fullName : 'N/A'}">客戶</td>
+                    <td>
+                        <span class="status" 
+                              th:classappend="${'status-' + order.status.name()}"
+                              th:text="${order.status.description}">訂單狀態</span>
+                    </td>
+                    <td>
+                        <span class="payment-status" 
+                              th:classappend="${'payment-status-' + order.paymentStatus.name()}"
+                              th:text="${order.paymentStatus.description}">付款狀態</span>
+                    </td>
+                    <td th:text="${order.paymentMethod != null ? order.paymentMethod.description : 'N/A'}">付款方式</td>
+                    <td class="text-right">
+                        <strong th:text="${#numbers.formatDecimal(order.finalAmount, 0, 2)} + ' 元'">金額</strong>
+                    </td>
+                    <td>
+                        <a th:href="@{'/orders/' + ${order.id}}" class="btn btn-info">查看詳情</a>
+                        <span th:if="${(isMyOrders != null && isMyOrders) && order.status.name() == 'PENDING'}">
+                            <form th:action="@{'/orders/' + ${order.id} + '/cancel'}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger" 
+                                        onclick="return confirm('確定要取消此訂單嗎？')">取消訂單</button>
+                            </form>
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${orders == null || orders.isEmpty()}" class="empty-orders">
+        <h2>目前沒有訂單</h2>
+        <p th:if="${isMyOrders != null && isMyOrders}">
+            您還沒有任何訂單，快去選購您喜歡的商品吧！
+        </p>
+        <p th:if="${isMyOrders == null || !isMyOrders}">
+            目前系統中沒有任何訂單。
+        </p>
+        <a th:href="@{/products}" class="btn btn-primary">前往商品列表</a>
+    </div>
+</body>
+</html>
+
