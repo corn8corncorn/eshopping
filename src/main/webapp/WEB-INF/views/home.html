@@ -26,12 +26,16 @@
     <!-- 導航選單 -->
     <nav>
         <a th:href="@{/home}" th:text="#{nav.home}">首頁</a> |
+        <a th:href="@{/shop}">商品展示</a> |
         <a th:href="@{/products}" th:text="#{nav.products}">商品管理</a> |
+        <a th:href="@{/cart}">購物車</a> |
+        <a th:href="@{/orders/my}">我的訂單</a> |
         <a th:href="@{/customers/edit}" th:text="#{nav.edit.profile}">編輯客戶資料</a> |
         <a th:href="@{/customers/profile}" th:text="#{nav.view.profile}">查看客戶資料</a>
         <span th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
             | <a th:href="@{/users}" th:text="#{nav.user.management}">用戶管理</a>
             | <a th:href="@{/customers}" th:text="#{nav.customer.management}">客戶管理</a>
+            | <a th:href="@{/orders}">訂單管理</a>
         </span>
     </nav>
     
