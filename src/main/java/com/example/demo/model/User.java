@@ -18,6 +18,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="user_id")
     private Long id;
 
     @Column(unique = true, nullable = false, length = 50)
@@ -34,6 +35,7 @@ public class User {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    
 
     @Column(name = "is_enabled")
     private Boolean enabled = true;
