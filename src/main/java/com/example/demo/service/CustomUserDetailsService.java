@@ -1,11 +1,6 @@
 package com.example.demo.service;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,55 +22,17 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
 
-        return new CustomUserPrincipal(user);
-    }
-
-    public static class CustomUserPrincipal implements UserDetails {
-        private final User user;
-
-        public CustomUserPrincipal(User user) {
-            this.user = user;
-        }
-
-        @Override
-        public Collection<? extends GrantedAuthority> getAuthorities() {
-            // 根據用戶角色設定權限
-            String role = "ROLE_" + user.getRole().name();
-            return Collections.singletonList(new SimpleGrantedAuthority(role));
-        }
-
-        @Override
-        public String getPassword() {
-            return user.getPassword();
-        }
-
-        @Override
-        public String getUsername() {
-            return user.getUsername();
-        }
-
-        @Override
-        public boolean isAccountNonExpired() {
-            return true;
-        }
-
-        @Override
-        public boolean isAccountNonLocked() {
-            return true;
-        }
-
-        @Override
-        public boolean isCredentialsNonExpired() {
-            return true;
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return Boolean.TRUE.equals(user.getEnabled());
-        }
-
-        public User getUser() {
-            return user;
-        }
+        // 使用 Spring Security 內建的 User.builder() 來建立 UserDetails
+        // enabled 狀態由 is_enabled 欄位控制
+        // accountExpired, accountLocked, credentialsExpired 都設為 false (不過期/不鎖定)
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .authorities("ROLE_" + user.getRole().name())
+                .accountExpired(false)      // 帳號未過期
+                .accountLocked(false)        // 帳號未鎖定
+                .credentialsExpired(false)   // 憑證未過期
+                .disabled(!Boolean.TRUE.equals(user.getEnabled()))  // 是否停用
+                .build();
     }
 }
