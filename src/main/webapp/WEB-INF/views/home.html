@@ -236,6 +236,7 @@
                           th:text="${cartItemCount}">0</span>
                 </a>
                 <a th:href="@{/orders/my}">我的訂單</a>
+                <a th:href="@{/account}" style="font-weight: bold; color: #667eea;">會員中心</a>
                 <span th:if="${isLoggedIn}">
                     <span th:text="${'歡迎，' + username}">歡迎</span>
                     <form th:action="@{/logout}" method="post" style="display: inline;">
