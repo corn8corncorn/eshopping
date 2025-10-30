@@ -135,11 +135,11 @@ public class OrderServiceImpl implements OrderService {
      * @return 新建立的訂單
      */
     @Override
-    public Order createOrder(Customer customer, String recipientName, String shippingAddress, Order.PaymentMethod paymentMethod) {
-        logger.info("建立新訂單 - customerId: {}, recipientName: {}, paymentMethod: {}", 
-                   customer.getId(), recipientName, paymentMethod);
+    public Order createOrder(Customer customer, Order.PaymentMethod paymentMethod) {
+        logger.info("建立新訂單 - customerId: {}, paymentMethod: {}", 
+                   customer.getId(), paymentMethod);
         
-        Order order = new Order(customer, recipientName, shippingAddress, paymentMethod);
+        Order order = new Order(customer, paymentMethod);
         Order savedOrder = orderDAO.save(order);
         
         logger.info("訂單建立成功 - orderId: {}, orderNumber: {}", savedOrder.getId(), savedOrder.getOrderNumber());
@@ -176,11 +176,6 @@ public class OrderServiceImpl implements OrderService {
         }
         
         // 更新訂單資訊
-        existingOrder.setRecipientName(order.getRecipientName());
-        existingOrder.setRecipientPhone(order.getRecipientPhone());
-        existingOrder.setShippingAddress(order.getShippingAddress());
-        existingOrder.setShippingCity(order.getShippingCity());
-        existingOrder.setShippingPostalCode(order.getShippingPostalCode());
         existingOrder.setPaymentMethod(order.getPaymentMethod());
         existingOrder.setNotes(order.getNotes());
         

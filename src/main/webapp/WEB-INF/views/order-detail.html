@@ -206,27 +206,35 @@
                 </div>
             </div>
 
-            <div class="info-card">
+            <div class="info-card" th:if="${order.orderAddress != null}">
                 <h3>收件人資訊</h3>
                 <div class="info-row">
                     <span>收件人姓名：</span>
-                    <strong th:text="${order.recipientName}">收件人姓名</strong>
+                    <strong th:text="${order.orderAddress.recipientName}">收件人姓名</strong>
                 </div>
-                <div class="info-row" th:if="${order.recipientPhone != null && !order.recipientPhone.isEmpty()}">
+                <div class="info-row" th:if="${order.orderAddress.phone != null && !order.orderAddress.phone.isEmpty()}">
                     <span>收件人電話：</span>
-                    <span th:text="${order.recipientPhone}">收件人電話</span>
+                    <span th:text="${order.orderAddress.phone}">收件人電話</span>
                 </div>
-                <div class="info-row">
-                    <span>收件地址：</span>
-                    <span th:text="${order.shippingAddress}">收件地址</span>
+                <div class="info-row" th:if="${order.orderAddress.country != null && !order.orderAddress.country.isEmpty()}">
+                    <span>國家：</span>
+                    <span th:text="${order.orderAddress.country}">國家</span>
                 </div>
-                <div class="info-row" th:if="${order.shippingCity != null && !order.shippingCity.isEmpty()}">
+                <div class="info-row" th:if="${order.orderAddress.city != null && !order.orderAddress.city.isEmpty()}">
                     <span>城市：</span>
-                    <span th:text="${order.shippingCity}">城市</span>
+                    <span th:text="${order.orderAddress.city}">城市</span>
                 </div>
-                <div class="info-row" th:if="${order.shippingPostalCode != null && !order.shippingPostalCode.isEmpty()}">
+                <div class="info-row" th:if="${order.orderAddress.district != null && !order.orderAddress.district.isEmpty()}">
+                    <span>區/鄉鎮：</span>
+                    <span th:text="${order.orderAddress.district}">區/鄉鎮</span>
+                </div>
+                <div class="info-row" th:if="${order.orderAddress.streetAddress != null && !order.orderAddress.streetAddress.isEmpty()}">
+                    <span>街道地址：</span>
+                    <span th:text="${order.orderAddress.streetAddress}">街道地址</span>
+                </div>
+                <div class="info-row" th:if="${order.orderAddress.postCode != null && !order.orderAddress.postCode.isEmpty()}">
                     <span>郵遞區號：</span>
-                    <span th:text="${order.shippingPostalCode}">郵遞區號</span>
+                    <span th:text="${order.orderAddress.postCode}">郵遞區號</span>
                 </div>
             </div>
         </div>

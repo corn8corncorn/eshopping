@@ -17,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -82,36 +83,6 @@ public class Order {
     private BigDecimal finalAmount = BigDecimal.ZERO;
 
     /**
-     * 收件人姓名
-     */
-    @Column(name = "recipient_name", nullable = false, length = 100)
-    private String recipientName;
-
-    /**
-     * 收件人電話
-     */
-    @Column(name = "recipient_phone", length = 20)
-    private String recipientPhone;
-
-    /**
-     * 收件地址
-     */
-    @Column(name = "shipping_address", columnDefinition = "TEXT", nullable = false)
-    private String shippingAddress;
-
-    /**
-     * 收件城市
-     */
-    @Column(name = "shipping_city", length = 50)
-    private String shippingCity;
-
-    /**
-     * 郵遞區號
-     */
-    @Column(name = "shipping_postal_code", length = 10)
-    private String shippingPostalCode;
-
-    /**
      * 付款方式
      */
     @Enumerated(EnumType.STRING)
@@ -144,6 +115,12 @@ public class Order {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    /**
+     * 訂單地址 - 一對一關聯
+     */
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private OrderAddress orderAddress;
 
     /**
      * 訂單項目列表 - 一對多關聯
@@ -225,15 +202,11 @@ public class Order {
     /**
      * 建構子
      * @param customer 客戶
-     * @param recipientName 收件人姓名
-     * @param shippingAddress 收件地址
      * @param paymentMethod 付款方式
      */
-    public Order(Customer customer, String recipientName, String shippingAddress, PaymentMethod paymentMethod) {
+    public Order(Customer customer, PaymentMethod paymentMethod) {
         this();
         this.customer = customer;
-        this.recipientName = recipientName;
-        this.shippingAddress = shippingAddress;
         this.paymentMethod = paymentMethod;
         this.orderNumber = generateOrderNumber();
     }
@@ -366,46 +339,6 @@ public class Order {
         this.finalAmount = finalAmount;
     }
 
-    public String getRecipientName() {
-        return recipientName;
-    }
-
-    public void setRecipientName(String recipientName) {
-        this.recipientName = recipientName;
-    }
-
-    public String getRecipientPhone() {
-        return recipientPhone;
-    }
-
-    public void setRecipientPhone(String recipientPhone) {
-        this.recipientPhone = recipientPhone;
-    }
-
-    public String getShippingAddress() {
-        return shippingAddress;
-    }
-
-    public void setShippingAddress(String shippingAddress) {
-        this.shippingAddress = shippingAddress;
-    }
-
-    public String getShippingCity() {
-        return shippingCity;
-    }
-
-    public void setShippingCity(String shippingCity) {
-        this.shippingCity = shippingCity;
-    }
-
-    public String getShippingPostalCode() {
-        return shippingPostalCode;
-    }
-
-    public void setShippingPostalCode(String shippingPostalCode) {
-        this.shippingPostalCode = shippingPostalCode;
-    }
-
     public PaymentMethod getPaymentMethod() {
         return paymentMethod;
     }
@@ -446,6 +379,14 @@ public class Order {
         this.updatedAt = updatedAt;
     }
 
+    public OrderAddress getOrderAddress() {
+        return orderAddress;
+    }
+
+    public void setOrderAddress(OrderAddress orderAddress) {
+        this.orderAddress = orderAddress;
+    }
+
     public List<OrderItem> getOrderItems() {
         return orderItems;
     }
@@ -462,7 +403,6 @@ public class Order {
                 ", status=" + status +
                 ", totalAmount=" + totalAmount +
                 ", finalAmount=" + finalAmount +
-                ", recipientName='" + recipientName + '\'' +
                 ", paymentMethod=" + paymentMethod +
                 ", paymentStatus=" + paymentStatus +
                 ", createdAt=" + createdAt +

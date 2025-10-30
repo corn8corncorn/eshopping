@@ -22,11 +22,13 @@ import com.example.demo.model.Order;
 import com.example.demo.model.Order.OrderStatus;
 import com.example.demo.model.Order.PaymentMethod;
 import com.example.demo.model.Order.PaymentStatus;
+import com.example.demo.model.OrderAddress;
 import com.example.demo.model.OrderItem;
 import com.example.demo.model.Product;
 import com.example.demo.model.User;
 import com.example.demo.service.CartService;
 import com.example.demo.service.CustomerService;
+import com.example.demo.service.OrderAddressService;
 import com.example.demo.service.OrderItemService;
 import com.example.demo.service.OrderService;
 import com.example.demo.service.ProductService;
@@ -49,6 +51,9 @@ public class OrderController {
 
     @Autowired
     private OrderItemService orderItemService;
+
+    @Autowired
+    private OrderAddressService orderAddressService;
 
     @Autowired
     private CartService cartService;
@@ -300,7 +305,11 @@ public class OrderController {
      * 
      * @param recipientName 收件人姓名
      * @param recipientPhone 收件人電話
-     * @param shippingAddress 收件地址
+     * @param streetAddress 街道地址
+     * @param country 國家
+     * @param city 城市
+     * @param district 區/鄉鎮
+     * @param postCode 郵遞區號
      * @param paymentMethod 付款方式
      * @param notes 訂單備註
      * @param redirectAttributes 用於傳遞重定向訊息
@@ -309,7 +318,11 @@ public class OrderController {
     @PostMapping("/create")
     public String createOrder(@RequestParam("recipientName") String recipientName,
                              @RequestParam(value = "recipientPhone", required = false) String recipientPhone,
-                             @RequestParam("shippingAddress") String shippingAddress,
+                             @RequestParam("streetAddress") String streetAddress,
+                             @RequestParam(value = "country", required = false) String country,
+                             @RequestParam(value = "city", required = false) String city,
+                             @RequestParam(value = "district", required = false) String district,
+                             @RequestParam(value = "postCode", required = false) String postCode,
                              @RequestParam("paymentMethod") String paymentMethod,
                              @RequestParam(value = "notes", required = false) String notes,
                              RedirectAttributes redirectAttributes) {
@@ -365,15 +378,20 @@ public class OrderController {
             }
 
             // 建立訂單
-            Order order = orderService.createOrder(customer, recipientName, shippingAddress, paymentMethodEnum);
+            Order order = orderService.createOrder(customer, paymentMethodEnum);
             
             // 設定其他訂單資訊
-            if (recipientPhone != null && !recipientPhone.isEmpty()) {
-                order.setRecipientPhone(recipientPhone);
-            }
             if (notes != null && !notes.isEmpty()) {
                 order.setNotes(notes);
+                order = orderService.saveOrder(order);
             }
+
+            // 建立訂單地址
+            OrderAddress orderAddress = orderAddressService.createOrderAddress(
+                order, recipientName, 
+                recipientPhone != null ? recipientPhone : "", 
+                streetAddress,
+                country, city, district, postCode);
 
             // 從購物車項目建立訂單項目
             for (CartItem cartItem : cart.getCartItems()) {

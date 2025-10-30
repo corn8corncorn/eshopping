@@ -71,7 +71,7 @@ public interface OrderService {
      * @param paymentMethod 付款方式
      * @return 新建立的訂單
      */
-    Order createOrder(Customer customer, String recipientName, String shippingAddress, PaymentMethod paymentMethod);
+    Order createOrder(Customer customer, PaymentMethod paymentMethod);
 
     /**
      * 儲存訂單

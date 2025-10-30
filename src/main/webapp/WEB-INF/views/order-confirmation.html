@@ -210,17 +210,17 @@
                     <span class="summary-label">訂單日期：</span>
                     <span class="summary-value" th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}">日期</span>
                 </div>
-                <div class="summary-row">
+                <div class="summary-row" th:if="${order.orderAddress != null}">
                     <span class="summary-label">收件人：</span>
-                    <span class="summary-value" th:text="${order.recipientName}">收件人</span>
+                    <span class="summary-value" th:text="${order.orderAddress.recipientName}">收件人</span>
                 </div>
-                <div class="summary-row" th:if="${order.recipientPhone != null && !order.recipientPhone.isEmpty()}">
+                <div class="summary-row" th:if="${order.orderAddress != null && order.orderAddress.phone != null && !order.orderAddress.phone.isEmpty()}">
                     <span class="summary-label">收件電話：</span>
-                    <span class="summary-value" th:text="${order.recipientPhone}">電話</span>
+                    <span class="summary-value" th:text="${order.orderAddress.phone}">電話</span>
                 </div>
-                <div class="summary-row">
+                <div class="summary-row" th:if="${order.orderAddress != null}">
                     <span class="summary-label">收件地址：</span>
-                    <span class="summary-value" th:text="${order.shippingAddress}">地址</span>
+                    <span class="summary-value" th:text="${order.orderAddress.getFullAddress()}">地址</span>
                 </div>
                 <div class="summary-row">
                     <span class="summary-label">付款方式：</span>
