@@ -361,7 +361,7 @@
         <div class="content">
             <div th:if="${error}" class="error" th:text="${error}"></div>
             
-            <div th:if="${customer}">
+            <div th:if="${customer != null}">
                 <!-- 歡迎區塊 -->
                 <div class="welcome-section">
                     <div class="avatar" th:text="${customer.fullName != null and !customer.fullName.isEmpty() ? customer.fullName.substring(0, 1) : user.username.substring(0, 1)}"></div>
@@ -441,9 +441,15 @@
                 </div>
             </div>
             
-            <div th:unless="${customer}">
+            <div th:if="${customer == null}">
+                <div class="welcome-section">
+                    <div class="user-info">
+                        <h2 th:text="'你好，' + ${user.username}"></h2>
+                        <p>歡迎來到會員中心！</p>
+                    </div>
+                </div>
                 <div class="no-orders">
-                    <p>尚未建立客戶資料</p>
+                    <p>尚未建立客戶資料，請先完善您的個人資料</p>
                     <a href="/customers/edit" class="btn btn-primary">建立個人資料</a>
                 </div>
             </div>

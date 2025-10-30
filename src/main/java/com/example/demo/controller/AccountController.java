@@ -69,11 +69,19 @@ public class AccountController {
             if (customer == null) {
                 // 如果沒有客戶資料，建立一個
                 logger.info("客戶資料不存在，建立新的客戶資料 - username: {}", currentUser.getUsername());
-                customer = customerService.createCustomerForUser(currentUser, currentUser.getUsername());
+                try {
+                    customer = customerService.createCustomerForUser(currentUser, currentUser.getUsername());
+                    if (customer != null) {
+                        logger.info("客戶資料建立成功 - customerId: {}", customer.getId());
+                    }
+                } catch (Exception e) {
+                    logger.error("建立客戶資料失敗", e);
+                    customer = null;
+                }
             }
             
             // 如果 fullName 為空或只包含空格，使用 username 作為顯示名稱
-            if (customer.getFullName() == null || customer.getFullName().trim().isEmpty()) {
+            if (customer != null && (customer.getFullName() == null || customer.getFullName().trim().isEmpty())) {
                 customer.setFullName(currentUser.getUsername());
                 logger.debug("客戶 fullName 為空，使用 username 作為顯示名稱");
             }
@@ -83,23 +91,25 @@ public class AccountController {
             int totalOrders = 0;
             long pendingOrders = 0;
             
-            try {
-                recentOrders = orderService.getByCustomer(customer);
-                
-                if (recentOrders != null && recentOrders.size() > 5) {
-                    recentOrders = recentOrders.subList(0, 5);
-                }
+            if (customer != null) {
+                try {
+                    recentOrders = orderService.getByCustomer(customer);
+                    
+                    if (recentOrders != null && recentOrders.size() > 5) {
+                        recentOrders = recentOrders.subList(0, 5);
+                    }
 
-                // 計算統計資料
-                if (recentOrders != null) {
-                    totalOrders = recentOrders.size();
-                    pendingOrders = recentOrders.stream()
-                            .filter(order -> order.getStatus() == Order.OrderStatus.PENDING)
-                            .count();
+                    // 計算統計資料
+                    if (recentOrders != null) {
+                        totalOrders = recentOrders.size();
+                        pendingOrders = recentOrders.stream()
+                                .filter(order -> order.getStatus() == Order.OrderStatus.PENDING)
+                                .count();
+                    }
+                } catch (Exception e) {
+                    logger.error("取得訂單資料時發生錯誤", e);
+                    recentOrders = null;
                 }
-            } catch (Exception e) {
-                logger.error("取得訂單資料時發生錯誤", e);
-                recentOrders = null;
             }
 
             // 傳遞資料到前端
@@ -109,8 +119,8 @@ public class AccountController {
             model.addAttribute("totalOrders", totalOrders);
             model.addAttribute("pendingOrders", pendingOrders);
             
-            logger.info("會員中心頁面載入完成 - customerId: {}, username: {}", 
-                    customer.getId(), currentUser.getUsername());
+            logger.info("會員中心頁面載入完成 - customer: {}, username: {}", 
+                    customer != null ? customer.getId() : "null", currentUser.getUsername());
             
             return "account";
             
