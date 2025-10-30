@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,6 +47,7 @@ public class AccountController {
      * @return 會員中心頁面模板名稱
      */
     @GetMapping
+    @Transactional(readOnly = true)
     public String showAccount(Model model) {
         logger.info("進入會員中心頁面");
         
@@ -77,16 +79,28 @@ public class AccountController {
             }
 
             // 取得最近的訂單（最多 5 筆）
-            List<Order> recentOrders = orderService.getByCustomer(customer);
-            if (recentOrders.size() > 5) {
-                recentOrders = recentOrders.subList(0, 5);
-            }
+            List<Order> recentOrders = null;
+            int totalOrders = 0;
+            long pendingOrders = 0;
+            
+            try {
+                recentOrders = orderService.getByCustomer(customer);
+                
+                if (recentOrders != null && recentOrders.size() > 5) {
+                    recentOrders = recentOrders.subList(0, 5);
+                }
 
-            // 計算統計資料
-            int totalOrders = recentOrders.size();
-            long pendingOrders = recentOrders.stream()
-                    .filter(order -> order.getStatus() == Order.OrderStatus.PENDING)
-                    .count();
+                // 計算統計資料
+                if (recentOrders != null) {
+                    totalOrders = recentOrders.size();
+                    pendingOrders = recentOrders.stream()
+                            .filter(order -> order.getStatus() == Order.OrderStatus.PENDING)
+                            .count();
+                }
+            } catch (Exception e) {
+                logger.error("取得訂單資料時發生錯誤", e);
+                recentOrders = null;
+            }
 
             // 傳遞資料到前端
             model.addAttribute("customer", customer);
