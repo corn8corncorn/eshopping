@@ -44,18 +44,6 @@ public class Cart {
     private Customer customer;
 
     /**
-     * 購物車總金額
-     */
-    @Column(name = "total_amount", precision = 10, scale = 2, nullable = false)
-    private BigDecimal totalAmount = BigDecimal.ZERO;
-
-    /**
-     * 購物車項目數量（總商品件數）
-     */
-    @Column(name = "total_items", nullable = false)
-    private Integer totalItems = 0;
-
-    /**
      * 購物車建立時間
      */
     @CreationTimestamp
@@ -93,17 +81,25 @@ public class Cart {
     }
 
     /**
-     * 計算購物車總金額
+     * 動態計算購物車總金額
      */
-    public void calculateTotalAmount() {
+    public BigDecimal getTotalAmount() {
         BigDecimal total = BigDecimal.ZERO;
-        int itemCount = 0;
         for (CartItem item : cartItems) {
             total = total.add(item.getSubtotal());
+        }
+        return total;
+    }
+
+    /**
+     * 動態計算購物車總商品數量
+     */
+    public Integer getTotalItems() {
+        int itemCount = 0;
+        for (CartItem item : cartItems) {
             itemCount += item.getQuantity();
         }
-        this.totalAmount = total;
-        this.totalItems = itemCount;
+        return itemCount;
     }
 
     /**
@@ -113,7 +109,6 @@ public class Cart {
     public void addCartItem(CartItem cartItem) {
         cartItems.add(cartItem);
         cartItem.setCart(this);
-        calculateTotalAmount();
     }
 
     /**
@@ -123,7 +118,6 @@ public class Cart {
     public void removeCartItem(CartItem cartItem) {
         cartItems.remove(cartItem);
         cartItem.setCart(null);
-        calculateTotalAmount();
     }
 
     /**
@@ -131,7 +125,6 @@ public class Cart {
      */
     public void clearCart() {
         cartItems.clear();
-        calculateTotalAmount();
     }
 
     /**
@@ -178,22 +171,6 @@ public class Cart {
         this.customer = customer;
     }
 
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
-    public Integer getTotalItems() {
-        return totalItems;
-    }
-
-    public void setTotalItems(Integer totalItems) {
-        this.totalItems = totalItems;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -216,15 +193,14 @@ public class Cart {
 
     public void setCartItems(List<CartItem> cartItems) {
         this.cartItems = cartItems;
-        calculateTotalAmount();
     }
 
     @Override
     public String toString() {
         return "Cart{" +
                 "id=" + id +
-                ", totalAmount=" + totalAmount +
-                ", totalItems=" + totalItems +
+                ", totalAmount=" + getTotalAmount() +
+                ", totalItems=" + getTotalItems() +
                 ", itemCount=" + getItemCount() +
                 ", createdAt=" + createdAt +
                 '}';

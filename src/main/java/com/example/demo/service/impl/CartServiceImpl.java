@@ -149,7 +149,6 @@ public class CartServiceImpl implements CartService {
     @Override
     public Cart saveCart(Cart cart) {
         logger.info("儲存購物車 - cartId: {}, customerId: {}", cart.getId(), cart.getCustomer().getId());
-        cart.calculateTotalAmount();
         Cart savedCart = cartDAO.save(cart);
         logger.debug("購物車儲存成功 - cartId: {}", savedCart.getId());
         return savedCart;
@@ -172,7 +171,6 @@ public class CartServiceImpl implements CartService {
         }
         
         // 更新購物車資訊（通常不需要更新，因為購物車資訊由項目自動計算）
-        existingCart.calculateTotalAmount();
         Cart updatedCart = cartDAO.save(existingCart);
         
         logger.info("購物車更新成功 - cartId: {}", updatedCart.getId());
@@ -221,29 +219,6 @@ public class CartServiceImpl implements CartService {
     }
 
     /**
-     * 重新計算購物車金額
-     * @param cartId 購物車ID
-     * @return 更新後的購物車
-     */
-    @Override
-    public Cart recalculateCartAmount(Long cartId) {
-        logger.info("重新計算購物車金額 - cartId: {}", cartId);
-        
-        Cart cart = cartDAO.findById(cartId);
-        if (cart == null) {
-            logger.warn("購物車不存在 - cartId: {}", cartId);
-            throw new IllegalArgumentException("購物車不存在: " + cartId);
-        }
-        
-        cart.calculateTotalAmount();
-        Cart updatedCart = cartDAO.save(cart);
-        
-        logger.info("購物車金額重新計算完成 - cartId: {}, totalAmount: {}, totalItems: {}", 
-                   cartId, updatedCart.getTotalAmount(), updatedCart.getTotalItems());
-        return updatedCart;
-    }
-
-    /**
      * 添加商品到購物車
      * @param cartId 購物車ID
      * @param product 商品
@@ -282,14 +257,12 @@ public class CartServiceImpl implements CartService {
                        existingItem.getId(), existingItem.getQuantity(), quantity);
             existingItem.incrementQuantity(quantity);
             CartItem updatedItem = cartItemDAO.save(existingItem);
-            recalculateCartAmount(cartId);
             return updatedItem;
         } else {
             // 如果不存在，建立新項目
             logger.info("購物車中不存在該商品，建立新項目");
             CartItem newItem = cartItemService.createCartItem(cart, product, quantity);
             cartItemDAO.save(newItem);
-            recalculateCartAmount(cartId);
             return newItem;
         }
     }
@@ -311,7 +284,6 @@ public class CartServiceImpl implements CartService {
         }
         
         cartItemDAO.delete(cartItem);
-        recalculateCartAmount(cartId);
         
         Cart updatedCart = cartDAO.findById(cartId);
         logger.info("商品移除成功 - cartId: {}, productId: {}", cartId, productId);
@@ -349,7 +321,6 @@ public class CartServiceImpl implements CartService {
         
         cartItem.updateQuantity(quantity);
         CartItem updatedItem = cartItemDAO.save(cartItem);
-        recalculateCartAmount(cartId);
         
         logger.info("購物車商品數量更新成功 - cartItemId: {}, newQuantity: {}", 
                    updatedItem.getId(), quantity);

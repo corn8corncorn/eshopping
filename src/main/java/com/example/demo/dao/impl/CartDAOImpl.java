@@ -44,10 +44,9 @@ public class CartDAOImpl implements CartDAO {
     @Override
     public Cart save(Cart cart) {
         logger.info("開始儲存購物車到資料庫 - customerId: {}", cart.getCustomer().getId());
-        cart.calculateTotalAmount();
         getCurrentSession().saveOrUpdate(cart);
-        logger.info("購物車儲存成功 - cartId: {}, customerId: {}, totalAmount: {}", 
-                   cart.getId(), cart.getCustomer().getId(), cart.getTotalAmount());
+        logger.info("購物車儲存成功 - cartId: {}, customerId: {}", 
+                   cart.getId(), cart.getCustomer().getId());
         return cart;
     }
 

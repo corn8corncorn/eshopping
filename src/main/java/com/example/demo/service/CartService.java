@@ -91,13 +91,6 @@ public interface CartService {
     Cart clearCart(Long cartId);
 
     /**
-     * 重新計算購物車金額
-     * @param cartId 購物車ID
-     * @return 更新後的購物車
-     */
-    Cart recalculateCartAmount(Long cartId);
-
-    /**
      * 添加商品到購物車
      * @param cartId 購物車ID
      * @param product 商品
