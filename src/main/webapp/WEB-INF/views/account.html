@@ -400,12 +400,7 @@
                                 <h4 th:text="'訂單編號：' + ${order.orderNumber}"></h4>
                                 <p th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm')}"></p>
                             </div>
-                            <div class="order-status" 
-                                 th:classappend="${order.status.name() == 'PENDING' ? 'status-pending' : ''}"
-                                 th:classappend="${order.status.name() == 'CONFIRMED' ? 'status-confirmed' : ''}"
-                                 th:classappend="${order.status.name() == 'PROCESSING' ? 'status-processing' : ''}"
-                                 th:classappend="${order.status.name() == 'SHIPPED' ? 'status-shipped' : ''}"
-                                 th:classappend="${order.status.name() == 'DELIVERED' ? 'status-delivered' : ''}"
+                            <div th:class="'order-status status-' + ${order.status.name().toLowerCase()}"
                                  th:text="${order.status.description}"></div>
                             <div class="order-amount" th:text="'$' + ${#numbers.formatDecimal(order.finalAmount, 0, 2)}"></div>
                             <div class="order-actions">
