@@ -364,9 +364,9 @@
             <div th:if="${customer}">
                 <!-- 歡迎區塊 -->
                 <div class="welcome-section">
-                    <div class="avatar" th:text="${customer.fullName ? customer.fullName.substring(0, 1) : 'M'}"></div>
+                    <div class="avatar" th:text="${customer.fullName != null and !customer.fullName.isEmpty() ? customer.fullName.substring(0, 1) : user.username.substring(0, 1)}"></div>
                     <div class="user-info">
-                        <h2 th:text="'你好，' + ${customer.fullName}"></h2>
+                        <h2 th:text="'你好，' + ${customer.fullName != null and !customer.fullName.isEmpty() ? customer.fullName : user.username}"></h2>
                         <p th:text="'帳號：' + ${user.username}"></p>
                     </div>
                 </div>

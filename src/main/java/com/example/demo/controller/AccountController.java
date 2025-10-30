@@ -69,6 +69,12 @@ public class AccountController {
                 logger.info("客戶資料不存在，建立新的客戶資料 - username: {}", currentUser.getUsername());
                 customer = customerService.createCustomerForUser(currentUser, currentUser.getUsername());
             }
+            
+            // 如果 fullName 為空或只包含空格，使用 username 作為顯示名稱
+            if (customer.getFullName() == null || customer.getFullName().trim().isEmpty()) {
+                customer.setFullName(currentUser.getUsername());
+                logger.debug("客戶 fullName 為空，使用 username 作為顯示名稱");
+            }
 
             // 取得最近的訂單（最多 5 筆）
             List<Order> recentOrders = orderService.getByCustomer(customer);
