@@ -173,5 +173,99 @@ public class ShopController {
         // 重定向到 shop 頁面並帶上分類參數
         return "redirect:/shop?type=" + category;
     }
+
+    /**
+     * 商品搜尋結果頁面
+     * 顯示搜尋結果，支援進階篩選
+     * 
+     * @param search 搜尋關鍵字
+     * @param type 商品類型（分類篩選）
+     * @param sortBy 排序方式（price, name, date）
+     * @param model 用於傳遞資料到前端頁面
+     * @return 搜尋結果頁面模板名稱
+     */
+    @GetMapping("/search")
+    public String searchResults(@RequestParam(value = "q", required = false) String search,
+                                @RequestParam(value = "type", required = false) String type,
+                                @RequestParam(value = "sortBy", defaultValue = "name") String sortBy,
+                                Model model) {
+        logger.info("進入商品搜尋頁面 - search: {}, type: {}, sortBy: {}", search, type, sortBy);
+        
+        try {
+            // 取得所有商品
+            List<Product> allProducts = productService.getAll();
+            
+            // 只顯示上架中的商品
+            List<Product> activeProducts = allProducts.stream()
+                    .filter(p -> p.getStatus() == ProductStatus.ACTIVE)
+                    .collect(Collectors.toList());
+            
+            // 根據搜尋關鍵字篩選
+            List<Product> filteredProducts = activeProducts;
+            if (search != null && !search.trim().isEmpty()) {
+                String searchLower = search.toLowerCase().trim();
+                filteredProducts = activeProducts.stream()
+                        .filter(p -> p.getName().toLowerCase().contains(searchLower) ||
+                                   (p.getDescription() != null && p.getDescription().toLowerCase().contains(searchLower)))
+                        .collect(Collectors.toList());
+                logger.debug("根據關鍵字篩選 - search: {}, 結果數量: {}", search, filteredProducts.size());
+            }
+            
+            // 根據分類篩選
+            if (type != null && !type.isEmpty()) {
+                filteredProducts = filteredProducts.stream()
+                        .filter(p -> p.getType().equalsIgnoreCase(type))
+                        .collect(Collectors.toList());
+                logger.debug("根據分類篩選 - type: {}, 結果數量: {}", type, filteredProducts.size());
+            }
+            
+            // 排序
+            switch (sortBy) {
+                case "price":
+                    filteredProducts = filteredProducts.stream()
+                            .sorted((p1, p2) -> p1.getPrice().compareTo(p2.getPrice()))
+                            .collect(Collectors.toList());
+                    break;
+                case "price-desc":
+                    filteredProducts = filteredProducts.stream()
+                            .sorted((p1, p2) -> p2.getPrice().compareTo(p1.getPrice()))
+                            .collect(Collectors.toList());
+                    break;
+                case "name":
+                    filteredProducts = filteredProducts.stream()
+                            .sorted((p1, p2) -> p1.getName().compareTo(p2.getName()))
+                            .collect(Collectors.toList());
+                    break;
+                case "date":
+                    filteredProducts = filteredProducts.stream()
+                            .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
+                            .collect(Collectors.toList());
+                    break;
+            }
+            
+            // 取得所有商品類型（用於分類篩選）
+            List<String> categories = activeProducts.stream()
+                    .map(Product::getType)
+                    .distinct()
+                    .sorted()
+                    .collect(Collectors.toList());
+            
+            // 傳遞資料到前端
+            model.addAttribute("products", filteredProducts);
+            model.addAttribute("categories", categories);
+            model.addAttribute("searchKeyword", search);
+            model.addAttribute("selectedType", type);
+            model.addAttribute("sortBy", sortBy);
+            model.addAttribute("resultCount", filteredProducts.size());
+            
+            logger.info("商品搜尋頁面載入完成 - 結果數量: {}", filteredProducts.size());
+            
+        } catch (Exception e) {
+            logger.error("載入商品搜尋頁面時發生錯誤", e);
+            model.addAttribute("error", "搜尋商品時發生錯誤：" + e.getMessage());
+        }
+        
+        return "search-results";
+    }
 }
 
