@@ -29,17 +29,8 @@ public class Customer {
     @Column(name = "phone", length = 20)
     private String phone;
 
-    @Column(name = "address", columnDefinition = "TEXT")
-    private String address;
-
-    @Column(name = "city", length = 50)
-    private String city;
-
-    @Column(name = "postal_code", length = 10)
-    private String postalCode;
-
-    @Column(name = "country", length = 50)
-    private String country = "台灣";
+    @Column(name = "email", length = 100)
+    private String email;
 
     // 預設建構子
     public Customer() {}
@@ -83,36 +74,12 @@ public class Customer {
         this.phone = phone;
     }
 
-    public String getAddress() {
-        return address;
+    public String getEmail() {
+        return email;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getPostalCode() {
-        return postalCode;
-    }
-
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override
@@ -121,7 +88,7 @@ public class Customer {
                 "id=" + id +
                 ", fullName='" + fullName + '\'' +
                 ", phone='" + phone + '\'' +
-                ", city='" + city + '\'' +
+                ", email='" + email + '\'' +
                 '}';
     }
 }

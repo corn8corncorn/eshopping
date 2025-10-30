@@ -96,10 +96,7 @@ public class CustomerServiceImpl implements CustomerService {
             // 更新客戶資料
             existingCustomer.setFullName(customer.getFullName());
             existingCustomer.setPhone(customer.getPhone());
-            existingCustomer.setAddress(customer.getAddress());
-            existingCustomer.setCity(customer.getCity());
-            existingCustomer.setPostalCode(customer.getPostalCode());
-            existingCustomer.setCountry(customer.getCountry());
+            existingCustomer.setEmail(customer.getEmail());
             
             customerDAO.save(existingCustomer);
             logger.info("客戶更新成功 - customerId: {}", id);

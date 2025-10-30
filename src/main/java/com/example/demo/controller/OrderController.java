@@ -279,7 +279,6 @@ public class OrderController {
             model.addAttribute("cart", cart);
             model.addAttribute("recipientName", customer.getFullName());
             model.addAttribute("recipientPhone", customer.getPhone());
-            model.addAttribute("shippingAddress", customer.getAddress());
             
             // 添加付款方式選項
             model.addAttribute("paymentMethods", PaymentMethod.values());
@@ -302,8 +301,6 @@ public class OrderController {
      * @param recipientName 收件人姓名
      * @param recipientPhone 收件人電話
      * @param shippingAddress 收件地址
-     * @param shippingCity 收件城市
-     * @param shippingPostalCode 郵遞區號
      * @param paymentMethod 付款方式
      * @param notes 訂單備註
      * @param redirectAttributes 用於傳遞重定向訊息
@@ -313,8 +310,6 @@ public class OrderController {
     public String createOrder(@RequestParam("recipientName") String recipientName,
                              @RequestParam(value = "recipientPhone", required = false) String recipientPhone,
                              @RequestParam("shippingAddress") String shippingAddress,
-                             @RequestParam(value = "shippingCity", required = false) String shippingCity,
-                             @RequestParam(value = "shippingPostalCode", required = false) String shippingPostalCode,
                              @RequestParam("paymentMethod") String paymentMethod,
                              @RequestParam(value = "notes", required = false) String notes,
                              RedirectAttributes redirectAttributes) {
@@ -375,12 +370,6 @@ public class OrderController {
             // 設定其他訂單資訊
             if (recipientPhone != null && !recipientPhone.isEmpty()) {
                 order.setRecipientPhone(recipientPhone);
-            }
-            if (shippingCity != null && !shippingCity.isEmpty()) {
-                order.setShippingCity(shippingCity);
-            }
-            if (shippingPostalCode != null && !shippingPostalCode.isEmpty()) {
-                order.setShippingPostalCode(shippingPostalCode);
             }
             if (notes != null && !notes.isEmpty()) {
                 order.setNotes(notes);
