@@ -46,7 +46,6 @@ public class CartItemDAOImpl implements CartItemDAO {
     public CartItem save(CartItem cartItem) {
         logger.info("開始儲存購物車項目到資料庫 - cartId: {}, productId: {}", 
                    cartItem.getCart().getId(), cartItem.getProduct().getId());
-        cartItem.calculateSubtotal();
         getCurrentSession().saveOrUpdate(cartItem);
         logger.info("購物車項目儲存成功 - cartItemId: {}, cartId: {}, productId: {}", 
                    cartItem.getId(), cartItem.getCart().getId(), cartItem.getProduct().getId());
@@ -62,7 +61,6 @@ public class CartItemDAOImpl implements CartItemDAO {
     public List<CartItem> saveAll(List<CartItem> cartItems) {
         logger.info("開始批量儲存購物車項目到資料庫 - count: {}", cartItems.size());
         for (CartItem cartItem : cartItems) {
-            cartItem.calculateSubtotal();
             getCurrentSession().saveOrUpdate(cartItem);
         }
         logger.info("批量儲存購物車項目成功 - count: {}", cartItems.size());

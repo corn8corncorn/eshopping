@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,7 +11,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 /**
  * 購物車項目實體類
@@ -46,28 +50,11 @@ public class CartItem {
     private Integer quantity;
 
     /**
-     * 商品單價（加入購物車時的價格，用於快照）
+     * 加入購物車時間
      */
-    @Column(name = "unit_price", precision = 10, scale = 2, nullable = false)
-    private BigDecimal unitPrice;
-
-    /**
-     * 小計金額（數量 × 單價）
-     */
-    @Column(name = "subtotal", precision = 10, scale = 2, nullable = false)
-    private BigDecimal subtotal;
-
-    /**
-     * 商品名稱快照（加入購物車時的商品名稱）
-     */
-    @Column(name = "product_name", nullable = false, length = 100)
-    private String productName;
-
-    /**
-     * 商品圖片URL快照（加入購物車時的商品圖片）
-     */
-    @Column(name = "product_image_url", length = 500)
-    private String productImageUrl;
+    @CreationTimestamp
+    @Column(name = "added_at", nullable = false, updatable = false)
+    private LocalDateTime addedAt;
 
     /**
      * 預設建構子
@@ -84,37 +71,45 @@ public class CartItem {
         this.cart = cart;
         this.product = product;
         this.quantity = quantity;
-        this.unitPrice = product.getPrice();
-        this.productName = product.getName();
-        this.productImageUrl = product.getImageUrl();
-        calculateSubtotal();
     }
 
     /**
-     * 計算小計金額
+     * 動態取得商品單價
      */
-    public void calculateSubtotal() {
-        if (quantity != null && unitPrice != null) {
-            this.subtotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
-        }
+    public BigDecimal getUnitPrice() {
+        return product != null ? product.getPrice() : BigDecimal.ZERO;
     }
 
     /**
-     * 更新數量並重新計算小計
+     * 動態計算小計金額
+     */
+    public BigDecimal getSubtotal() {
+        if (quantity != null && product != null) {
+            return product.getPrice().multiply(BigDecimal.valueOf(quantity));
+        }
+        return BigDecimal.ZERO;
+    }
+
+    /**
+     * 動態取得商品名稱
+     */
+    public String getProductName() {
+        return product != null ? product.getName() : "";
+    }
+
+    /**
+     * 動態取得商品圖片URL
+     */
+    public String getProductImageUrl() {
+        return product != null ? product.getImageUrl() : "";
+    }
+
+    /**
+     * 更新數量
      * @param newQuantity 新數量
      */
     public void updateQuantity(Integer newQuantity) {
         this.quantity = newQuantity;
-        calculateSubtotal();
-    }
-
-    /**
-     * 更新單價並重新計算小計
-     * @param newUnitPrice 新單價
-     */
-    public void updateUnitPrice(BigDecimal newUnitPrice) {
-        this.unitPrice = newUnitPrice;
-        calculateSubtotal();
     }
 
     /**
@@ -123,7 +118,6 @@ public class CartItem {
      */
     public void incrementQuantity(Integer increment) {
         this.quantity += increment;
-        calculateSubtotal();
     }
 
     /**
@@ -133,19 +127,6 @@ public class CartItem {
     public void decrementQuantity(Integer decrement) {
         if (this.quantity >= decrement) {
             this.quantity -= decrement;
-            calculateSubtotal();
-        }
-    }
-
-    /**
-     * 同步商品資訊（當商品價格或名稱變動時）
-     */
-    public void syncProductInfo() {
-        if (product != null) {
-            this.unitPrice = product.getPrice();
-            this.productName = product.getName();
-            this.productImageUrl = product.getImageUrl();
-            calculateSubtotal();
         }
     }
 
@@ -172,12 +153,6 @@ public class CartItem {
 
     public void setProduct(Product product) {
         this.product = product;
-        if (product != null) {
-            this.unitPrice = product.getPrice();
-            this.productName = product.getName();
-            this.productImageUrl = product.getImageUrl();
-            calculateSubtotal();
-        }
     }
 
     public Integer getQuantity() {
@@ -186,50 +161,31 @@ public class CartItem {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
-        calculateSubtotal();
     }
 
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
+    public LocalDateTime getAddedAt() {
+        return addedAt;
     }
 
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
-        calculateSubtotal();
+    public void setAddedAt(LocalDateTime addedAt) {
+        this.addedAt = addedAt;
     }
 
-    public BigDecimal getSubtotal() {
-        return subtotal;
-    }
-
-    public void setSubtotal(BigDecimal subtotal) {
-        this.subtotal = subtotal;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public String getProductImageUrl() {
-        return productImageUrl;
-    }
-
-    public void setProductImageUrl(String productImageUrl) {
-        this.productImageUrl = productImageUrl;
+    @PrePersist
+    protected void onCreate() {
+        if (this.addedAt == null) {
+            this.addedAt = LocalDateTime.now();
+        }
     }
 
     @Override
     public String toString() {
         return "CartItem{" +
                 "id=" + id +
-                ", productName='" + productName + '\'' +
+                ", productName='" + getProductName() + '\'' +
                 ", quantity=" + quantity +
-                ", unitPrice=" + unitPrice +
-                ", subtotal=" + subtotal +
+                ", unitPrice=" + getUnitPrice() +
+                ", subtotal=" + getSubtotal() +
                 '}';
     }
 }

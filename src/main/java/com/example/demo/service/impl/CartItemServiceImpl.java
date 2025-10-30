@@ -150,7 +150,6 @@ public class CartItemServiceImpl implements CartItemService {
     public CartItem saveCartItem(CartItem cartItem) {
         logger.info("儲存購物車項目 - cartItemId: {}, cartId: {}, productId: {}", 
                    cartItem.getId(), cartItem.getCart().getId(), cartItem.getProduct().getId());
-        cartItem.calculateSubtotal();
         CartItem savedCartItem = cartItemDAO.save(cartItem);
         logger.debug("購物車項目儲存成功 - cartItemId: {}", savedCartItem.getId());
         return savedCartItem;
@@ -174,9 +173,6 @@ public class CartItemServiceImpl implements CartItemService {
         
         // 更新購物車項目資訊
         existingCartItem.setQuantity(cartItem.getQuantity());
-        existingCartItem.setUnitPrice(cartItem.getUnitPrice());
-        existingCartItem.setProductName(cartItem.getProductName());
-        existingCartItem.setProductImageUrl(cartItem.getProductImageUrl());
         
         CartItem updatedCartItem = cartItemDAO.save(existingCartItem);
         logger.info("購物車項目更新成功 - cartItemId: {}", updatedCartItem.getId());
@@ -257,7 +253,6 @@ public class CartItemServiceImpl implements CartItemService {
             throw new IllegalArgumentException("購物車項目不存在: " + cartItemId);
         }
         
-        cartItem.updateUnitPrice(unitPrice);
         CartItem updatedCartItem = cartItemDAO.save(cartItem);
         
         logger.info("購物車項目單價更新成功 - cartItemId: {}, newUnitPrice: {}", cartItemId, unitPrice);
@@ -279,7 +274,7 @@ public class CartItemServiceImpl implements CartItemService {
             throw new IllegalArgumentException("購物車項目不存在: " + cartItemId);
         }
         
-        cartItem.calculateSubtotal();
+        // 小計現在是動態計算的，不需要重新計算
         CartItem updatedCartItem = cartItemDAO.save(cartItem);
         
         logger.info("購物車項目小計重新計算完成 - cartItemId: {}, subtotal: {}", 
@@ -365,7 +360,7 @@ public class CartItemServiceImpl implements CartItemService {
             throw new IllegalArgumentException("購物車項目不存在: " + cartItemId);
         }
         
-        cartItem.syncProductInfo();
+        // 商品資訊現在是動態取得的，不需要同步
         CartItem updatedCartItem = cartItemDAO.save(cartItem);
         
         logger.info("商品資訊同步成功 - cartItemId: {}", cartItemId);
