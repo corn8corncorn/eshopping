@@ -75,7 +75,7 @@ body {
 /* ========== 統一頁首樣式 ========== */
 /* 基礎頁首樣式 - 用於大部分頁面 */
 .header {
-    background-color: #fff;
+    background-color: rgba(103,103,103,0.6);
     padding: 15px 20px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     margin-bottom: 20px;
@@ -103,7 +103,7 @@ body {
 
 .nav a {
     text-decoration: none;
-    color: #007bff;
+    color: #c19677;
     padding: 5px 10px;
 }
 
@@ -116,14 +116,14 @@ body {
     position: relative;
     display: inline-block;
     text-decoration: none;
-    color: #007bff;
+    color: #c19677;
     padding: 8px 12px;
-    border: 1px solid #007bff;
+    border: 1px solid #c19677;
     border-radius: 4px;
 }
 
 .cart-icon:hover {
-    background-color: #007bff;
+    background-color: #c19677;
     color: white;
 }
 
@@ -179,4 +179,28 @@ body {
 /* 簡單頁首樣式 - 僅有 margin-bottom */
 .header-simple {
     margin-bottom: 30px;
+}
+
+/* ========== 統一按鈕樣式 ========== */
+/* 基礎按鈕樣式 */
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s;
+    font-weight: 600;
+}
+
+/* 主要按鈕樣式 - 統一所有按鈕使用此樣式 */
+.btn-primary {
+    background-color: #c19677;
+    color: white;
+}
+
+.btn-primary:hover {
+	color: #fbd5ba;
+    background-color: #4f3f66;
 }

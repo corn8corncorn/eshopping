@@ -75,7 +75,7 @@
         .order-summary h3 {
             margin-bottom: 20px;
             color: #333;
-            border-bottom: 2px solid #007bff;
+            border-bottom: 2px solid #c19677;
             padding-bottom: 10px;
         }
         .summary-row {
@@ -117,27 +117,6 @@
             font-size: 16px;
             font-weight: bold;
             transition: background-color 0.3s;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            color: white;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-        .btn-success {
-            background-color: #28a745;
-            color: white;
-        }
-        .btn-success:hover {
-            background-color: #218838;
-        }
-        .btn-secondary {
-            background-color: #6c757d;
-            color: white;
-        }
-        .btn-secondary:hover {
-            background-color: #5a6268;
         }
         .info-box {
             background-color: #d1ecf1;
@@ -228,8 +207,8 @@
             <!-- 操作按鈕 -->
             <div class="actions">
                 <a th:href="@{'/orders/' + ${order != null ? order.id : ''}}" class="btn btn-primary">查看訂單詳情</a>
-                <a th:href="@{/orders/my}" class="btn btn-success">我的訂單列表</a>
-                <a th:href="@{/shop}" class="btn btn-secondary">繼續購物</a>
+                <a th:href="@{/orders/my}" class="btn btn-primary">我的訂單列表</a>
+                <a th:href="@{/shop}" class="btn btn-primary">繼續購物</a>
             </div>
 
             <!-- 注意事項 -->

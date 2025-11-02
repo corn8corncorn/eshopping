@@ -39,7 +39,7 @@
         }
         .info-card h3 {
             margin-top: 0;
-            border-bottom: 2px solid #007bff;
+            border-bottom: 2px solid #c19677;
             padding-bottom: 10px;
         }
         .info-row {
@@ -59,7 +59,7 @@
         }
         .status-PENDING { background-color: #ffc107; color: #000; }
         .status-CONFIRMED { background-color: #17a2b8; color: #fff; }
-        .status-PROCESSING { background-color: #007bff; color: #fff; }
+        .status-PROCESSING { background-color: #c19677; color: #fff; }
         .status-SHIPPED { background-color: #6f42c1; color: #fff; }
         .status-DELIVERED { background-color: #28a745; color: #fff; }
         .status-CANCELLED { background-color: #dc3545; color: #fff; }
@@ -120,14 +120,6 @@
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            color: white;
-        }
-        .btn-danger {
-            background-color: #dc3545;
-            color: white;
         }
         .btn-info {
             background-color: #17a2b8;
@@ -291,7 +283,7 @@
             <a th:href="@{/orders/my}" class="btn btn-primary">返回訂單列表</a>
             <span th:if="${order.status.name() == 'PENDING'}">
                 <form th:action="@{'/orders/' + ${order.id} + '/cancel'}" method="post" style="display:inline;">
-                    <button type="submit" class="btn btn-danger" 
+                    <button type="submit" class="btn btn-primary" 
                             onclick="return confirm('確定要取消此訂單嗎？')">取消訂單</button>
                 </form>
             </span>
@@ -311,7 +303,7 @@
                                 th:selected="${order.status == status}"></option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-info">更新訂單狀態</button>
+                <button type="submit" class="btn btn-primary">更新訂單狀態</button>
             </form>
             <form th:action="@{'/orders/' + ${order.id} + '/update-payment-status'}" method="post">
                 <div class="form-group">
@@ -324,7 +316,7 @@
                                 th:selected="${order.paymentStatus == status}"></option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-info">更新付款狀態</button>
+                <button type="submit" class="btn btn-primary">更新付款狀態</button>
             </form>
         </div>
     </div>

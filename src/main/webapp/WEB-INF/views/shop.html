@@ -59,9 +59,9 @@
             background-color: #f0f0f0;
         }
         .category-btn.active {
-            background-color: #007bff;
+            background-color: #c19677;
             color: #fff;
-            border-color: #007bff;
+            border-color: #c19677;
         }
         .products-grid {
             display: grid;
@@ -108,7 +108,7 @@
             color: inherit;
         }
         .product-name a:hover {
-            color: #007bff;
+            color: #c19677;
         }
         .product-type {
             font-size: 14px;
@@ -149,20 +149,13 @@
             font-size: 14px;
             transition: background-color 0.3s;
         }
-        .btn-primary {
-            background-color: #007bff;
-            color: white;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
         .btn-outline {
             background-color: transparent;
-            border: 1px solid #007bff;
-            color: #007bff;
+            border: 1px solid #c19677;
+            color: #c19677;
         }
         .btn-outline:hover {
-            background-color: #007bff;
+            background-color: #c19677;
             color: white;
         }
         .empty-state {
@@ -209,7 +202,7 @@
                     <input type="text" name="search" th:value="${searchKeyword}" placeholder="搜尋商品名稱或描述...">
                     <input type="hidden" name="type" th:value="${selectedType}">
                     <button type="submit" class="btn btn-primary" style="margin-top: 10px;">搜尋</button>
-                    <a th:if="${searchKeyword}" th:href="@{/shop}" class="btn btn-outline" style="margin-top: 10px;">清除搜尋</a>
+                    <a th:if="${searchKeyword}" th:href="@{/shop}" class="btn btn-primary" style="margin-top: 10px;">清除搜尋</a>
                 </form>
             </div>
             
@@ -253,7 +246,7 @@
                                   class="stock-out">缺貨中</span>
                         </div>
                         <div class="product-actions">
-                            <a th:href="@{'/shop/product/' + ${product.id}}" class="btn btn-outline">查看詳情</a>
+                            <a th:href="@{'/shop/product/' + ${product.id}}" class="btn btn-primary">查看詳情</a>
                             <form th:if="${product.stockQuantity > 0}" 
                                   th:action="@{'/cart/add'}" 
                                   method="post" 

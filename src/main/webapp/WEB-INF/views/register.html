@@ -38,7 +38,7 @@
             <div th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
         </div>
         
-        <button type="submit">註冊</button>
+        <button type="submit" class="btn btn-primary">註冊</button>
     </form>
     
     <p>已有帳號？ <a th:href="@{/login}">立即登入</a></p>

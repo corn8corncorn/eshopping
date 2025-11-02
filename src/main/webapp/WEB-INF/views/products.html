@@ -35,7 +35,7 @@
         <td>
           <a th:href="@{'/products/edit/' + ${p.id}}">編輯</a>
           <form th:action="@{'/products/delete/' + ${p.id}}" method="post" style="display:inline;">
-            <button type="submit">刪除</button>
+            <button type="submit" class="btn btn-primary">刪除</button>
           </form>
         </td>
       </tr>

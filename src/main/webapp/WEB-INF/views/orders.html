@@ -72,14 +72,6 @@
             display: inline-block;
             font-size: 14px;
         }
-        .btn-primary {
-            background-color: #007bff;
-            color: white;
-        }
-        .btn-danger {
-            background-color: #dc3545;
-            color: white;
-        }
         .btn-info {
             background-color: #17a2b8;
             color: white;
@@ -151,10 +143,10 @@
                         <strong th:text="${#numbers.formatDecimal(order.finalAmount, 0, 2)} + ' 元'">金額</strong>
                     </td>
                     <td>
-                        <a th:href="@{'/orders/' + ${order.id}}" class="btn btn-info">查看詳情</a>
+                        <a th:href="@{'/orders/' + ${order.id}}" class="btn btn-primary">查看詳情</a>
                         <span th:if="${(isMyOrders != null && isMyOrders) && order.status.name() == 'PENDING'}">
                             <form th:action="@{'/orders/' + ${order.id} + '/cancel'}" method="post" style="display:inline;">
-                                <button type="submit" class="btn btn-danger" 
+                                <button type="submit" class="btn btn-primary" 
                                         onclick="return confirm('確定要取消此訂單嗎？')">取消訂單</button>
                             </form>
                         </span>

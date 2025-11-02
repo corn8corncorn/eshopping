@@ -63,22 +63,6 @@
             text-decoration: none;
             display: inline-block;
         }
-        .btn-primary {
-            background-color: #007bff;
-            color: white;
-        }
-        .btn-danger {
-            background-color: #dc3545;
-            color: white;
-        }
-        .btn-success {
-            background-color: #28a745;
-            color: white;
-        }
-        .btn-secondary {
-            background-color: #6c757d;
-            color: white;
-        }
         .text-right {
             text-align: right;
         }
@@ -135,7 +119,7 @@
                     <td th:text="${#numbers.formatDecimal(item.subtotal, 0, 2)} + ' 元'">小計</td>
                     <td>
                         <form th:action="@{'/cart/remove/' + ${item.product.id}}" method="post" style="display:inline;">
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('確定要移除此商品嗎？')">移除</button>
+                            <button type="submit" class="btn btn-primary" onclick="return confirm('確定要移除此商品嗎？')">移除</button>
                         </form>
                     </td>
                 </tr>
@@ -155,9 +139,9 @@
         </table>
 
         <div class="actions">
-            <a th:href="@{/orders/checkout}" class="btn btn-success">前往結帳</a>
+            <a th:href="@{/orders/checkout}" class="btn btn-primary">前往結帳</a>
             <form th:action="@{/cart/clear}" method="post" style="display:inline;">
-                <button type="submit" class="btn btn-secondary" onclick="return confirm('確定要清空購物車嗎？')">清空購物車</button>
+                <button type="submit" class="btn btn-primary" onclick="return confirm('確定要清空購物車嗎？')">清空購物車</button>
             </form>
             <a th:href="@{/products}" class="btn btn-primary">繼續購物</a>
         </div>
