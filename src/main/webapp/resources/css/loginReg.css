@@ -7,6 +7,17 @@ body {
 	background-attachment: fixed;    /* ❗背景固定不動 */
 }
 
+/* 登入行 - 包含表單和返回首頁 icon */
+.login-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: absolute;
+    top: 50%;
+    left: 65%;
+    transform: translate(-50%, -50%);
+}
+
 .loginRegForm {
     display: flex;
     justify-content: center;
@@ -14,24 +25,22 @@ body {
     flex-direction: column;
     text-align: center;
     width: 600px;
-    height: 300px;
+    height: 350px;
     background-color: rgba(158, 154, 154, 0.5); 
     border-radius: 10px;
-    position: absolute;
-    top: 50%;
-    left: 65%;
-    transform: translate(-50%, -50%);
 }
 .loginRegForm:hover {
 	background-color: rgba(158, 154, 154, 0.6);
 }
 .loginRegForm label {
     display: inline-block;
-    width: 80px;
+    width: 100px;
     text-align: right;
     margin-right: 10px;
+    margin: 10px;
     color: white;
     font-weight: bold;
+    
 }
 
 .loginRegForm input {
@@ -70,6 +79,36 @@ body {
     background-color: #52618f;
     color: #FFFFFF;
     font-weight: bold;
+}
+
+/* 返回首頁 icon 欄位 */
+.home-icon-column {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background-color: rgba(158, 154, 154, 0.5);
+    border-radius: 50%;
+    text-decoration: none;
+    transition: all 0.3s;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+.home-icon:hover {
+    background-color: rgba(158, 154, 154, 0.7);
+    transform: scale(1.1);
+}
+
+.home-icon span {
+    display: block;
 }
 
 /* ========== 統一頁首樣式 ========== */

@@ -1,80 +1,89 @@
 ## Git Commit Message
 
-### Type: refactor
-### Scope: views
-### Subject: 統一所有按鈕樣式為 .btn-primary
+### Type: feat
+### Scope: auth-ui
+### Subject: 優化登入註冊頁面 UI 並添加返回首頁功能
 
 ### Body:
-重構按鈕樣式系統，將所有按鈕統一使用 `.btn-primary` 樣式，移除所有未使用的按鈕樣式，簡化 CSS 結構並提升維護性。
+改善用戶認證頁面的用戶體驗，添加 logo、返回首頁功能，並優化頁面布局，解決頁面切換時的視覺閃爍問題。
 
 **主要變更:**
-1. **統一按鈕樣式**
-   - 所有按鈕現在使用 `.btn-primary` 樣式
-   - 樣式：`background-color: #c19677`, `color: white`
-   - hover：`color: #fbd5ba`, `background-color: #4f3f66`
 
-2. **移除未使用的按鈕樣式**
-   - 移除 `.btn-primary-gradient`
-   - 移除 `.btn-secondary`
-   - 移除 `.btn-success`
-   - 移除 `.btn-danger`
-   - 保留 `.btn` 基礎樣式和 `.btn-primary` 主要樣式
+1. **添加 Logo 和返回首頁功能**
+   - 在登入頁面添加可點擊的 logo，點擊返回首頁
+   - 在登入和註冊頁面添加返回首頁 icon（🏠）
+   - 使用 Thymeleaf 資源路徑解析 `th:src="@{/resources/images/logo.png}"`
 
-3. **更新所有 HTML 檔案**
-   - 將所有 `btn-success`, `btn-danger`, `btn-secondary`, `btn-info`, `btn-warning` 等改為 `btn-primary`
-   - 從登入、註冊到管理頁面的所有按鈕統一風格
+2. **優化頁面布局**
+   - 創建 `.login-row` flex 容器，實現表單與返回首頁 icon 並排顯示
+   - 創建 `.home-icon-column` 和 `.home-icon` 樣式
+   - 調整表單高度從 300px 增加到 350px，適應新增的按鈕
+   - 改進按鈕布局，使用 `justify-content: space-between` 分佈按鈕
+
+3. **修復視覺閃爍問題**
+   - 移除 `home.html` 中的 `background-color: #f5f5f5`
+   - 統一使用 `loginReg.css` 的背景圖片，避免頁面切換時的背景閃爍
+   - 確保所有頁面背景一致
+
+4. **UI 改進**
+   - 登入頁面：整合登入、註冊、忘記密碼按鈕
+   - 註冊頁面：整合註冊、立即登入按鈕
+   - 返回首頁 icon 使用圓形按鈕設計，hover 時有放大效果
 
 **影響範圍:**
-更新的視圖檔案（22 個）：
-- `login.html` - 登入按鈕
-- `register.html` - 註冊按鈕
-- `account.html` - 會員中心按鈕
-- `cart.html` - 購物車按鈕
-- `checkout.html` - 結帳按鈕
-- `home.html` - 首頁按鈕
-- `order-confirmation.html` - 訂單確認按鈕
-- `order-detail.html` - 訂單詳情按鈕
-- `orders.html` - 訂單列表按鈕
-- `product-detail.html` - 商品詳情按鈕
-- `shop.html` - 商店頁按鈕
-- `search-results.html` - 搜尋結果按鈕
-- `products.html` - 商品管理按鈕
-- `add-product.html` - 新增商品按鈕
-- `edit-product.html` - 編輯商品按鈕
-- `add-user.html` - 新增用戶按鈕
-- `edit-user.html` - 編輯用戶按鈕
-- `edit-customer.html` - 編輯客戶按鈕
-- `users.html` - 用戶列表按鈕
-- `forgot-password.html` - 忘記密碼按鈕
-- `reset-password.html` - 重設密碼按鈕
+- `login.html` - 新增 logo、返回首頁 icon、優化布局
+- `register.html` - 新增返回首頁 icon、優化布局
+- `home.html` - 移除背景色，統一背景樣式
+- `loginReg.css` - 新增 `.login-row`, `.home-icon-column`, `.home-icon` 樣式
 
-**優點:**
-- ✅ 統一視覺風格，提升用戶體驗一致性
-- ✅ 簡化 CSS 檔案（減少約 40 行未使用代碼）
-- ✅ 降低維護成本（只需維護一種按鈕樣式）
-- ✅ 更清晰的程式碼結構
-- ✅ 易於未來調整按鈕外觀
+**CSS 新增樣式:**
+```css
+.login-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    /* 定位樣式 */
+}
 
-**統計資料:**
-- 刪除代碼：198 行
-- 新增代碼：84 行
-- 淨減少：114 行
-- 受影響檔案：22 個
+.home-icon-column {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-icon {
+    /* 圓形按鈕設計，60x60px */
+    /* hover 時放大效果 */
+}
+```
+
+**用戶體驗改進:**
+- ✅ 新增多種返回首頁的方式（logo、icon）
+- ✅ 優化按鈕布局，更直觀的操作
+- ✅ 解決頁面切換時的視覺閃爍
+- ✅ 統一的視覺風格
+- ✅ 更友好的導航體驗
+
+**技術細節:**
+- 使用 Flexbox 實現響應式布局
+- 使用 Thymeleaf 資源路徑解析，確保正確載入資源
+- 過渡動畫效果（transition、transform）
+- 保持與現有樣式系統的一致性
 
 ### Breaking Changes: 無
 
-### Related Issues: 統一按鈕樣式、簡化 CSS 結構
+### Related Issues: 優化認證頁面 UI、改善用戶體驗、修復頁面切換閃爍問題
 
 ---
 
 ## 簡化版本（單行）
 
 ```
-refactor(views): 統一所有按鈕樣式為 .btn-primary
+feat(auth-ui): 優化登入註冊頁面 UI 並添加返回首頁功能
 
-將所有按鈕統一使用 .btn-primary 樣式，移除未使用的按鈕變體（secondary,
-success, danger 等），從 22 個 HTML 檔案中更新所有按鈕類別，簡化
-CSS 結構並提升維護性。
+在登入和註冊頁面添加 logo 和返回首頁 icon，優化頁面布局使用
+row/column 結構，修復頁面切換時的視覺閃爍問題。改進按鈕布局，
+提升用戶導航體驗。
 ```
 
 ---
@@ -90,8 +99,9 @@ git commit -F COMMIT_MESSAGE.md
 
 ```bash
 git add .
-git commit -m "refactor(views): 統一所有按鈕樣式為 .btn-primary
+git commit -m "feat(auth-ui): 優化登入註冊頁面 UI 並添加返回首頁功能
 
-將所有按鈕統一使用 .btn-primary 樣式，移除未使用的按鈕變體，從
-22 個 HTML 檔案中更新所有按鈕類別，簡化 CSS 結構並提升維護性。"
+在登入和註冊頁面添加 logo 和返回首頁 icon，優化頁面布局使用
+row/column 結構，修復頁面切換時的視覺閃爍問題。改進按鈕布局，
+提升用戶導航體驗。"
 ```
