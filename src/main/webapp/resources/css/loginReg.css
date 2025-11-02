@@ -84,14 +84,30 @@ body {
     font-weight: bold;
 }
 
-.loginRegForm input {
+.loginRegForm input,
+.loginRegForm textarea,
+.loginRegForm select {
     width: 200px;
-    height: 25px;
     border-radius: 5px;
     text-align: center;
     color: #c29678;
     font-weight: bold;
     border: 2px solid transparent;
+}
+
+.loginRegForm input {
+    height: 25px;
+}
+
+.loginRegForm textarea {
+    text-align: left;
+    padding: 5px;
+    resize: vertical;
+}
+
+.loginRegForm select {
+    height: 25px;
+    padding: 2px;
 }
 
 /* 輸入框驗證錯誤樣式 */
