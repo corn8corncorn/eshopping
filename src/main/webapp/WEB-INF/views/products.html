@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" th:href="@{/resources/css/loginReg.css}">
     <script th:src="@{/resources/js/notice.js}"></script>
+    <script th:src="@{/resources/js/confirm-modal.js}"></script>
     <title>商品列表 - 電子商城</title>
     <style>
         .product-list-container {
@@ -174,8 +175,16 @@
                         <a th:href="@{'/products/edit/' + ${p.id}}" style="text-decoration: none;">
                             <button class="btn btn-primary" type="button">編輯</button>
                         </a>
-                        <form th:action="@{'/products/delete/' + ${p.id}}" method="post" style="display:inline; margin:0;">
-                            <button type="submit" class="btn btn-primary">刪除</button>
+                        <button type="button" 
+                                class="btn btn-primary delete-btn" 
+                                th:data-delete-form="'deleteForm-' + ${p.id}"
+                                th:data-delete-message="'確定要刪除商品「' + ${p.name} + '」嗎？'">
+                            刪除
+                        </button>
+                        <form th:id="'deleteForm-' + ${p.id}" 
+                              th:action="@{'/products/delete/' + ${p.id}}" 
+                              method="post" 
+                              style="display:none;">
                         </form>
                     </div>
                 </div>
@@ -223,5 +232,8 @@
             </div>
         </div>
     </div>
+
+    <!-- 確認刪除 Modal -->
+    <div th:replace="~{fragments/confirm-modal :: confirm-delete-modal}"></div>
 </body>
 </html>

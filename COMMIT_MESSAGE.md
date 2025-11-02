@@ -1,138 +1,95 @@
 ## Git Commit Message
 
-### Type: refactor
-### Scope: products-ui
-### Subject: 重構商品列表頁面樣式並添加分頁功能，優化商店頁面圖片連結
+### Type: feat
+### Scope: notice-modal-validation
+### Subject: 添加確認刪除 Modal、成功/失敗 Notice 提示，以及商品價格驗證
 
 ### Body:
-重構商品管理列表頁面，將傳統表格改為卡片式設計（類似登入頁面表單風格），添加分頁功能（每頁 10 個商品），並優化商店頁面商品圖片可點擊跳轉到詳情頁。
+實現通用的確認刪除 Modal 元件，整合成功/失敗 Notice 提示功能，並添加商品價格驗證（最小值為 0）。
 
 **主要變更:**
 
-1. **商品列表頁面重構 (products.html)**
-   - 移除傳統 `<table>` 表格，改用卡片式設計
-   - 每個商品使用 `.product-card` 卡片容器
-   - 使用與登入頁面相同的背景色和樣式（`rgba(158, 154, 154, 0.5)`）
-   - 添加 hover 效果（背景色加深）
-   - 商品資訊使用 flex 布局顯示：
-     - ID、名稱、類型、價格、狀態
-     - 商品圖片（80x80px，圓角）
-   - 操作按鈕：編輯、刪除（使用統一的 `.btn btn-primary` 樣式）
-   - 添加 Notice 元件、Logo、返回首頁功能
-   - 響應式設計，適應不同螢幕尺寸
+1. **確認刪除 Modal 元件**
+   - 創建 `fragments/confirm-modal.html` Thymeleaf Fragment
+   - 添加 Modal CSS 樣式（`loginReg.css`）：
+     - `.modal` - 遮罩層和動畫效果
+     - `.modal-content` - Modal 內容容器（半透明背景）
+     - `.modal-header`, `.modal-body`, `.modal-footer` - Modal 結構
+     - `.btn-danger` - 確認刪除按鈕樣式
+     - 響應式設計（手機端適配）
+   - 創建 `confirm-modal.js` JavaScript 功能：
+     - `showConfirmModal()` - 顯示確認 Modal
+     - `closeConfirmModal()` - 關閉 Modal
+     - `confirmDelete()` - 確認刪除操作
+     - 自動綁定刪除按鈕事件（支援 `data-delete-url` 和 `data-delete-form` 屬性）
+     - 支援 GET 和 POST 請求
+     - ESC 鍵和背景點擊關閉功能
 
-2. **分頁功能實現**
-   - **後端 (ProductController.java)**：
-     - 添加 `page` 和 `size` 參數（默認：page=0, size=10）
-     - 計算總頁數和當前頁的商品範圍
-     - 頁碼範圍驗證（防止越界）
-     - 向 Model 傳遞分頁資訊（currentPage, totalPages, totalProducts, pageSize）
-   - **前端 (products.html)**：
-     - 分頁導航 UI：
-       - 上一頁/下一頁按鈕（自動禁用邊界狀態）
-       - 頁碼按鈕（顯示所有頁碼，使用 `#numbers.sequence()`）
-       - 當前頁高亮顯示（`.active` 類別）
-       - 分頁資訊顯示（第 X 頁 / 共 Y 頁，共 Z 筆商品）
-     - 響應式分頁導航（手機端自動換行）
+2. **Controller 成功/失敗訊息處理**
+   - **ProductController.java**：
+     - `saveUser()` - 新增商品時添加成功/失敗訊息
+     - `updateProduct()` - 更新商品時添加成功/失敗訊息
+     - `deleteProduct()` - 刪除商品時添加成功/失敗訊息
+     - 使用 `RedirectAttributes` 傳遞 flash 訊息
+     - 添加 `try-catch` 錯誤處理
+   - **UserController.java**：
+     - `saveUser()` - 新增用戶時添加成功/失敗訊息
+     - `updateUser()` - 更新用戶時添加成功/失敗訊息
+     - `deleteUser()` - 刪除用戶時添加成功/失敗訊息
+     - 使用 `RedirectAttributes` 傳遞 flash 訊息
+     - 添加 `try-catch` 錯誤處理
 
-3. **商店頁面優化 (shop.html)**
-   - 將商品圖片包裝在 `<a>` 標籤中
-   - 點擊商品圖片可跳轉到商品詳情頁面（`/shop/product/{id}`）
-   - 添加 hover 效果（opacity: 0.8）提示可點擊
-   - 添加 `cursor: pointer` 樣式
+3. **商品價格驗證**
+   - **前端 HTML (add-product.html, edit-product.html)**：
+     - 價格輸入欄位添加 `min="0"` 屬性
+     - 將 `step` 從 `"1"` 改為 `"0.01"` 支援小數
+     - 添加 `validatePrice()` JavaScript 驗證函數
+     - 表單提交前檢查價格是否為負數
+   - **後端模型 (Product.java)**：
+     - 添加 `@DecimalMin(value = "0.00", message = "價格不能為負數，最小值為 0 元")` 驗證註解
+     - 添加 `@NotNull(message = "價格不能為空")` 驗證註解
+     - 將資料庫欄位的 `scale` 從 `0` 改為 `2` 支援小數
+   - **Controller 驗證 (ProductController.java)**：
+     - `saveUser()` 和 `updateProduct()` 使用 `@Valid` 驗證
+     - 添加 `BindingResult` 處理驗證錯誤
+     - 驗證失敗時返回錯誤訊息並重定向
 
-4. **CSS 樣式設計**
-   - `.product-card` - 商品卡片容器（圓角、陰影、hover 效果）
-   - `.product-info` - 商品資訊 flex 容器
-   - `.product-info-item` - 單個資訊項（標籤 + 值）
-   - `.product-info-label` - 標籤樣式（白色，右對齊）
-   - `.product-info-value` - 值樣式（`#fbd5ba` 顏色）
-   - `.product-image` - 商品圖片樣式（80x80px，圓角）
-   - `.product-actions` - 操作按鈕容器
-   - `.pagination` - 分頁導航容器
-   - `.pagination-btn` - 分頁按鈕樣式
-   - `.pagination-btn.active` - 當前頁按鈕高亮
-   - `.pagination-btn.disabled` - 禁用狀態按鈕
+4. **頁面整合**
+   - **products.html**：
+     - 添加確認刪除 Modal Fragment
+     - 刪除按鈕使用 `data-delete-form` 屬性綁定 Modal
+     - 每個商品都有隱藏的刪除表單（`display:none`）
+     - 整合 Notice 元件顯示成功/失敗訊息
+   - **users.html**：
+     - 添加確認刪除 Modal Fragment
+     - 刪除按鈕使用 `data-delete-url` 屬性（GET 請求）
+     - 整合 Notice 元件
+     - 更新中文標籤
+   - **add-product.html, edit-product.html**：
+     - 整合 Notice 元件
+     - 添加價格驗證 JavaScript
+   - **add-user.html, edit-user.html**：
+     - 整合 Notice 元件
 
-**影響範圍:**
-- `ProductController.java` - 添加分頁邏輯（+46 行變更）
-- `products.html` - 完全重構（+260 行變更，90% 重寫）
-- `shop.html` - 優化圖片連結（+21 行變更）
-
-**統計資料:**
-- 新增代碼：275 行
-- 刪除代碼：52 行
-- 淨增加：223 行
-- 受影響檔案：3 個
-
-**分頁功能詳細說明:**
-```java
-// 後端分頁參數
-@RequestParam(value = "page", defaultValue = "0") int page
-@RequestParam(value = "size", defaultValue = "10") int size
-
-// 分頁計算
-int totalPages = totalProducts > 0 ? (int) Math.ceil((double) totalProducts / size) : 0;
-int start = page * size;
-int end = Math.min(start + size, totalProducts);
-List<Product> paginatedProducts = allProducts.subList(start, end);
-```
-
-**分頁 URL 範例:**
-- `/products` - 第 1 頁（預設）
-- `/products?page=0` - 第 1 頁
-- `/products?page=1` - 第 2 頁
-- `/products?page=2&size=10` - 第 3 頁，每頁 10 個
-
-**視覺改進:**
-- ✅ 商品列表從表格改為現代化的卡片設計
-- ✅ 視覺風格與認證頁面統一（相同的背景色和樣式）
-- ✅ 每頁顯示 10 個商品，提升載入速度
-- ✅ 分頁導航清晰易懂（上一頁、頁碼、下一頁、資訊）
-- ✅ 商品圖片可點擊，提升用戶體驗
-- ✅ 響應式設計，適應不同螢幕
-- ✅ 統一的按鈕和操作樣式
+5. **Notice 元件增強**
+   - 更新 `notice.js` 自動處理 Thymeleaf flash attributes
+   - 支援從 `success` 和 `error` flash attributes 自動顯示 Notice
 
 **技術細節:**
-- 使用 Thymeleaf 的 `#numbers.sequence()` 生成頁碼列表
-- 使用 `Math.ceil()` 計算總頁數
-- 使用 `List.subList()` 實現分頁切片
-- 卡片式布局使用 Flexbox
-- 分頁按鈕使用條件判斷顯示禁用狀態
-- 圖片連結使用 Thymeleaf URL 表達式
 
-### Breaking Changes: 無
+- Modal 使用 flexbox 居中顯示
+- 支援動畫效果（fadeIn, slideDown）
+- 防止背景滾動（`overflow: hidden`）
+- 表單驗證使用 Bean Validation（JSR-303）
+- 價格使用 `BigDecimal` 類型確保精度
 
-### Related Issues: 重構商品列表頁面、添加分頁功能、優化用戶體驗
+**影響範圍:**
+- 所有刪除操作都需要確認
+- 所有新增/修改/刪除操作都會顯示成功/失敗訊息
+- 商品價格不能為負數
 
----
-
-## 簡化版本（單行）
-
-```
-refactor(products-ui): 重構商品列表頁面樣式並添加分頁功能，優化商店頁面圖片連結
-
-將商品列表從表格改為卡片式設計（類似登入頁面風格），添加分頁功能
-（每頁 10 個商品）。後端添加分頁邏輯，前端實現分頁導航 UI。同時優化
-商店頁面，讓商品圖片可點擊跳轉到詳情頁。
-```
-
----
-
-## 使用方式
-
-```bash
-git add .
-git commit -F COMMIT_MESSAGE.md
-```
-
-或者直接使用簡化版本：
-
-```bash
-git add .
-git commit -m "refactor(products-ui): 重構商品列表頁面樣式並添加分頁功能，優化商店頁面圖片連結
-
-將商品列表從表格改為卡片式設計（類似登入頁面風格），添加分頁功能
-（每頁 10 個商品）。後端添加分頁邏輯，前端實現分頁導航 UI。同時優化
-商店頁面，讓商品圖片可點擊跳轉到詳情頁。"
-```
+**測試建議:**
+1. 測試刪除商品/用戶時的確認 Modal
+2. 測試新增/修改商品時輸入負數價格的驗證
+3. 測試成功/失敗 Notice 的顯示和自動消失
+4. 測試 Modal 的 ESC 鍵和背景點擊關閉功能

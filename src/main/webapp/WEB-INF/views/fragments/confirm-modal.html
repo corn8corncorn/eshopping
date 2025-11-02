@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <!-- 確認刪除 Modal Fragment -->
+    <div th:fragment="confirm-delete-modal">
+        <div id="confirmDeleteModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">確認刪除</h3>
+                    <button class="modal-close" onclick="closeConfirmModal()" aria-label="關閉">×</button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalMessage">確定要刪除此項目嗎？</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" onclick="closeConfirmModal()">取消</button>
+                    <button id="confirmDeleteBtn" class="btn btn-danger">確認刪除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

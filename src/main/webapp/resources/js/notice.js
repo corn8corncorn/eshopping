@@ -151,6 +151,22 @@ function escapeHtml(text) {
 
 // 頁面載入完成後，自動處理 Thymeleaf 的訊息
 document.addEventListener('DOMContentLoaded', function() {
+    // 檢查 Thymeleaf flash attributes (success, error)
+    const successMsg = document.body.getAttribute('data-success') || 
+                      (window.location.search.includes('success=') ? decodeURIComponent(window.location.search.split('success=')[1].split('&')[0]) : null);
+    const errorMsg = document.body.getAttribute('data-error') || 
+                     (window.location.search.includes('error=') ? decodeURIComponent(window.location.search.split('error=')[1].split('&')[0]) : null);
+
+    // 如果有成功訊息，顯示它
+    if (successMsg) {
+        showSuccess(successMsg, 5000);
+    }
+
+    // 如果有錯誤訊息，顯示它
+    if (errorMsg) {
+        showError(errorMsg, 5000);
+    }
+
     // 自動為 Thymeleaf 生成的 notice 添加自動消失功能
     const notices = document.querySelectorAll('.notice');
     notices.forEach(notice => {
@@ -160,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         // 成功訊息 3 秒後消失
         else if (notice.classList.contains('notice-success')) {
-            setTimeout(() => removeNotice(notice), 3000);
+            setTimeout(() => removeNotice(notice), 5000);
         }
         // 其他訊息 5 秒後消失
         else {

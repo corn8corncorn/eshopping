@@ -27,7 +27,7 @@
                 </a>
             </div>
             <h2>編輯商品</h2>
-            <form th:action="@{'/products/update/' + ${product.id}}" method="post" th:object="${product}">
+            <form th:action="@{'/products/update/' + ${product.id}}" method="post" th:object="${product}" id="editProductForm" onsubmit="return validatePrice(this)">
                 <div class="form-group">
                     <div class="input-row">
                         <label for="name">名稱：</label>
@@ -47,7 +47,7 @@
                 <div class="form-group">
                     <div class="input-row">
                         <label for="price">價格：</label>
-                        <input id="price" type="number" step="1" th:field="*{price}" required />
+                        <input id="price" type="number" step="0.01" min="0" th:field="*{price}" required />
                     </div>
                     <div class="error-message" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
                 </div>
@@ -94,5 +94,21 @@
             </form>
         </div>
     </div>
+
+    <script>
+        // 驗證價格不能為負數
+        function validatePrice(form) {
+            const priceInput = form.querySelector('#price');
+            const price = parseFloat(priceInput.value);
+            
+            if (isNaN(price) || price < 0) {
+                alert('價格不能為負數，最小值為 0 元');
+                priceInput.focus();
+                return false;
+            }
+            
+            return true;
+        }
+    </script>
 </body>
 </html>

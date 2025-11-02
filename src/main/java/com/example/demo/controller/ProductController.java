@@ -13,9 +13,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.validation.BindingResult;
 
 import com.example.demo.model.Product;
 import com.example.demo.service.ProductService;
+
+import javax.validation.Valid;
 
 /**
  * 產品管理控制器
@@ -115,13 +119,29 @@ public class ProductController {
 	 * 
 	 * @param id 商品 ID
 	 * @param product 包含更新後商品資料的物件
+	 * @param redirectAttributes 用於傳遞重定向訊息
 	 * @return 更新成功後重定向到商品列表頁面
 	 */
 	@PostMapping("/update/{id}")
-	public String updateProduct(@PathVariable("id") Long id, @ModelAttribute("product") Product product) {
-		logger.info("開始更新商品 - productId: {}, productName: {}", id, product.getName());
-		productService.updateProduct(id, product);
-		logger.info("商品更新成功 - productId: {}", id);
+	public String updateProduct(@PathVariable("id") Long id, 
+	                           @Valid @ModelAttribute("product") Product product,
+	                           BindingResult bindingResult,
+	                           RedirectAttributes redirectAttributes) {
+		if (bindingResult.hasErrors()) {
+			logger.warn("商品更新驗證失敗 - productId: {}, errors: {}", id, bindingResult.getAllErrors());
+			redirectAttributes.addFlashAttribute("error", "商品更新失敗：請檢查輸入資料是否正確");
+			return "redirect:/products/edit/" + id;
+		}
+		
+		try {
+			logger.info("開始更新商品 - productId: {}, productName: {}", id, product.getName());
+			productService.updateProduct(id, product);
+			logger.info("商品更新成功 - productId: {}", id);
+			redirectAttributes.addFlashAttribute("success", "商品「" + product.getName() + "」更新成功");
+		} catch (Exception e) {
+			logger.error("更新商品失敗 - productId: {}", id, e);
+			redirectAttributes.addFlashAttribute("error", "商品更新失敗：" + e.getMessage());
+		}
 		return "redirect:/products";
 	}
 
@@ -130,13 +150,28 @@ public class ProductController {
 	 * 將新創建的商品資料保存到資料庫
 	 * 
 	 * @param product 包含新商品資料的物件
+	 * @param redirectAttributes 用於傳遞重定向訊息
 	 * @return 保存成功後重定向到商品列表頁面
 	 */
 	@PostMapping("/save")
-	public String saveUser(@ModelAttribute Product product) {
-		logger.info("開始儲存新商品 - productName: {}", product.getName());
-		productService.saveProduct(product);
-		logger.info("商品儲存成功 - productId: {}", product.getId());
+	public String saveUser(@Valid @ModelAttribute Product product, 
+	                     BindingResult bindingResult,
+	                     RedirectAttributes redirectAttributes) {
+		if (bindingResult.hasErrors()) {
+			logger.warn("商品新增驗證失敗 - errors: {}", bindingResult.getAllErrors());
+			redirectAttributes.addFlashAttribute("error", "商品新增失敗：請檢查輸入資料是否正確（價格不能為負數）");
+			return "redirect:/products/add";
+		}
+		
+		try {
+			logger.info("開始儲存新商品 - productName: {}", product.getName());
+			productService.saveProduct(product);
+			logger.info("商品儲存成功 - productId: {}", product.getId());
+			redirectAttributes.addFlashAttribute("success", "商品「" + product.getName() + "」新增成功");
+		} catch (Exception e) {
+			logger.error("新增商品失敗 - productName: {}", product.getName(), e);
+			redirectAttributes.addFlashAttribute("error", "商品新增失敗：" + e.getMessage());
+		}
 		return "redirect:/products";
 	}
 
@@ -145,13 +180,22 @@ public class ProductController {
 	 * 根據商品 ID 從資料庫中刪除商品
 	 * 
 	 * @param id 商品 ID
+	 * @param redirectAttributes 用於傳遞重定向訊息
 	 * @return 刪除成功後重定向到商品列表頁面
 	 */
 	@PostMapping("/delete/{id}")
-	public String deleteProduct(@PathVariable("id") Long id) {
-		logger.info("開始刪除商品 - productId: {}", id);
-		productService.deleteProduct(id);
-		logger.info("商品刪除成功 - productId: {}", id);
+	public String deleteProduct(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+		try {
+			logger.info("開始刪除商品 - productId: {}", id);
+			Product product = productService.getById(id);
+			String productName = product != null ? product.getName() : "商品";
+			productService.deleteProduct(id);
+			logger.info("商品刪除成功 - productId: {}", id);
+			redirectAttributes.addFlashAttribute("success", "商品「" + productName + "」刪除成功");
+		} catch (Exception e) {
+			logger.error("刪除商品失敗 - productId: {}", id, e);
+			redirectAttributes.addFlashAttribute("error", "商品刪除失敗：" + e.getMessage());
+		}
 		return "redirect:/products";
 	}
 }

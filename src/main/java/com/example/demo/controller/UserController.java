@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
@@ -79,20 +80,29 @@ public class UserController {
      * 
      * @param id 用戶 ID
      * @param user 包含更新後用戶資料的物件
+     * @param redirectAttributes 用於傳遞重定向訊息
      * @return 更新成功後重定向到用戶列表頁面
      */
     @PostMapping("/update/{id}")
-    public String updateUser(@PathVariable("id") Long id, @ModelAttribute("user") User user) {
-        logger.info("開始更新用戶 - userId: {}, username: {}", id, user.getUsername());
-        
-        // 編輯用戶時，如果密碼不為空才加密
-        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-            logger.debug("密碼已提供，進行加密");
-            String encodedPassword = userService.encodePassword(user.getPassword());
-            user.setPassword(encodedPassword);
+    public String updateUser(@PathVariable("id") Long id, 
+                           @ModelAttribute("user") User user,
+                           RedirectAttributes redirectAttributes) {
+        try {
+            logger.info("開始更新用戶 - userId: {}, username: {}", id, user.getUsername());
+            
+            // 編輯用戶時，如果密碼不為空才加密
+            if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+                logger.debug("密碼已提供，進行加密");
+                String encodedPassword = userService.encodePassword(user.getPassword());
+                user.setPassword(encodedPassword);
+            }
+            userService.updateUser(id, user);
+            logger.info("用戶更新成功 - userId: {}", id);
+            redirectAttributes.addFlashAttribute("success", "用戶「" + user.getUsername() + "」更新成功");
+        } catch (Exception e) {
+            logger.error("更新用戶失敗 - userId: {}", id, e);
+            redirectAttributes.addFlashAttribute("error", "用戶更新失敗：" + e.getMessage());
         }
-        userService.updateUser(id, user);
-        logger.info("用戶更新成功 - userId: {}", id);
         return "redirect:/users";
     }
 
@@ -101,18 +111,25 @@ public class UserController {
      * 將新創建的用戶資料保存到資料庫，密碼會自動加密
      * 
      * @param user 包含新用戶資料的物件
+     * @param redirectAttributes 用於傳遞重定向訊息
      * @return 保存成功後重定向到用戶列表頁面
      */
     @PostMapping("/save")
-    public String saveUser(@ModelAttribute User user) {
-        logger.info("開始儲存新用戶 - username: {}", user.getUsername());
-        
-        // 新增用戶時加密密碼
-        logger.debug("對新用戶密碼進行加密");
-        String encodedPassword = userService.encodePassword(user.getPassword());
-        user.setPassword(encodedPassword);
-        userService.saveUser(user);
-        logger.info("用戶儲存成功 - userId: {}, username: {}", user.getId(), user.getUsername());
+    public String saveUser(@ModelAttribute User user, RedirectAttributes redirectAttributes) {
+        try {
+            logger.info("開始儲存新用戶 - username: {}", user.getUsername());
+            
+            // 新增用戶時加密密碼
+            logger.debug("對新用戶密碼進行加密");
+            String encodedPassword = userService.encodePassword(user.getPassword());
+            user.setPassword(encodedPassword);
+            userService.saveUser(user);
+            logger.info("用戶儲存成功 - userId: {}, username: {}", user.getId(), user.getUsername());
+            redirectAttributes.addFlashAttribute("success", "用戶「" + user.getUsername() + "」新增成功");
+        } catch (Exception e) {
+            logger.error("新增用戶失敗 - username: {}", user.getUsername(), e);
+            redirectAttributes.addFlashAttribute("error", "用戶新增失敗：" + e.getMessage());
+        }
         return "redirect:/users";
     }
 
@@ -121,13 +138,22 @@ public class UserController {
      * 根據用戶 ID 從資料庫中刪除用戶
      * 
      * @param id 用戶 ID
+     * @param redirectAttributes 用於傳遞重定向訊息
      * @return 刪除成功後重定向到用戶列表頁面
      */
     @GetMapping("/delete/{id}")
-    public String deleteUser(@PathVariable("id") Long id) {
-        logger.info("開始刪除用戶 - userId: {}", id);
-        userService.deleteUser(id);
-        logger.info("用戶刪除成功 - userId: {}", id);
+    public String deleteUser(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        try {
+            logger.info("開始刪除用戶 - userId: {}", id);
+            User user = userService.getById(id);
+            String username = user != null ? user.getUsername() : "用戶";
+            userService.deleteUser(id);
+            logger.info("用戶刪除成功 - userId: {}", id);
+            redirectAttributes.addFlashAttribute("success", "用戶「" + username + "」刪除成功");
+        } catch (Exception e) {
+            logger.error("刪除用戶失敗 - userId: {}", id, e);
+            redirectAttributes.addFlashAttribute("error", "用戶刪除失敗：" + e.getMessage());
+        }
         return "redirect:/users";
     }
 }

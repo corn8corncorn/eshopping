@@ -11,6 +11,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -29,7 +31,9 @@ public class Product {
 	@Column(name = "type", nullable = false, length = 100)
 	private String type;
 
-	@Column(name = "price", precision = 10, scale = 0)
+	@Column(name = "price", precision = 10, scale = 2)
+	@NotNull(message = "價格不能為空")
+	@DecimalMin(value = "0.00", message = "價格不能為負數，最小值為 0 元")
 	private BigDecimal price;
 
 	/**
