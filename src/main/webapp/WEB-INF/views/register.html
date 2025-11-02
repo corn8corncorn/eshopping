@@ -6,6 +6,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" th:href="@{/resources/css/loginReg.css}">
     <title>註冊 - 電子商城</title>
+    <script>
+        // 表單提交驗證
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form[th\\:action*="/register"]');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    let hasError = false;
+                    
+                    // 驗證所有必填欄位
+                    const requiredInputs = form.querySelectorAll('input[required]');
+                    requiredInputs.forEach(input => {
+                        let errorDiv = input.parentElement.parentElement.querySelector('.error-message');
+                        if (!errorDiv) {
+                            // 如果沒有錯誤訊息 div，創建一個
+                            errorDiv = document.createElement('div');
+                            errorDiv.className = 'error-message';
+                            input.parentElement.parentElement.appendChild(errorDiv);
+                        }
+                        if (!input.value.trim()) {
+                            const fieldName = input.parentElement.querySelector('label').textContent.replace('：', '').trim();
+                            // 如果沒有後端錯誤訊息，顯示前端驗證訊息
+                            if (!errorDiv.hasAttribute('th:if') || errorDiv.textContent.trim() === '') {
+                                errorDiv.textContent = '尚未輸入' + fieldName;
+                                errorDiv.style.display = 'block';
+                            }
+                            hasError = true;
+                        } else if (!errorDiv.hasAttribute('th:if')) {
+                            // 如果有輸入且沒有後端錯誤，隱藏錯誤訊息
+                            errorDiv.textContent = '';
+                            errorDiv.style.display = 'none';
+                        }
+                    });
+                    
+                    if (hasError) {
+                        e.preventDefault();
+                    }
+                });
+                
+                // 輸入時清除錯誤訊息
+                const inputs = form.querySelectorAll('input');
+                inputs.forEach(input => {
+                    input.addEventListener('input', function() {
+                        const errorMsg = this.parentElement.parentElement.querySelector('.error-message');
+                        if (errorMsg && this.value.trim() && !errorMsg.hasAttribute('th:if')) {
+                            errorMsg.textContent = '';
+                            errorMsg.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        });
+    </script>
 </head>
 
 <body>
@@ -16,28 +68,36 @@
     <div class="login-row">
         <form class="loginRegForm" th:action="@{/register}" method="post" th:object="${userRegistrationDTO}">
             <h2>註冊</h2>
-        <div>
-            <label for="username">使用者名稱：</label>
-            <input type="text" id="username" th:field="*{username}" required>
-            <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+        <div class="form-group">
+            <div class="input-row">
+                <label for="username">使用者名稱：</label>
+                <input type="text" id="username" th:field="*{username}" required>
+            </div>
+            <div class="error-message" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
         </div>
 
-        <div>
-            <label for="email">電子郵件：</label>
-            <input type="email" id="email" th:field="*{email}" required>
-            <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+        <div class="form-group">
+            <div class="input-row">
+                <label for="email">電子郵件：</label>
+                <input type="email" id="email" th:field="*{email}" required>
+            </div>
+            <div class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
         </div>
 
-        <div>
-            <label for="password">密碼：</label>
-            <input type="password" id="password" th:field="*{password}" required>
-            <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+        <div class="form-group">
+            <div class="input-row">
+                <label for="password">密碼：</label>
+                <input type="password" id="password" th:field="*{password}" required>
+            </div>
+            <div class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
         </div>
 
-        <div>
-            <label for="confirmPassword">確認密碼：</label>
-            <input type="password" id="confirmPassword" th:field="*{confirmPassword}" required>
-            <div th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+        <div class="form-group">
+            <div class="input-row">
+                <label for="confirmPassword">確認密碼：</label>
+                <input type="password" id="confirmPassword" th:field="*{confirmPassword}" required>
+            </div>
+            <div class="error-message" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
         </div>
 
         <div>

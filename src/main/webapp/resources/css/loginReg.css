@@ -25,22 +25,38 @@ body {
     flex-direction: column;
     text-align: center;
     width: 600px;
-    height: 350px;
+    min-height: 400px;
     background-color: rgba(158, 154, 154, 0.5); 
     border-radius: 10px;
+    padding: 20px;
 }
 .loginRegForm:hover {
 	background-color: rgba(158, 154, 154, 0.6);
 }
-.loginRegForm label {
+/* 表單組 - 包含 label、input 和錯誤訊息 */
+.loginRegForm .form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+/* Label 和 Input 在同一行 */
+.loginRegForm .input-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.loginRegForm .input-row label {
     display: inline-block;
     width: 100px;
     text-align: right;
     margin-right: 10px;
-    margin: 10px;
     color: white;
     font-weight: bold;
-    
 }
 
 .loginRegForm input {
@@ -50,6 +66,35 @@ body {
     text-align: center;
     color: #c29678;
     font-weight: bold;
+    border: 2px solid transparent;
+}
+
+/* 輸入框驗證錯誤樣式 */
+.loginRegForm input:invalid:not(:placeholder-shown) {
+    border-color: #dc3545;
+}
+
+.loginRegForm input:valid:not(:placeholder-shown) {
+    border-color: #28a745;
+}
+
+/* 錯誤訊息樣式 - 顯示在輸入框下方 */
+.loginRegForm .error-message {
+    color: #ffcccc;
+    font-size: 12px;
+    margin-top: 5px;
+    text-align: center;
+    width: 100%;
+    min-height: 18px;
+    font-weight: normal;
+    padding: 0 10px;
+}
+
+/* 輸入框有錯誤時的樣式 */
+.loginRegForm input.error,
+.loginRegForm input:invalid:not(:placeholder-shown):not(:focus) {
+    border-color: #dc3545;
+    background-color: rgba(220, 53, 69, 0.1);
 }
 .loginRegForm input::placeholder {
   text-align: center;
