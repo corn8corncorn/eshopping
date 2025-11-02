@@ -92,6 +92,11 @@
     <!-- 登入表單和返回首頁 -->
     <div class="login-row">
         <div class="loginRegForm">
+            <div class="home-icon-top-right">
+                <a th:href="@{/home}" class="home-icon" title="返回首頁">
+                    <span>🏠</span>
+                </a>
+            </div>
             <h2>登入</h2>
             <form th:action="@{/login}" method="post" th:object="${userLoginDTO}">
             <div class="form-group">
@@ -110,24 +115,32 @@
                 <div class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
             </div>
 
-            <div style="display: flex; justify-content: space-between;" >
-                <button type="submit" class="btn btn-primary">登入</button>
-                <a th:href="@{/register}">
-                    <button type="button" class="btn btn-primary">註冊</button>
-                </a>
-                <a th:href="@{/forgot-password}">
-                    <button type="button" class="btn btn-primary">忘記密碼？</button>
-                </a>
+            <div class="form-group">
+                <div class="input-row">
+                    <label></label>
+                    <div style="display: flex; justify-content: space-between; width: 200px;">
+                        <button type="submit" class="btn btn-primary">登入</button>
+                        <a th:href="@{/register}">
+                            <button type="button" class="btn btn-primary">註冊</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-row">
+                    <label></label>
+                    <div style="width: 200px; display: flex; justify-content: center;">
+                        <a th:href="@{/forgot-password}">
+                            <button type="button" class="btn btn-warning">忘記密碼？</button>
+                        </a>
+                    </div>
+                </div>
             </div>
             <!-- <p>還沒有帳號？ <a th:href="@{/register}">立即註冊</a></p> -->
 
             <!-- <p><a th:href="@{/forgot-password}">忘記密碼？</a></p> -->
             </form>
-        </div>
-        <div class="home-icon-column">
-            <a th:href="@{/home}" class="home-icon" title="返回首頁">
-                <span>🏠</span>
-            </a>
         </div>
     </div>
 </body>

@@ -67,6 +67,11 @@
     <!-- 註冊表單和返回首頁 -->
     <div class="login-row">
         <form class="loginRegForm" th:action="@{/register}" method="post" th:object="${userRegistrationDTO}">
+            <div class="home-icon-top-right">
+                <a th:href="@{/home}" class="home-icon" title="返回首頁">
+                    <span>🏠</span>
+                </a>
+            </div>
             <h2>註冊</h2>
         <div class="form-group">
             <div class="input-row">
@@ -100,19 +105,19 @@
             <div class="error-message" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
         </div>
 
-        <div>
-            <button type="submit" class="btn btn-primary">註冊</button>
-            <a th:href="@{/login}">
-                <button type="button" class="btn btn-primary">立即登入</button>
-            </a>
+        <div class="form-group">
+            <div class="input-row">
+                <label></label>
+                <div style="display: flex; justify-content: space-between; width: 200px;">
+                    <button type="submit" class="btn btn-primary">註冊</button>
+                    <a th:href="@{/login}">
+                        <button type="button" class="btn btn-primary">立即登入</button>
+                    </a>
+                </div>
+            </div>
         </div>
         <!-- <p>已有帳號？ <a th:href="@{/login}">立即登入</a></p> -->
         </form>
-        <div class="home-icon-column">
-            <a th:href="@{/home}" class="home-icon" title="返回首頁">
-                <span>🏠</span>
-            </a>
-        </div>
     </div>
 </body>
 

@@ -1,119 +1,111 @@
 ## Git Commit Message
 
-### Type: feat
-### Scope: auth-validation
-### Subject: 添加登入註冊頁面輸入驗證錯誤訊息顯示功能
+### Type: refactor
+### Scope: auth-ui
+### Subject: 統一認證頁面表單樣式並優化按鈕布局
 
 ### Body:
-在登入和註冊頁面添加表單驗證錯誤訊息顯示功能，當用戶未填寫必填欄位時，在對應輸入框下方顯示驗證錯誤訊息，提升用戶體驗和表單填寫的友好性。
+統一所有認證相關頁面的表單樣式，將返回首頁 icon 移至表單右上角，優化按鈕布局和對齊方式，提升視覺一致性和用戶體驗。
 
 **主要變更:**
 
-1. **HTML 結構重構**
-   - 將每個輸入欄位包裝在 `.form-group` 容器中
-   - 創建 `.input-row` 讓 label 和 input 在同一行顯示
-   - 錯誤訊息 `<div class="error-message">` 放在輸入框下方
-   - 保持 Thymeleaf 後端驗證錯誤顯示機制 (`th:errors`)
+1. **統一表單樣式**
+   - 將 `forgot-password.html` 和 `reset-password.html` 調整為與登入/註冊頁面相同的表單結構
+   - 使用 `login-row` > `loginRegForm` 統一容器結構
+   - 使用 `form-group` > `input-row` 統一輸入欄位結構
+   - 添加 JavaScript 前端驗證邏輯（與登入/註冊頁面一致）
+   - `reset-password.html` 額外添加密碼一致性驗證
 
-2. **CSS 樣式新增**
-   - `.form-group` - 表單組容器，垂直排列輸入欄位和錯誤訊息
-   - `.input-row` - 水平排列 label 和 input
-   - `.error-message` - 錯誤訊息樣式（紅色文字、小字體、居中顯示）
-   - 輸入框驗證狀態樣式（錯誤時紅色邊框，有效時綠色邊框）
-   - 調整表單高度從 `350px` 改為 `min-height: 400px`，適應錯誤訊息顯示
+2. **返回首頁 icon 位置調整**
+   - 將返回首頁 icon 從表單旁邊移到表單右上角
+   - 新增 `.home-icon-top-right` CSS 樣式，使用絕對定位
+   - 為 `.loginRegForm` 添加 `position: relative` 以支持絕對定位
+   - 更新所有認證頁面（登入、註冊、忘記密碼、重設密碼）
 
-3. **JavaScript 前端驗證**
-   - **登入頁面驗證**：
-     - 使用者名稱為空時顯示 "尚未輸入帳號"
-     - 密碼為空時顯示 "尚未輸入密碼"
-   - **註冊頁面驗證**：
-     - 所有必填欄位為空時顯示 "尚未輸入[欄位名稱]"
-   - 表單提交前進行驗證，阻止無效提交
-   - 輸入時自動清除錯誤訊息（僅清除前端驗證訊息，保留後端錯誤）
-   - 優先顯示後端驗證錯誤訊息
+3. **按鈕布局優化**
+   - **登入頁面**：
+     - 第一行：登入、註冊按鈕並排（`space-between` 分布）
+     - 第二行：忘記密碼按鈕單獨一行（居中對齊）
+     - 忘記密碼按鈕使用 `btn-warning` 樣式（由用戶調整）
+   - **註冊頁面**：註冊、立即登入按鈕並排對齊
+   - **忘記密碼頁面**：驗證身份、返回登入按鈕並排對齊
+   - **重設密碼頁面**：重設密碼、返回登入按鈕並排對齊
+   - 所有按鈕行使用 `form-group` > `input-row` 結構，添加空 `<label></label>` 佔位，確保與輸入框對齊
 
-4. **驗證流程整合**
-   - 前端驗證：JavaScript 在提交前檢查必填欄位
-   - 後端驗證：Spring Validation 處理格式驗證和業務邏輯驗證
-   - 兩者無縫整合，用戶體驗流暢
+4. **CSS 樣式調整**
+   - 新增 `.home-icon-top-right` 樣式（絕對定位，右上角）
+   - 保留 `.home-icon-column` 樣式（標註為舊版，已棄用）
+   - 調整 `.login-row` 移除 `gap: 20px`（不再需要並排布局）
+   - 表單寬度調整為 `500px`，高度調整為 `min-height: 300px`（由用戶調整）
 
 **影響範圍:**
-- `login.html` - 重構表單結構，添加 JavaScript 驗證邏輯（+91 行）
-- `register.html` - 重構表單結構，添加 JavaScript 驗證邏輯（+92 行）
-- `loginReg.css` - 新增表單組、輸入行、錯誤訊息樣式（+53 行）
+- `login.html` - 按鈕布局調整，返回首頁 icon 移至右上角（+39 行變更）
+- `register.html` - 按鈕對齊調整，返回首頁 icon 移至右上角（+25 行變更）
+- `forgot-password.html` - 統一表單樣式，添加驗證邏輯（+110 行變更）
+- `reset-password.html` - 統一表單樣式，添加驗證邏輯（+147 行變更）
+- `loginReg.css` - 新增樣式和調整（+29 行變更）
 
 **統計資料:**
-- 新增代碼：208 行
-- 刪除代碼：28 行
-- 淨增加：180 行
-- 受影響檔案：3 個
+- 新增代碼：281 行
+- 刪除代碼：69 行
+- 淨增加：212 行
+- 受影響檔案：5 個
 
-**CSS 新增樣式範例:**
+**CSS 新增樣式:**
 ```css
-.loginRegForm .form-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 15px;
-    width: 100%;
+.home-icon-top-right {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
 }
 
-.loginRegForm .input-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-}
-
-.loginRegForm .error-message {
-    color: #ffcccc;
-    font-size: 12px;
-    margin-top: 5px;
-    text-align: center;
-    width: 100%;
-    min-height: 18px;
-    font-weight: normal;
-    padding: 0 10px;
+.loginRegForm {
+    position: relative; /* 支持絕對定位 */
 }
 ```
 
-**JavaScript 驗證邏輯:**
-- 表單提交事件監聽
-- 必填欄位空值檢查
-- 動態創建/更新錯誤訊息 div
-- 輸入事件監聽，實時清除錯誤訊息
-- 與 Thymeleaf 後端驗證無衝突
+**按鈕布局結構:**
+```html
+<!-- 按鈕行對齊結構 -->
+<div class="form-group">
+    <div class="input-row">
+        <label></label>  <!-- 空 label 佔位，對齊輸入框 -->
+        <div style="display: flex; justify-content: space-between; width: 200px;">
+            <!-- 按鈕內容 -->
+        </div>
+    </div>
+</div>
+```
 
 **用戶體驗改進:**
-- ✅ 錯誤訊息顯示在對應輸入框正下方，位置明確
-- ✅ 即時驗證反饋，無需等待後端響應
-- ✅ 錯誤訊息清晰易懂（如："尚未輸入帳號"）
-- ✅ 輸入時自動清除錯誤，交互流暢
-- ✅ 前後端驗證無縫整合
-- ✅ 視覺樣式統一，紅色錯誤提示醒目
+- ✅ 所有認證頁面視覺風格統一
+- ✅ 返回首頁 icon 位置更直觀（右上角）
+- ✅ 按鈕與輸入框完美對齊，視覺更整潔
+- ✅ 登入頁面按鈕布局更清晰（忘記密碼單獨一行）
+- ✅ 統一的前端驗證體驗
+- ✅ 表單樣式更現代化
 
 **技術細節:**
-- 使用原生 JavaScript，無依賴外部庫
-- CSS Flexbox 實現響應式布局
-- 保持與 Thymeleaf 後端驗證的兼容性
-- 錯誤訊息 div 動態創建（如果不存在）
-- 檢查 `th:if` 屬性確保不覆蓋後端錯誤訊息
+- 使用 Flexbox 實現響應式布局
+- 使用絕對定位實現右上角 icon
+- 保持與現有樣式系統的一致性
+- 所有頁面共享相同的 CSS 和驗證邏輯
 
 ### Breaking Changes: 無
 
-### Related Issues: 改善表單驗證用戶體驗、添加輸入驗證錯誤提示
+### Related Issues: 統一認證頁面樣式、優化用戶體驗、改善按鈕布局
 
 ---
 
 ## 簡化版本（單行）
 
 ```
-feat(auth-validation): 添加登入註冊頁面輸入驗證錯誤訊息顯示功能
+refactor(auth-ui): 統一認證頁面表單樣式並優化按鈕布局
 
-在登入和註冊頁面添加表單驗證錯誤訊息顯示，當用戶未填寫必填欄位時
-在對應輸入框下方顯示驗證錯誤（如"尚未輸入帳號"）。重構 HTML 結構
-使用 form-group 和 input-row，新增 CSS 樣式，添加 JavaScript 前端
-驗證邏輯，與後端驗證無縫整合。
+統一所有認證頁面表單樣式，將返回首頁 icon 移至表單右上角，優化
+按鈕布局和對齊方式。忘記密碼和重設密碼頁面採用與登入/註冊頁面相同
+的表單結構，所有按鈕與輸入框完美對齊，提升視覺一致性。
 ```
 
 ---
@@ -129,10 +121,9 @@ git commit -F COMMIT_MESSAGE.md
 
 ```bash
 git add .
-git commit -m "feat(auth-validation): 添加登入註冊頁面輸入驗證錯誤訊息顯示功能
+git commit -m "refactor(auth-ui): 統一認證頁面表單樣式並優化按鈕布局
 
-在登入和註冊頁面添加表單驗證錯誤訊息顯示，當用戶未填寫必填欄位時
-在對應輸入框下方顯示驗證錯誤（如"尚未輸入帳號"）。重構 HTML 結構
-使用 form-group 和 input-row，新增 CSS 樣式，添加 JavaScript 前端
-驗證邏輯，與後端驗證無縫整合。"
+統一所有認證頁面表單樣式，將返回首頁 icon 移至表單右上角，優化
+按鈕布局和對齊方式。忘記密碼和重設密碼頁面採用與登入/註冊頁面相同
+的表單結構，所有按鈕與輸入框完美對齊，提升視覺一致性。"
 ```

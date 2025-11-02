@@ -7,11 +7,11 @@ body {
 	background-attachment: fixed;    /* ❗背景固定不動 */
 }
 
-/* 登入行 - 包含表單和返回首頁 icon */
+/* 登入行 - 包含表單 */
 .login-row {
     display: flex;
     align-items: center;
-    gap: 20px;
+    justify-content: center;
     position: absolute;
     top: 50%;
     left: 65%;
@@ -24,11 +24,12 @@ body {
     align-items: center;
     flex-direction: column;
     text-align: center;
-    width: 600px;
-    min-height: 400px;
+    width: 500px;
+    min-height: 300px;
     background-color: rgba(158, 154, 154, 0.5); 
     border-radius: 10px;
     padding: 20px;
+    position: relative;
 }
 .loginRegForm:hover {
 	background-color: rgba(158, 154, 154, 0.6);
@@ -126,11 +127,19 @@ body {
     font-weight: bold;
 }
 
-/* 返回首頁 icon 欄位 */
+/* 返回首頁 icon 欄位 - 表單旁邊（舊版，已棄用） */
 .home-icon-column {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* 返回首頁 icon - 表單右上角 */
+.home-icon-top-right {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
 }
 
 .home-icon {
@@ -287,4 +296,14 @@ body {
 .btn-primary:hover {
 	color: #fbd5ba;
     background-color: #4f3f66;
+}
+
+.btn-warning {
+    color: #ffc107;
+    background-color: #4f3f66;
+}
+
+.btn-warning:hover {
+	color: #4f3f66;
+    background-color: #ffc107;
 }
