@@ -1,52 +1,98 @@
 <!DOCTYPE html>
 <html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-	<link rel="stylesheet" type="text/css" th:href="@{/resources/css/loginReg.css}">
-  <title>編輯商品</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" th:href="@{/resources/css/loginReg.css}">
+    <script th:src="@{/resources/js/notice.js}"></script>
+    <title>編輯商品 - 電子商城</title>
 </head>
 <body>
-  <h1>編輯商品</h1>
+    <!-- Notice 元件 -->
+    <div th:replace="~{fragments/notice :: notice}"></div>
 
-  <form th:action="@{'/products/update/' + ${product.id}}" method="post" th:object="${product}">
-    <div>
-      <label for="name">名稱</label>
-      <input id="name" type="text" th:field="*{name}" required />
+    <!-- Logo - 頁面中央上方 -->
+    <div class="page-logo-container">
+        <a th:href="@{/home}">
+            <img th:src="@{/resources/images/logo.png}" alt="logo" class="page-logo">
+        </a>
     </div>
 
-    <div>
-      <label for="type">類型</label>
-      <input id="type" type="text" th:field="*{type}" required />
-    </div>
+    <!-- 編輯商品表單 -->
+    <div class="login-row">
+        <div class="loginRegForm">
+            <div class="home-icon-top-right">
+                <a th:href="@{/home}" class="home-icon" title="返回首頁">
+                    <span>🏠</span>
+                </a>
+            </div>
+            <h2>編輯商品</h2>
+            <form th:action="@{'/products/update/' + ${product.id}}" method="post" th:object="${product}">
+                <div class="form-group">
+                    <div class="input-row">
+                        <label for="name">名稱：</label>
+                        <input id="name" type="text" th:field="*{name}" required />
+                    </div>
+                    <div class="error-message" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                </div>
 
-    <div>
-      <label for="price">價格</label>
-      <input id="price" type="number" step="1" th:field="*{price}" required />
-    </div>
+                <div class="form-group">
+                    <div class="input-row">
+                        <label for="type">類型：</label>
+                        <input id="type" type="text" th:field="*{type}" required />
+                    </div>
+                    <div class="error-message" th:if="${#fields.hasErrors('type')}" th:errors="*{type}"></div>
+                </div>
 
-    <div>
-      <label for="description">描述</label>
-      <textarea id="description" th:field="*{description}" rows="4"></textarea>
-    </div>
+                <div class="form-group">
+                    <div class="input-row">
+                        <label for="price">價格：</label>
+                        <input id="price" type="number" step="1" th:field="*{price}" required />
+                    </div>
+                    <div class="error-message" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+                </div>
 
-    <div>
-      <label for="imageUrl">圖片連結</label>
-      <input id="imageUrl" type="text" th:field="*{imageUrl}" />
-    </div>
+                <div class="form-group">
+                    <div class="input-row">
+                        <label for="description">描述：</label>
+                        <textarea id="description" th:field="*{description}" rows="4"></textarea>
+                    </div>
+                    <div class="error-message" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                </div>
 
-    <div>
-      <label for="status">狀態</label>
-      <select id="status" th:field="*{status}">
-        <option th:value="ACTIVE">上架中</option>
-        <option th:value="INACTIVE">已下架</option>
-        <option th:value="OUT_OF_STOCK">缺貨中</option>
-      </select>
-    </div>
+                <div class="form-group">
+                    <div class="input-row">
+                        <label for="imageUrl">圖片連結：</label>
+                        <input id="imageUrl" type="text" th:field="*{imageUrl}" />
+                    </div>
+                    <div class="error-message" th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}"></div>
+                </div>
 
-    <div>
-      <button type="submit" class="btn btn-primary">更新</button>
-      <a th:href="@{/products}">取消</a>
+                <div class="form-group">
+                    <div class="input-row">
+                        <label for="status">狀態：</label>
+                        <select id="status" th:field="*{status}">
+                            <option th:value="ACTIVE">上架中</option>
+                            <option th:value="INACTIVE">已下架</option>
+                            <option th:value="OUT_OF_STOCK">缺貨中</option>
+                        </select>
+                    </div>
+                    <div class="error-message" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-row">
+                        <label></label>
+                        <div style="display: flex; justify-content: space-between; width: 200px;">
+                            <button type="submit" class="btn btn-primary">更新</button>
+                            <a th:href="@{/products}">
+                                <button type="button" class="btn btn-primary">取消</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-  </form>
 </body>
 </html>
