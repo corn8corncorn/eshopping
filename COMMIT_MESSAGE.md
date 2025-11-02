@@ -1,71 +1,66 @@
 ## Git Commit Message
 
-### Type: feat
-### Scope: order-confirmation
-### Subject: 新增訂單確認頁面
+### Type: chore
+### Scope: views
+### Subject: 統一所有視圖頁面引入 CSS 樣式表
 
 ### Body:
-實作訂單建立成功後的確認頁面，完善用戶購買流程的最後一環。
+在所有 HTML 視圖頁面中統一引入 `loginReg.css` 樣式表，確保前端樣式一致性和正確載入。
 
-**OrderController 更新:**
-- 新增 `GET /orders/confirmation/{orderId}` 端點
-  - 處理訂單確認頁面的顯示邏輯
-  - 完整的權限檢查（用戶只能查看自己的訂單，管理員可查看所有訂單）
-  - 錯誤處理和日誌記錄
-- 更新 `POST /orders/create` 方法
-  - 訂單建立成功後重定向到訂單確認頁面（而非直接跳到訂單詳情頁）
-  - 使用 Flash 屬性傳遞成功訊息和訂單資訊
-  - 保留原有的訂單建立邏輯（庫存檢查、購物車清空等）
+**影響範圍:**
+更新了以下 21 個視圖檔案：
+- `account.html` - 會員中心頁面
+- `add-product.html` - 新增商品頁面
+- `add-user.html` - 新增用戶頁面
+- `cart.html` - 購物車頁面
+- `checkout.html` - 結帳頁面
+- `customer-profile.html` - 客戶資料頁面
+- `customers.html` - 客戶列表頁面
+- `edit-customer.html` - 編輯客戶頁面
+- `edit-product.html` - 編輯商品頁面
+- `edit-user.html` - 編輯用戶頁面
+- `forgot-password.html` - 忘記密碼頁面
+- `home.html` - 首頁
+- `order-confirmation.html` - 訂單確認頁面
+- `order-detail.html` - 訂單詳情頁面
+- `orders.html` - 訂單列表頁面
+- `product-detail.html` - 商品詳情頁面
+- `products.html` - 商品列表頁面
+- `reset-password.html` - 重設密碼頁面
+- `search-results.html` - 搜尋結果頁面
+- `shop.html` - 商店頁面
+- `users.html` - 用戶列表頁面
 
-**order-confirmation.html（訂單確認頁面）:**
-- 視覺設計：
-  - 大型成功圖標（綠色勾號）
-  - 醒目的訂單編號展示區域
-  - 清晰的層次結構
-  - 響應式設計（RWD），支援手機和平板瀏覽
-- 訂單資訊展示：
-  - 訂單編號（突出顯示在獨立卡片中）
-  - 訂單日期
-  - 收件人資訊（姓名、電話、地址）
-  - 付款方式、訂單狀態、付款狀態
-  - 訂單總金額（醒目顯示）
-- 操作按鈕：
-  - 查看訂單詳情（跳轉到完整的訂單詳情頁）
-  - 我的訂單列表（跳轉到用戶訂單列表）
-  - 繼續購物（回到商品展示頁）
-- 用戶體驗：
-  - 成功訊息顯示區域
-  - 後續步驟說明（透過郵件通知、查看訂單狀態等）
-  - 清晰的視覺反饋
-  - 友好的提示訊息
+**變更內容:**
+在每個 HTML 檔案的 `<head>` 區塊中新增：
+```html
+<link rel="stylesheet" type="text/css" th:href="@{/resources/css/loginReg.css}">
+```
 
-**功能特點:**
-- 訂單建立後提供清晰的確認反饋
-- 完整的訂單資訊展示
-- 多種後續操作選項
-- 權限安全控制
-- 錯誤處理機制
+**目標:**
+- 統一所有頁面的 CSS 引入方式
+- 確保 `loginReg.css` 樣式在所有頁面正確載入
+- 改善前端樣式一致性
+- 提供統一的視覺體驗
 
-**用戶流程改進:**
-完整的訂單建立流程現在包括：
-1. 加入購物車 → 2. 結帳頁面 → 3. 建立訂單 → 4. **訂單確認頁** → 5. 查看訂單詳情
-
-此功能補齊了購買流程的最後一環，提供用戶清晰的訂單建立成功反饋。
+**技術細節:**
+- 使用 Thymeleaf 的 `@{...}` 語法進行資源路徑解析
+- 在 `<meta charset>` 之後、`<title>` 之前插入 CSS 連結
+- 保持原有的 `<style>` 標籤內聯樣式不變
 
 ### Breaking Changes: 無
 
-### Related Issues: 完成 MISSING_FEATURES.md 中的訂單確認頁需求
+### Related Issues: 統一前端樣式載入機制
 
 ---
 
 ## 簡化版本（單行）
 
 ```
-feat(order-confirmation): 新增訂單確認頁面
+chore(views): 統一所有視圖頁面引入 CSS 樣式表
 
-實作訂單建立成功後的確認頁面。新增 OrderController 端點處理訂單確認
-顯示，更新訂單建立邏輯重定向到確認頁。order-confirmation.html 提供
-完整的訂單資訊展示、成功反饋和後續操作按鈕，完善用戶購買流程。
+在所有 21 個 HTML 視圖頁面中新增 loginReg.css 樣式表引入，確保
+前端樣式一致性和正確載入。統一使用 Thymeleaf 資源路徑解析。
 ```
 
 ---
@@ -81,9 +76,8 @@ git commit -F COMMIT_MESSAGE.md
 
 ```bash
 git add .
-git commit -m "feat(order-confirmation): 新增訂單確認頁面
+git commit -m "chore(views): 統一所有視圖頁面引入 CSS 樣式表
 
-實作訂單建立成功後的確認頁面。新增 OrderController 端點處理訂單確認
-顯示，更新訂單建立邏輯重定向到確認頁。order-confirmation.html 提供
-完整的訂單資訊展示、成功反饋和後續操作按鈕，完善用戶購買流程。"
+在所有 21 個 HTML 視圖頁面中新增 loginReg.css 樣式表引入，確保
+前端樣式一致性和正確載入。統一使用 Thymeleaf 資源路徑解析。"
 ```
