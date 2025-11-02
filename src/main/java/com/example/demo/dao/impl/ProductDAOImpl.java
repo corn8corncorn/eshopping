@@ -56,8 +56,9 @@ public class ProductDAOImpl implements ProductDAO {
 	public Product getById(Long id) {
 		logger.debug("從資料庫取得商品 - productId: {}", id);
 		Product product = getCurrentSession().get(Product.class, id);
-		logger.debug("商品查詢結果 - productId: {}, found: {}, name: {}", id, product != null,
-				   product != null ? product.getName() : "N/A");
+		logger.debug("商品查詢結果 - productId: {}, found: {}, name: {}, stockQuantity: {}", 
+		           id, product != null, product != null ? product.getName() : "N/A",
+		           product != null ? product.getStockQuantity() : "N/A");
 		return product;
 	}
 
@@ -68,10 +69,25 @@ public class ProductDAOImpl implements ProductDAO {
 	 */
 	@Override
 	public void save(Product product) {
-		logger.info("開始儲存商品到資料庫 - productId: {}, name: {}, price: {}",
-				   product.getId(), product.getName(), product.getPrice());
-		getCurrentSession().saveOrUpdate(product);
-		logger.info("商品儲存成功 - productId: {}, name: {}", product.getId(), product.getName());
+		logger.info("開始儲存商品到資料庫 - productId: {}, name: {}, stockQuantity: {}, price: {}",
+				   product.getId(), product.getName(), product.getStockQuantity(), product.getPrice());
+		
+		// 如果是更新現有商品（有 ID），使用 merge 確保更新所有欄位
+		if (product.getId() != null) {
+			logger.debug("更新現有商品，使用 merge - productId: {}", product.getId());
+			Product merged = (Product) getCurrentSession().merge(product);
+			logger.debug("商品 merge 完成 - productId: {}, stockQuantity: {}", merged.getId(), merged.getStockQuantity());
+		} else {
+			// 如果是新商品，使用 save
+			logger.debug("新增新商品，使用 save");
+			getCurrentSession().save(product);
+		}
+		
+		// 強制刷新 session，確保立即寫入資料庫
+		getCurrentSession().flush();
+		
+		logger.info("商品儲存成功 - productId: {}, name: {}, stockQuantity: {}", 
+		           product.getId(), product.getName(), product.getStockQuantity());
 	}
 
 	/**

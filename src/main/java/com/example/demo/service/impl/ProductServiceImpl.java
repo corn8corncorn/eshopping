@@ -76,20 +76,44 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public void updateProduct(Long id, Product updateProduct) {
 		logger.info("開始更新商品 - productId: {}", id);
+		logger.debug("更新資料 - name: {}, stockQuantity: {}, status: {}", 
+		             updateProduct.getName(), updateProduct.getStockQuantity(), updateProduct.getStatus());
+		
 		Product existingProduct = productRepository.getById(id);
 		if (existingProduct != null) {
-			logger.debug("找到現有商品 - name: {}", existingProduct.getName());
+			logger.debug("找到現有商品 - name: {}, stockQuantity: {}, status: {}", 
+			             existingProduct.getName(), existingProduct.getStockQuantity(), existingProduct.getStatus());
 			
-			// 更新商品資料
+			// 直接更新所有欄位，確保 stockQuantity 被正確設置
 			existingProduct.setName(updateProduct.getName());
 			existingProduct.setType(updateProduct.getType());
 			existingProduct.setPrice(updateProduct.getPrice());
+			
+			// 更新庫存數量（這會自動更新狀態）
+			Integer newStockQuantity = updateProduct.getStockQuantity();
+			logger.debug("準備更新庫存數量 - 從 {} 改為 {}", existingProduct.getStockQuantity(), newStockQuantity);
+			
+			if (newStockQuantity != null) {
+				existingProduct.setStockQuantity(newStockQuantity);
+				logger.debug("庫存數量已設置為: {}", existingProduct.getStockQuantity());
+			} else {
+				logger.warn("庫存數量為 null，保持原值: {}", existingProduct.getStockQuantity());
+			}
+			
 			existingProduct.setDescription(updateProduct.getDescription());
 			existingProduct.setImageUrl(updateProduct.getImageUrl());
+			
+			// 最後更新狀態（如果用戶手動選擇了狀態，則使用用戶選擇的）
 			existingProduct.setStatus(updateProduct.getStatus());
 			
+			// 驗證更新後的值
+			logger.debug("更新完成，準備保存 - stockQuantity: {}", existingProduct.getStockQuantity());
+			
+			// 保存到資料庫
 			productRepository.save(existingProduct);
-			logger.info("商品更新成功 - productId: {}, name: {}", id, existingProduct.getName());
+			
+			logger.info("商品更新成功 - productId: {}, name: {}, stockQuantity: {}, status: {}", 
+			            id, existingProduct.getName(), existingProduct.getStockQuantity(), existingProduct.getStatus());
 		} else {
 			logger.warn("商品不存在 - productId: {}", id);
 		}

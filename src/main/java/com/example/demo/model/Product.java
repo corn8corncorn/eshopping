@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -40,6 +41,8 @@ public class Product {
 	 * 商品庫存數量
 	 */
 	@Column(name = "stock_quantity", nullable = false)
+	@NotNull(message = "庫存數量不能為空")
+	@Min(value = 0, message = "庫存數量不能為負數，最小值為 0")
 	private Integer stockQuantity = 0;
 
 	/**

@@ -134,7 +134,8 @@ public class ProductController {
 		}
 		
 		try {
-			logger.info("開始更新商品 - productId: {}, productName: {}", id, product.getName());
+			logger.info("開始更新商品 - productId: {}, productName: {}, stockQuantity: {}", 
+			           id, product.getName(), product.getStockQuantity());
 			productService.updateProduct(id, product);
 			logger.info("商品更新成功 - productId: {}", id);
 			redirectAttributes.addFlashAttribute("success", "商品「" + product.getName() + "」更新成功");
