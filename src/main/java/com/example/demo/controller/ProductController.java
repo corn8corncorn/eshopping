@@ -5,11 +5,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.model.Product;
 import com.example.demo.service.ProductService;
@@ -29,16 +32,49 @@ public class ProductController {
 
 	/**
 	 * 顯示商品列表頁面
-	 * 獲取所有商品資料並顯示在列表中
+	 * 獲取所有商品資料並顯示在列表中，支持分頁功能
 	 * 
+	 * @param page 頁碼（從 0 開始，預設為 0）
+	 * @param size 每頁顯示數量（預設為 10）
 	 * @param model 用於傳遞商品資料到前端頁面
 	 * @return 商品列表頁面模板名稱
 	 */
 	@GetMapping
-	public String listProducts(Model model) {
-		logger.info("進入商品列表頁面");
-		model.addAttribute("products", productService.getAll());
-		logger.info("商品列表載入完成");
+	public String listProducts(@RequestParam(value = "page", defaultValue = "0") int page,
+	                          @RequestParam(value = "size", defaultValue = "10") int size,
+	                          Model model) {
+		logger.info("進入商品列表頁面 - page: {}, size: {}", page, size);
+		
+		List<Product> allProducts = productService.getAll();
+		int totalProducts = allProducts.size();
+		int totalPages = totalProducts > 0 ? (int) Math.ceil((double) totalProducts / size) : 0;
+		
+		// 確保頁碼不超出範圍
+		if (page < 0) {
+			page = 0;
+		}
+		if (totalPages > 0 && page >= totalPages) {
+			page = totalPages - 1;
+		}
+		
+		// 計算當前頁的商品範圍
+		List<Product> paginatedProducts;
+		if (totalProducts > 0) {
+			int start = page * size;
+			int end = Math.min(start + size, totalProducts);
+			paginatedProducts = allProducts.subList(start, end);
+		} else {
+			paginatedProducts = java.util.Collections.emptyList();
+		}
+		
+		model.addAttribute("products", paginatedProducts);
+		model.addAttribute("currentPage", page);
+		model.addAttribute("totalPages", totalPages);
+		model.addAttribute("totalProducts", totalProducts);
+		model.addAttribute("pageSize", size);
+		
+		logger.info("商品列表載入完成 - 總數: {}, 當前頁: {}/{}, 顯示: {} 筆", 
+		            totalProducts, page + 1, totalPages, paginatedProducts.size());
 		return "products";
 	}
 

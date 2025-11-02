@@ -1,123 +1,120 @@
 ## Git Commit Message
 
 ### Type: refactor
-### Scope: product-forms
-### Subject: 統一商品管理表單樣式與認證頁面一致
+### Scope: products-ui
+### Subject: 重構商品列表頁面樣式並添加分頁功能，優化商店頁面圖片連結
 
 ### Body:
-將新增商品和編輯商品頁面的表單樣式重構為與登入註冊頁面相同的風格，統一使用 form-group、input-row 結構，添加錯誤訊息顯示、Logo、返回首頁功能，提升整體視覺一致性和用戶體驗。
+重構商品管理列表頁面，將傳統表格改為卡片式設計（類似登入頁面表單風格），添加分頁功能（每頁 10 個商品），並優化商店頁面商品圖片可點擊跳轉到詳情頁。
 
 **主要變更:**
 
-1. **表單結構統一**
-   - 使用 `login-row` > `loginRegForm` 容器結構
-   - 使用 `form-group` > `input-row` 統一輸入欄位結構
-   - 所有輸入欄位（input、textarea、select）使用相同的布局
-   - Label 和輸入框在同一行顯示，錯誤訊息在下方
+1. **商品列表頁面重構 (products.html)**
+   - 移除傳統 `<table>` 表格，改用卡片式設計
+   - 每個商品使用 `.product-card` 卡片容器
+   - 使用與登入頁面相同的背景色和樣式（`rgba(158, 154, 154, 0.5)`）
+   - 添加 hover 效果（背景色加深）
+   - 商品資訊使用 flex 布局顯示：
+     - ID、名稱、類型、價格、狀態
+     - 商品圖片（80x80px，圓角）
+   - 操作按鈕：編輯、刪除（使用統一的 `.btn btn-primary` 樣式）
+   - 添加 Notice 元件、Logo、返回首頁功能
+   - 響應式設計，適應不同螢幕尺寸
 
-2. **頁面元素添加**
-   - **Notice 元件**：添加通用訊息提示元件
-   - **Logo**：添加頁面中央上方的 Logo（可點擊返回首頁）
-   - **返回首頁 icon**：表單右上角添加返回首頁按鈕（🏠）
-   - 標題從 `<h1>` 改為 `<h2>`（與認證頁面一致）
+2. **分頁功能實現**
+   - **後端 (ProductController.java)**：
+     - 添加 `page` 和 `size` 參數（默認：page=0, size=10）
+     - 計算總頁數和當前頁的商品範圍
+     - 頁碼範圍驗證（防止越界）
+     - 向 Model 傳遞分頁資訊（currentPage, totalPages, totalProducts, pageSize）
+   - **前端 (products.html)**：
+     - 分頁導航 UI：
+       - 上一頁/下一頁按鈕（自動禁用邊界狀態）
+       - 頁碼按鈕（顯示所有頁碼，使用 `#numbers.sequence()`）
+       - 當前頁高亮顯示（`.active` 類別）
+       - 分頁資訊顯示（第 X 頁 / 共 Y 頁，共 Z 筆商品）
+     - 響應式分頁導航（手機端自動換行）
 
-3. **CSS 樣式擴展**
-   - 擴展 `.loginRegForm` 樣式以支持 `textarea` 和 `select` 元素
-   - **textarea 樣式**：
-     - 寬度：200px（與其他輸入框一致）
-     - 文字左對齊（text-align: left）
-     - 內邊距和可調整大小（resize: vertical）
-   - **select 樣式**：
-     - 寬度：200px，高度：25px
-     - 統一的邊框和圓角樣式
-     - 統一的內邊距
-   - 所有表單元素共享相同的基礎樣式
+3. **商店頁面優化 (shop.html)**
+   - 將商品圖片包裝在 `<a>` 標籤中
+   - 點擊商品圖片可跳轉到商品詳情頁面（`/shop/product/{id}`）
+   - 添加 hover 效果（opacity: 0.8）提示可點擊
+   - 添加 `cursor: pointer` 樣式
 
-4. **錯誤訊息顯示**
-   - 為所有輸入欄位添加 `.error-message` 顯示區域
-   - 使用 Thymeleaf 的 `th:errors` 顯示後端驗證錯誤
-   - 錯誤訊息顯示在輸入框下方，使用統一樣式
-
-5. **按鈕布局優化**
-   - 按鈕行使用 `form-group` > `input-row` 結構
-   - 添加空 `<label></label>` 佔位，確保與輸入框對齊
-   - 儲存/更新和取消按鈕並排顯示（space-between 分布）
+4. **CSS 樣式設計**
+   - `.product-card` - 商品卡片容器（圓角、陰影、hover 效果）
+   - `.product-info` - 商品資訊 flex 容器
+   - `.product-info-item` - 單個資訊項（標籤 + 值）
+   - `.product-info-label` - 標籤樣式（白色，右對齊）
+   - `.product-info-value` - 值樣式（`#fbd5ba` 顏色）
+   - `.product-image` - 商品圖片樣式（80x80px，圓角）
+   - `.product-actions` - 操作按鈕容器
+   - `.pagination` - 分頁導航容器
+   - `.pagination-btn` - 分頁按鈕樣式
+   - `.pagination-btn.active` - 當前頁按鈕高亮
+   - `.pagination-btn.disabled` - 禁用狀態按鈕
 
 **影響範圍:**
-- `add-product.html` - 完全重構表單樣式（新增商品頁面）
-- `edit-product.html` - 完全重構表單樣式（編輯商品頁面）
-- `loginReg.css` - 擴展樣式支持 textarea 和 select（+24 行）
+- `ProductController.java` - 添加分頁邏輯（+46 行變更）
+- `products.html` - 完全重構（+260 行變更，90% 重寫）
+- `shop.html` - 優化圖片連結（+21 行變更）
 
 **統計資料:**
-- 新增代碼：約 150 行
-- 刪除代碼：約 30 行
-- 淨增加：約 120 行
+- 新增代碼：275 行
+- 刪除代碼：52 行
+- 淨增加：223 行
 - 受影響檔案：3 個
 
-**CSS 新增/修改樣式:**
-```css
-/* 統一 input、textarea、select 樣式 */
-.loginRegForm input,
-.loginRegForm textarea,
-.loginRegForm select {
-    width: 200px;
-    border-radius: 5px;
-    color: #c29678;
-    font-weight: bold;
-    border: 2px solid transparent;
-}
+**分頁功能詳細說明:**
+```java
+// 後端分頁參數
+@RequestParam(value = "page", defaultValue = "0") int page
+@RequestParam(value = "size", defaultValue = "10") int size
 
-.loginRegForm textarea {
-    text-align: left;
-    padding: 5px;
-    resize: vertical;
-}
-
-.loginRegForm select {
-    height: 25px;
-    padding: 2px;
-}
+// 分頁計算
+int totalPages = totalProducts > 0 ? (int) Math.ceil((double) totalProducts / size) : 0;
+int start = page * size;
+int end = Math.min(start + size, totalProducts);
+List<Product> paginatedProducts = allProducts.subList(start, end);
 ```
 
-**表單欄位對應:**
-- 名稱（name）- text input
-- 類型（type）- text input
-- 價格（price）- number input
-- 描述（description）- textarea（多行輸入）
-- 圖片連結（imageUrl）- text input
-- 狀態（status）- select（下拉選單）
+**分頁 URL 範例:**
+- `/products` - 第 1 頁（預設）
+- `/products?page=0` - 第 1 頁
+- `/products?page=1` - 第 2 頁
+- `/products?page=2&size=10` - 第 3 頁，每頁 10 個
 
 **視覺改進:**
-- ✅ 表單樣式與認證頁面完全一致
-- ✅ 所有輸入欄位對齊美觀
-- ✅ 錯誤訊息顯示在對應輸入框下方
-- ✅ Logo 和返回首頁功能統一体驗
-- ✅ 統一的按鈕布局和樣式
-- ✅ 響應式設計支持
-- ✅ 統一的視覺風格
+- ✅ 商品列表從表格改為現代化的卡片設計
+- ✅ 視覺風格與認證頁面統一（相同的背景色和樣式）
+- ✅ 每頁顯示 10 個商品，提升載入速度
+- ✅ 分頁導航清晰易懂（上一頁、頁碼、下一頁、資訊）
+- ✅ 商品圖片可點擊，提升用戶體驗
+- ✅ 響應式設計，適應不同螢幕
+- ✅ 統一的按鈕和操作樣式
 
 **技術細節:**
-- 使用 Flexbox 實現響應式布局
-- 所有表單元素共享 CSS 樣式類別
-- 保持與現有樣式系統的一致性
-- 支持所有表單元素類型（input、textarea、select）
-- 錯誤訊息使用 Thymeleaf 動態渲染
+- 使用 Thymeleaf 的 `#numbers.sequence()` 生成頁碼列表
+- 使用 `Math.ceil()` 計算總頁數
+- 使用 `List.subList()` 實現分頁切片
+- 卡片式布局使用 Flexbox
+- 分頁按鈕使用條件判斷顯示禁用狀態
+- 圖片連結使用 Thymeleaf URL 表達式
 
 ### Breaking Changes: 無
 
-### Related Issues: 統一表單樣式、提升視覺一致性、改善用戶體驗
+### Related Issues: 重構商品列表頁面、添加分頁功能、優化用戶體驗
 
 ---
 
 ## 簡化版本（單行）
 
 ```
-refactor(product-forms): 統一商品管理表單樣式與認證頁面一致
+refactor(products-ui): 重構商品列表頁面樣式並添加分頁功能，優化商店頁面圖片連結
 
-將新增商品和編輯商品頁面的表單樣式重構為與登入註冊頁面相同的
-風格，使用 form-group、input-row 結構，添加 Notice 元件、Logo、
-返回首頁功能，擴展 CSS 支持 textarea 和 select，提升整體視覺
-一致性。
+將商品列表從表格改為卡片式設計（類似登入頁面風格），添加分頁功能
+（每頁 10 個商品）。後端添加分頁邏輯，前端實現分頁導航 UI。同時優化
+商店頁面，讓商品圖片可點擊跳轉到詳情頁。
 ```
 
 ---
@@ -133,10 +130,9 @@ git commit -F COMMIT_MESSAGE.md
 
 ```bash
 git add .
-git commit -m "refactor(product-forms): 統一商品管理表單樣式與認證頁面一致
+git commit -m "refactor(products-ui): 重構商品列表頁面樣式並添加分頁功能，優化商店頁面圖片連結
 
-將新增商品和編輯商品頁面的表單樣式重構為與登入註冊頁面相同的
-風格，使用 form-group、input-row 結構，添加 Notice 元件、Logo、
-返回首頁功能，擴展 CSS 支持 textarea 和 select，提升整體視覺
-一致性。"
+將商品列表從表格改為卡片式設計（類似登入頁面風格），添加分頁功能
+（每頁 10 個商品）。後端添加分頁邏輯，前端實現分頁導航 UI。同時優化
+商店頁面，讓商品圖片可點擊跳轉到詳情頁。"
 ```

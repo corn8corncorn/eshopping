@@ -1,47 +1,227 @@
 <!DOCTYPE html>
 <html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-	<link rel="stylesheet" type="text/css" th:href="@{/resources/css/loginReg.css}">
-  <title>商品列表</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" th:href="@{/resources/css/loginReg.css}">
+    <script th:src="@{/resources/js/notice.js}"></script>
+    <title>商品列表 - 電子商城</title>
+    <style>
+        .product-list-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .product-card {
+            background-color: rgba(158, 154, 154, 0.5);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            transition: background-color 0.3s;
+            width: 100%;
+            min-width: 800px;
+        }
+
+        .product-card:hover {
+            background-color: rgba(158, 154, 154, 0.6);
+        }
+
+        .product-info {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .product-info-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .product-info-label {
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .product-info-value {
+            color: #fbd5ba;
+        }
+
+        .product-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-info {
+            color: white;
+            font-weight: bold;
+            margin: 0 15px;
+        }
+
+        .pagination-btn {
+            padding: 8px 16px;
+            background-color: #c19677;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .pagination-btn:hover:not(.disabled) {
+            color: #fbd5ba;
+            background-color: #4f3f66;
+        }
+
+        .pagination-btn.disabled {
+            background-color: rgba(158, 154, 154, 0.3);
+            color: rgba(255, 255, 255, 0.5);
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .pagination-btn.active {
+            background-color: #4f3f66;
+            color: #fbd5ba;
+        }
+    </style>
 </head>
 <body>
-  <h1>商品列表</h1>
+    <!-- Notice 元件 -->
+    <div th:replace="~{fragments/notice :: notice}"></div>
 
-  <p><a th:href="@{/products/add}">新增商品</a></p>
+    <!-- Logo - 頁面中央上方 -->
+    <div class="page-logo-container">
+        <a th:href="@{/home}">
+            <img th:src="@{/resources/images/logo.png}" alt="logo" class="page-logo">
+        </a>
+    </div>
 
-  <table border="1" cellpadding="6" cellspacing="0">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>名稱</th>
-        <th>類型</th>
-        <th>價格</th>
-        <th>狀態</th>
-        <th>圖片</th>
-        <th>操作</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr th:each="p : ${products}">
-        <td th:text="${p.id}"></td>
-        <td th:text="${p.name}"></td>
-        <td th:text="${p.type}"></td>
-        <td th:text="${p.price}"></td>
-        <td th:text="${p.status}"></td>
-        <td>
-          <a th:if="${p.imageUrl}" th:href="${p.imageUrl}" target="_blank">查看圖片</a>
-        </td>
-        <td>
-          <a th:href="@{'/products/edit/' + ${p.id}}">編輯</a>
-          <form th:action="@{'/products/delete/' + ${p.id}}" method="post" style="display:inline;">
-            <button type="submit" class="btn btn-primary">刪除</button>
-          </form>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+    <!-- 商品列表容器 -->
+    <div style="position: relative; margin-top: 350px; width: 100%; display: flex; justify-content: center;">
+        <div class="product-list-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: white; margin: 0;">商品列表</h2>
+                <div>
+                    <a th:href="@{/products/add}" style="text-decoration: none;">
+                        <button class="btn btn-primary">新增商品</button>
+                    </a>
+                    <a th:href="@{/home}" style="text-decoration: none; margin-left: 10px;">
+                        <button class="btn btn-primary">回首頁</button>
+                    </a>
+                </div>
+            </div>
 
-  <p><a th:href="@{/home}">回首頁</a></p>
+            <!-- 商品列表 -->
+            <div th:if="${products != null && !products.isEmpty()}">
+                <div th:each="p : ${products}" class="product-card">
+                    <div class="product-info">
+                        <div class="product-info-item">
+                            <span class="product-info-label">ID：</span>
+                            <span class="product-info-value" th:text="${p.id}"></span>
+                        </div>
+                        <div class="product-info-item">
+                            <span class="product-info-label">名稱：</span>
+                            <span class="product-info-value" th:text="${p.name}"></span>
+                        </div>
+                        <div class="product-info-item">
+                            <span class="product-info-label">類型：</span>
+                            <span class="product-info-value" th:text="${p.type}"></span>
+                        </div>
+                        <div class="product-info-item">
+                            <span class="product-info-label">價格：</span>
+                            <span class="product-info-value" th:text="${'$' + #numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')}"></span>
+                        </div>
+                        <div class="product-info-item">
+                            <span class="product-info-label">狀態：</span>
+                            <span class="product-info-value" th:text="${p.status}"></span>
+                        </div>
+                        <div class="product-info-item" th:if="${p.imageUrl}">
+                            <img th:src="${p.imageUrl}" alt="商品圖片" class="product-image" 
+                                 onerror="this.src='/resources/images/default-product.png'; this.onerror=null;">
+                        </div>
+                    </div>
+                    <div class="product-actions">
+                        <a th:href="@{'/products/edit/' + ${p.id}}" style="text-decoration: none;">
+                            <button class="btn btn-primary" type="button">編輯</button>
+                        </a>
+                        <form th:action="@{'/products/delete/' + ${p.id}}" method="post" style="display:inline; margin:0;">
+                            <button type="submit" class="btn btn-primary">刪除</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 無商品訊息 -->
+            <div th:if="${products == null || products.isEmpty()}" class="product-card">
+                <div style="color: white; text-align: center; width: 100%;">
+                    <p style="margin: 0;">目前沒有商品</p>
+                </div>
+            </div>
+
+            <!-- 分頁導航 -->
+            <div class="pagination" th:if="${totalPages > 1}">
+                <!-- 上一頁按鈕 -->
+                <a th:href="@{/products(page=${currentPage > 0 ? currentPage - 1 : 0})}" 
+                   class="pagination-btn" 
+                   th:class="${currentPage == 0 ? 'pagination-btn disabled' : 'pagination-btn'}">
+                    上一頁
+                </a>
+
+                <!-- 頁碼按鈕 -->
+                <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                    <a th:each="pageNum : ${#numbers.sequence(1, totalPages)}"
+                       th:href="@{/products(page=${pageNum - 1})}"
+                       th:class="${(pageNum - 1) == currentPage ? 'pagination-btn active' : 'pagination-btn'}"
+                       th:text="${pageNum}">
+                    </a>
+                </div>
+
+                <!-- 下一頁按鈕 -->
+                <a th:href="@{/products(page=${currentPage < totalPages - 1 ? currentPage + 1 : totalPages - 1})}" 
+                   class="pagination-btn" 
+                   th:class="${currentPage >= totalPages - 1 ? 'pagination-btn disabled' : 'pagination-btn'}">
+                    下一頁
+                </a>
+
+                <!-- 分頁資訊 -->
+                <div class="pagination-info">
+                    第 <span th:text="${currentPage + 1}"></span> 頁 / 共 <span th:text="${totalPages}"></span> 頁
+                    <span style="margin-left: 10px;">
+                        （共 <span th:text="${totalProducts}"></span> 筆商品）
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
