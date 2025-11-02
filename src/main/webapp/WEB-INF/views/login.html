@@ -84,9 +84,12 @@
     <!-- Notice 元件 -->
     <div th:replace="~{fragments/notice :: notice}"></div>
 
-    <a th:href="@{/home}" align="center">
-        <img th:src="@{/resources/images/logo.png}" alt="logo" style="width: 100px; height: 100px; cursor: pointer;">
-    </a>
+    <!-- Logo - 頁面中央上方 -->
+    <div class="page-logo-container">
+        <a th:href="@{/home}">
+            <img th:src="@{/resources/images/logo.png}" alt="logo" class="page-logo">
+        </a>
+    </div>
 
     <!-- 登入表單和返回首頁 -->
     <div class="login-row">

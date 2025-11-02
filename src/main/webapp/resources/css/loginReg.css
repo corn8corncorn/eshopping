@@ -34,6 +34,30 @@ body {
 .loginRegForm:hover {
 	background-color: rgba(158, 154, 154, 0.6);
 }
+
+/* Logo 容器 - 頁面中央上方（表單外面） */
+.page-logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    z-index: 100;
+}
+
+.page-logo {
+    width: 250px;
+    height: 250px;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.page-logo:hover {
+    transform: scale(1.1);
+}
 /* 表單組 - 包含 label、input 和錯誤訊息 */
 .loginRegForm .form-group {
     display: flex;
