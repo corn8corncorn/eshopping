@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <!-- Notice 元件 Fragment -->
+    <div th:fragment="notice" class="notice-container" id="noticeContainer">
+        <!-- 錯誤訊息 -->
+        <div th:if="${error}" class="notice notice-error" role="alert">
+            <div class="notice-content">
+                <span class="notice-icon">⚠️</span>
+                <span class="notice-message" th:text="${error}"></span>
+            </div>
+            <button class="notice-close" onclick="this.parentElement.remove()" aria-label="關閉">×</button>
+        </div>
+
+        <!-- 成功訊息 -->
+        <div th:if="${success}" class="notice notice-success" role="alert">
+            <div class="notice-content">
+                <span class="notice-icon">✅</span>
+                <span class="notice-message" th:text="${success}"></span>
+            </div>
+            <button class="notice-close" onclick="this.parentElement.remove()" aria-label="關閉">×</button>
+        </div>
+
+        <!-- 警告訊息 -->
+        <div th:if="${warning}" class="notice notice-warning" role="alert">
+            <div class="notice-content">
+                <span class="notice-icon">⚠️</span>
+                <span class="notice-message" th:text="${warning}"></span>
+            </div>
+            <button class="notice-close" onclick="this.parentElement.remove()" aria-label="關閉">×</button>
+        </div>
+
+        <!-- 資訊訊息 -->
+        <div th:if="${info}" class="notice notice-info" role="alert">
+            <div class="notice-content">
+                <span class="notice-icon">ℹ️</span>
+                <span class="notice-message" th:text="${info}"></span>
+            </div>
+            <button class="notice-close" onclick="this.parentElement.remove()" aria-label="關閉">×</button>
+        </div>
+    </div>
+</body>
+</html>
+

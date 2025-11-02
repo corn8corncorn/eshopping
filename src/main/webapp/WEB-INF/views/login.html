@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" th:href="@{/resources/css/loginReg.css}">
+    <script th:src="@{/resources/js/notice.js}"></script>
     <title>登入 - 電子商城</title>
     <script>
         // 表單提交驗證
@@ -80,14 +81,12 @@
 </head>
 
 <body>
+    <!-- Notice 元件 -->
+    <div th:replace="~{fragments/notice :: notice}"></div>
+
     <a th:href="@{/home}" align="center">
         <img th:src="@{/resources/images/logo.png}" alt="logo" style="width: 100px; height: 100px; cursor: pointer;">
     </a>
-    <!-- 顯示錯誤訊息 -->
-    <div th:if="${error}" th:text="${error}"></div>
-
-    <!-- 顯示成功訊息 -->
-    <div th:if="${success}" th:text="${success}"></div>
 
     <!-- 登入表單和返回首頁 -->
     <div class="login-row">

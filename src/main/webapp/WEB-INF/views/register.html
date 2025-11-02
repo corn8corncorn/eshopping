@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" th:href="@{/resources/css/loginReg.css}">
+    <script th:src="@{/resources/js/notice.js}"></script>
     <title>註冊 - 電子商城</title>
     <script>
         // 表單提交驗證
@@ -61,8 +62,8 @@
 </head>
 
 <body>
-    <!-- 顯示錯誤訊息 -->
-    <div th:if="${error}" th:text="${error}"></div>
+    <!-- Notice 元件 -->
+    <div th:replace="~{fragments/notice :: notice}"></div>
 
     <!-- 註冊表單和返回首頁 -->
     <div class="login-row">
