@@ -1,100 +1,79 @@
 ## Git Commit Message
 
-### Type: feat
-### Scope: customer-phone-validation
-### Subject: 添加客戶電話號碼格式驗證（09開頭+8碼數字，共10碼）
+### Type: fix
+### Scope: cart
+### Subject: 修復商品詳情頁加入購物車功能並整合 Notice 元件
 
 ### Body:
-為客戶資料編輯頁面添加電話號碼格式驗證功能，確保電話號碼必須以09開頭，後面接8碼數字，總共10碼，且不能有空白或其他符號。
+修復從商品詳情頁（/shop/product/{id}）加入購物車失敗的問題，並將購物車頁面整合 Notice 元件以提供統一的訊息顯示體驗。
 
 **主要變更:**
 
-1. **Customer.java - 客戶模型**
-   - 添加 Bean Validation 註解
-     - 在 `phone` 欄位添加 `@Pattern` 驗證註解
-     - 正則表達式：`^$|^09\\d{8}$`
-       - `^$` - 允許空值（電話是可選欄位）
-       - `^09\\d{8}$` - 驗證必須以 09 開頭，後面 8 碼數字，共 10 碼
-     - 錯誤訊息：「電話號碼必須以09開頭，後面接8碼數字，共10碼，不能有空白或其他符號」
-   - 添加必要的 import
-     - `import javax.validation.constraints.Pattern;`
+1. **product-detail.html - 商品詳情頁**
+   - 修復 JavaScript 錯誤
+     - 移除內聯 onclick 事件，改用全局函數 `updateQuantityAndSubmit()`
+     - 修正變數作用域問題（移除未定義變數的使用）
+     - 添加錯誤處理和元素存在性檢查
+   - 改進表單結構
+     - 為「加入購物車」表單添加 `quantity` 隱藏欄位
+     - 確保數量值能正確傳遞到後端
+   - 添加 Notice 元件
+     - 集成 `fragments/notice :: notice` fragment
+     - 添加 `notice.js` 腳本引用
+     - 移除舊的錯誤訊息顯示
 
-2. **CustomerController.java - 客戶管理控制器**
-   - 啟用 Bean Validation
-     - 在 `updateCustomer()` 方法添加 `@Valid` 註解
-     - 添加 `BindingResult` 參數檢查驗證結果
-     - 驗證失敗時返回編輯頁面並顯示錯誤訊息
-   - 添加必要的 import
-     - `import javax.validation.Valid;`
-     - `import org.springframework.validation.BindingResult;`
-   - 改進驗證錯誤處理
-     - 檢查 `bindingResult.hasErrors()`
-     - 驗證失敗時記錄警告日誌
-     - 返回 `"edit-customer"` 視圖以顯示驗證錯誤
+2. **CartController.java - 購物車控制器**
+   - 改進錯誤處理邏輯
+     - `IllegalStateException`（庫存不足）→ 重定向回商品詳情頁
+     - `IllegalArgumentException`（參數錯誤）→ 重定向回商品詳情頁
+     - 其他異常 → 重定向到商品列表
+   - 修正重定向路徑
+     - 商品不存在時重定向到 `/shop`（而不是 `/products`）
+     - 庫存不足時重定向回 `/shop/product/{id}`
+   - 優化錯誤訊息傳遞
+     - 使用 `redirectAttributes.addFlashAttribute()` 傳遞成功/錯誤訊息
 
-3. **edit-customer.html - 編輯客戶資料頁面**
-   - 添加 HTML5 驗證
-     - 在電話輸入框添加 `pattern="^09\\d{8}$"` 屬性
-     - 添加 `placeholder="例如：0912345678"` 提示文字
-     - 添加格式說明：「※ 請輸入10碼手機號碼（09開頭 + 8碼數字，不能有空白或其他符號）」
-   - 添加即時驗證 JavaScript
-     - 實作 `validatePhone()` 函數
-       - 使用 `oninput` 事件進行即時驗證
-       - 空值視為有效（因為電話是可選欄位）
-       - 不符合格式時顯示錯誤訊息
-       - 使用 `setCustomValidity()` 與 HTML5 驗證整合
-     - 表單提交時驗證
-       - 在 `DOMContentLoaded` 事件中綁定表單提交驗證
-       - 如果驗證失敗，阻止表單提交
-   - 添加錯誤訊息顯示區域
-     - 添加 `id="phoneError"` 的錯誤訊息 div
-     - 動態顯示/隱藏驗證錯誤訊息
+3. **cart.html - 購物車頁面**
+   - 整合 Notice 元件
+     - 添加 `notice.js` 腳本引用
+     - 添加 Notice 元件 fragment
+     - 移除舊的訊息顯示 div（`.message.success` 和 `.message.error`）
+   - 修正導航連結
+     - 將商品列表連結從 `/products` 改為 `/shop`
 
-**驗證規則:**
+**修復的問題:**
 
-- **允許空值**: 電話號碼是可選欄位，允許不填寫
-- **格式要求**: 如果填寫，必須符合以下規則：
-  - 必須以 `09` 開頭
-  - 後面必須接 8 碼數字
-  - 總共必須是 10 碼數字
-  - 不能有空白或其他符號
+1. **JavaScript 錯誤**
+   - 問題：`Cannot set properties of undefined (setting 'value')`
+   - 原因：在 `onclick` 中使用 `document.getElementById('quantity')` 時，元素可能尚未渲染
+   - 解決：改用全局函數，添加元素存在性檢查
 
-**驗證層級:**
+2. **表單提交失敗**
+   - 問題：從商品詳情頁點擊「加入購物車」按鈕後表單無法正確提交
+   - 原因：表單缺少 `quantity` 隱藏欄位，或 JavaScript 未正確同步數量值
+   - 解決：添加隱藏欄位，使用安全的 JavaScript 函數更新值
 
-1. **前端 HTML5 驗證**: 使用 `pattern` 屬性進行基本的格式檢查
-2. **前端 JavaScript 驗證**: 即時驗證並顯示友好的錯誤訊息
-3. **後端 Bean Validation**: 使用 `@Pattern` 註解確保資料完整性
-
-**測試範例:**
-
-- **有效格式**: 
-  - `0912345678` ✅
-  - 空值 ✅
-  
-- **無效格式**: 
-  - `091234567` ❌ (9碼)
-  - `0812345678` ❌ (不以09開頭)
-  - `09 12345678` ❌ (有空白)
-  - `09123456789` ❌ (11碼)
-  - `09-12345678` ❌ (有符號)
+3. **訊息顯示不一致**
+   - 問題：購物車頁面使用舊的訊息顯示方式，沒有自動消失功能
+   - 解決：統一使用 Notice 元件，成功訊息會在 5 秒後自動消失
 
 **技術細節:**
 
-- 使用 Java Bean Validation (JSR-303/JSR-380) 進行後端驗證
-- 使用 HTML5 `pattern` 屬性進行前端基本驗證
-- JavaScript 驗證提供即時回饋，提升用戶體驗
-- 驗證訊息使用中文，符合用戶需求
-- 支援空值驗證（因為電話是可選欄位）
+- 使用全局 JavaScript 函數避免作用域問題
+- 添加 try-catch 錯誤處理確保穩定性
+- 確保即使找不到 `quantity` 輸入框也能正常工作（使用默認值）
+- Notice 元件提供統一的訊息顯示體驗，支援自動消失功能
 
 **用戶體驗改進:**
 
-- 即時驗證：輸入時立即顯示錯誤訊息，無需等到提交
-- 清晰的格式說明：提示文字清楚說明電話號碼格式要求
-- 範例提示：placeholder 提供範例號碼（0912345678）
-- 友好的錯誤訊息：明確指出格式錯誤的原因
+- 修復商品詳情頁加入購物車功能，用戶可以順利將商品加入購物車
+- 錯誤訊息會在商品詳情頁顯示，用戶無需離開頁面
+- 成功訊息會在 5 秒後自動消失，不會遮擋用戶視線
+- 統一的通知樣式，提供一致的用戶體驗
 
-**資料完整性:**
+**測試場景:**
 
-- 確保所有儲存的電話號碼都符合台灣手機號碼格式
-- 防止錯誤格式的電話號碼進入資料庫
-- 提升資料品質和一致性
+- ✅ 從商品列表頁加入購物車（原本正常）
+- ✅ 從商品詳情頁加入購物車（已修復）
+- ✅ 庫存不足時顯示錯誤訊息並停留在商品詳情頁
+- ✅ 成功加入購物車後顯示成功訊息並在 5 秒後自動消失

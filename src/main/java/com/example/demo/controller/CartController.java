@@ -1,5 +1,8 @@
 package com.example.demo.controller;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,7 @@ import com.example.demo.model.CartItem;
 import com.example.demo.model.Customer;
 import com.example.demo.model.Product;
 import com.example.demo.model.User;
+import com.example.demo.service.CartItemService;
 import com.example.demo.service.CartService;
 import com.example.demo.service.CustomerService;
 import com.example.demo.service.ProductService;
@@ -36,6 +40,9 @@ public class CartController {
 
     @Autowired
     private CartService cartService;
+
+    @Autowired
+    private CartItemService cartItemService;
 
     @Autowired
     private CustomerService customerService;
@@ -76,14 +83,27 @@ public class CartController {
                 return "redirect:/customers/edit";
             }
 
-            // 取得或建立購物車
+            // 取得或建立購物車（在 Service 層初始化所有 lazy 關聯）
             Cart cart = cartService.getOrCreateCart(customer);
+            
+            // 在 Service 層的 @Transactional 範圍內獲取所有數據
+            // 這確保所有 lazy 關聯都在 Session 內初始化
+            Cart initializedCart = cartService.getById(cart.getId());
+            BigDecimal totalAmount = cartService.getCartTotalAmount(cart.getId());
+            Integer totalItems = cartService.getCartTotalItems(cart.getId());
+            
+            // 在 Service 層獲取 cartItems（確保所有關聯都已初始化）
+            List<CartItem> cartItems = cartItemService.getByCartId(cart.getId());
+            
             logger.debug("購物車載入成功 - cartId: {}, totalItems: {}, totalAmount: {}", 
-                        cart.getId(), cart.getTotalItems(), cart.getTotalAmount());
-
-            model.addAttribute("cart", cart);
-            model.addAttribute("cartItems", cart.getCartItems());
-            logger.info("購物車頁面載入完成 - cartId: {}", cart.getId());
+                        initializedCart.getId(), totalItems, totalAmount);
+            
+            // 使用完全初始化的購物車對象和項目列表
+            model.addAttribute("cart", initializedCart);
+            model.addAttribute("cartItems", cartItems);
+            model.addAttribute("totalAmount", totalAmount);
+            model.addAttribute("totalItems", totalItems);
+            logger.info("購物車頁面載入完成 - cartId: {}", initializedCart.getId());
             
         } catch (Exception e) {
             logger.error("載入購物車時發生錯誤", e);
@@ -132,7 +152,7 @@ public class CartController {
             if (product == null) {
                 logger.warn("商品不存在 - productId: {}", productId);
                 redirectAttributes.addFlashAttribute("error", "商品不存在");
-                return "redirect:/products";
+                return "redirect:/shop";
             }
 
             // 檢查庫存
@@ -140,7 +160,8 @@ public class CartController {
                 logger.warn("庫存不足 - productId: {}, requested: {}, available: {}", 
                            productId, quantity, product.getStockQuantity());
                 redirectAttributes.addFlashAttribute("error", "庫存不足，目前庫存：" + product.getStockQuantity());
-                return "redirect:/products";
+                // 重定向回商品詳情頁
+                return "redirect:/shop/product/" + productId;
             }
 
             // 取得或建立購物車
@@ -153,13 +174,24 @@ public class CartController {
                        cart.getId(), productId, quantity);
             
             redirectAttributes.addFlashAttribute("success", "商品已成功添加到購物車");
+            return "redirect:/cart";
             
+        } catch (IllegalStateException e) {
+            // 庫存不足等業務邏輯錯誤，重定向回商品詳情頁
+            logger.error("添加商品到購物車失敗 - productId: {}, error: {}", productId, e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "添加商品到購物車失敗：" + e.getMessage());
+            return "redirect:/shop/product/" + productId;
+        } catch (IllegalArgumentException e) {
+            // 參數錯誤，重定向回商品詳情頁
+            logger.error("添加商品到購物車失敗 - productId: {}, error: {}", productId, e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "添加商品到購物車失敗：" + e.getMessage());
+            return "redirect:/shop/product/" + productId;
         } catch (Exception e) {
+            // 其他錯誤，重定向回商品列表
             logger.error("添加商品到購物車時發生錯誤 - productId: {}", productId, e);
             redirectAttributes.addFlashAttribute("error", "添加商品到購物車失敗：" + e.getMessage());
+            return "redirect:/shop";
         }
-        
-        return "redirect:/cart";
     }
 
     /**

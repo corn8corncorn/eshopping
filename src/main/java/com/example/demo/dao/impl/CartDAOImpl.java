@@ -59,7 +59,10 @@ public class CartDAOImpl implements CartDAO {
     @Transactional(readOnly = true)
     public Cart findById(Long id) {
         logger.info("根據ID查找購物車 - cartId: {}", id);
-        Cart cart = getCurrentSession().get(Cart.class, id);
+        Query<Cart> query = getCurrentSession().createQuery(
+                "SELECT DISTINCT c FROM Cart c LEFT JOIN FETCH c.cartItems ci LEFT JOIN FETCH ci.product WHERE c.id = :id", Cart.class);
+        query.setParameter("id", id);
+        Cart cart = query.uniqueResult();
         logger.debug("購物車查詢結果 - cartId: {}, found: {}", id, cart != null);
         return cart;
     }
@@ -72,7 +75,8 @@ public class CartDAOImpl implements CartDAO {
     @Transactional(readOnly = true)
     public List<Cart> findAll() {
         logger.info("查找所有購物車");
-        Query<Cart> query = getCurrentSession().createQuery("FROM Cart ORDER BY updatedAt DESC", Cart.class);
+        Query<Cart> query = getCurrentSession().createQuery(
+                "SELECT DISTINCT c FROM Cart c LEFT JOIN FETCH c.cartItems ci LEFT JOIN FETCH ci.product ORDER BY c.updatedAt DESC", Cart.class);
         List<Cart> carts = query.getResultList();
         logger.debug("查詢到購物車數量: {}", carts.size());
         return carts;
@@ -88,7 +92,7 @@ public class CartDAOImpl implements CartDAO {
     public Cart findByCustomer(Customer customer) {
         logger.info("根據客戶查找購物車 - customerId: {}", customer.getId());
         Query<Cart> query = getCurrentSession().createQuery(
-                "FROM Cart WHERE customer = :customer", Cart.class);
+                "SELECT DISTINCT c FROM Cart c LEFT JOIN FETCH c.cartItems ci LEFT JOIN FETCH ci.product WHERE c.customer = :customer", Cart.class);
         query.setParameter("customer", customer);
         Cart cart = query.uniqueResult();
         logger.debug("購物車查詢結果 - customerId: {}, found: {}", customer.getId(), cart != null);
@@ -105,7 +109,7 @@ public class CartDAOImpl implements CartDAO {
     public Cart findByCustomerId(Long customerId) {
         logger.info("根據客戶ID查找購物車 - customerId: {}", customerId);
         Query<Cart> query = getCurrentSession().createQuery(
-                "FROM Cart WHERE customer.id = :customerId", Cart.class);
+                "SELECT DISTINCT c FROM Cart c LEFT JOIN FETCH c.cartItems ci LEFT JOIN FETCH ci.product WHERE c.customer.id = :customerId", Cart.class);
         query.setParameter("customerId", customerId);
         Cart cart = query.uniqueResult();
         logger.debug("購物車查詢結果 - customerId: {}, found: {}", customerId, cart != null);

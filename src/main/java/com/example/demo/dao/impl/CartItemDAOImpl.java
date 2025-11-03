@@ -76,7 +76,10 @@ public class CartItemDAOImpl implements CartItemDAO {
     @Transactional(readOnly = true)
     public CartItem findById(Long id) {
         logger.info("根據ID查找購物車項目 - cartItemId: {}", id);
-        CartItem cartItem = getCurrentSession().get(CartItem.class, id);
+        Query<CartItem> query = getCurrentSession().createQuery(
+                "SELECT ci FROM CartItem ci LEFT JOIN FETCH ci.product WHERE ci.id = :id", CartItem.class);
+        query.setParameter("id", id);
+        CartItem cartItem = query.uniqueResult();
         logger.debug("購物車項目查詢結果 - cartItemId: {}, found: {}", id, cartItem != null);
         return cartItem;
     }
@@ -89,7 +92,8 @@ public class CartItemDAOImpl implements CartItemDAO {
     @Transactional(readOnly = true)
     public List<CartItem> findAll() {
         logger.info("查找所有購物車項目");
-        Query<CartItem> query = getCurrentSession().createQuery("FROM CartItem", CartItem.class);
+        Query<CartItem> query = getCurrentSession().createQuery(
+                "SELECT DISTINCT ci FROM CartItem ci LEFT JOIN FETCH ci.product ORDER BY ci.id", CartItem.class);
         List<CartItem> cartItems = query.getResultList();
         logger.debug("查詢到購物車項目數量: {}", cartItems.size());
         return cartItems;
@@ -105,7 +109,7 @@ public class CartItemDAOImpl implements CartItemDAO {
     public List<CartItem> findByCart(Cart cart) {
         logger.info("根據購物車查找購物車項目 - cartId: {}", cart.getId());
         Query<CartItem> query = getCurrentSession().createQuery(
-                "FROM CartItem WHERE cart = :cart ORDER BY id", CartItem.class);
+                "SELECT DISTINCT ci FROM CartItem ci LEFT JOIN FETCH ci.product WHERE ci.cart = :cart ORDER BY ci.id", CartItem.class);
         query.setParameter("cart", cart);
         List<CartItem> cartItems = query.getResultList();
         logger.debug("購物車項目查詢結果 - cartId: {}, itemCount: {}", cart.getId(), cartItems.size());
@@ -122,7 +126,7 @@ public class CartItemDAOImpl implements CartItemDAO {
     public List<CartItem> findByCartId(Long cartId) {
         logger.info("根據購物車ID查找購物車項目 - cartId: {}", cartId);
         Query<CartItem> query = getCurrentSession().createQuery(
-                "FROM CartItem WHERE cart.id = :cartId ORDER BY id", CartItem.class);
+                "SELECT DISTINCT ci FROM CartItem ci LEFT JOIN FETCH ci.product WHERE ci.cart.id = :cartId ORDER BY ci.id", CartItem.class);
         query.setParameter("cartId", cartId);
         List<CartItem> cartItems = query.getResultList();
         logger.debug("購物車項目查詢結果 - cartId: {}, itemCount: {}", cartId, cartItems.size());
@@ -139,7 +143,7 @@ public class CartItemDAOImpl implements CartItemDAO {
     public List<CartItem> findByProduct(Product product) {
         logger.info("根據商品查找購物車項目 - productId: {}", product.getId());
         Query<CartItem> query = getCurrentSession().createQuery(
-                "FROM CartItem WHERE product = :product ORDER BY id", CartItem.class);
+                "SELECT DISTINCT ci FROM CartItem ci LEFT JOIN FETCH ci.product WHERE ci.product = :product ORDER BY ci.id", CartItem.class);
         query.setParameter("product", product);
         List<CartItem> cartItems = query.getResultList();
         logger.debug("商品購物車項目查詢結果 - productId: {}, itemCount: {}", product.getId(), cartItems.size());
@@ -156,7 +160,7 @@ public class CartItemDAOImpl implements CartItemDAO {
     public List<CartItem> findByProductId(Long productId) {
         logger.info("根據商品ID查找購物車項目 - productId: {}", productId);
         Query<CartItem> query = getCurrentSession().createQuery(
-                "FROM CartItem WHERE product.id = :productId ORDER BY id", CartItem.class);
+                "SELECT DISTINCT ci FROM CartItem ci LEFT JOIN FETCH ci.product WHERE ci.product.id = :productId ORDER BY ci.id", CartItem.class);
         query.setParameter("productId", productId);
         List<CartItem> cartItems = query.getResultList();
         logger.debug("商品購物車項目查詢結果 - productId: {}, itemCount: {}", productId, cartItems.size());
@@ -175,7 +179,7 @@ public class CartItemDAOImpl implements CartItemDAO {
         logger.info("根據購物車和商品查找購物車項目 - cartId: {}, productId: {}", 
                    cart.getId(), product.getId());
         Query<CartItem> query = getCurrentSession().createQuery(
-                "FROM CartItem WHERE cart = :cart AND product = :product", CartItem.class);
+                "SELECT ci FROM CartItem ci LEFT JOIN FETCH ci.product WHERE ci.cart = :cart AND ci.product = :product", CartItem.class);
         query.setParameter("cart", cart);
         query.setParameter("product", product);
         CartItem cartItem = query.uniqueResult();
@@ -195,7 +199,7 @@ public class CartItemDAOImpl implements CartItemDAO {
     public CartItem findByCartIdAndProductId(Long cartId, Long productId) {
         logger.info("根據購物車ID和商品ID查找購物車項目 - cartId: {}, productId: {}", cartId, productId);
         Query<CartItem> query = getCurrentSession().createQuery(
-                "FROM CartItem WHERE cart.id = :cartId AND product.id = :productId", CartItem.class);
+                "SELECT ci FROM CartItem ci LEFT JOIN FETCH ci.product WHERE ci.cart.id = :cartId AND ci.product.id = :productId", CartItem.class);
         query.setParameter("cartId", cartId);
         query.setParameter("productId", productId);
         CartItem cartItem = query.uniqueResult();

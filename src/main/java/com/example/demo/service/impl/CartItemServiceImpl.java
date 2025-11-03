@@ -69,7 +69,7 @@ public class CartItemServiceImpl implements CartItemService {
         return cartItems;
     }
 
-    /**
+    /** 
      * 根據購物車ID取得所有購物車項目
      * @param cartId 購物車ID
      * @return 該購物車的所有項目列表
@@ -79,6 +79,18 @@ public class CartItemServiceImpl implements CartItemService {
     public List<CartItem> getByCartId(Long cartId) {
         logger.info("根據購物車ID取得購物車項目 - cartId: {}", cartId);
         List<CartItem> cartItems = cartItemDAO.findByCartId(cartId);
+        
+        // 強制初始化每個 cartItem 的 product，確保在 Session 內完成
+        for (CartItem item : cartItems) {
+            if (item.getProduct() != null) {
+                org.hibernate.Hibernate.initialize(item.getProduct());
+                // 訪問 product 的基本屬性以確保完全初始化
+                item.getProduct().getId();
+                item.getProduct().getName();
+                item.getProduct().getPrice();
+            }
+        }
+        
         logger.debug("購物車項目查詢結果 - cartId: {}, itemCount: {}", cartId, cartItems.size());
         return cartItems;
     }

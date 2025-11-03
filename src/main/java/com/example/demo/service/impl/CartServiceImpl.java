@@ -3,6 +3,7 @@ package com.example.demo.service.impl;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,22 @@ public class CartServiceImpl implements CartService {
     public Cart getById(Long id) {
         logger.info("根據ID取得購物車 - cartId: {}", id);
         Cart cart = cartDAO.findById(id);
+        if (cart != null) {
+            // 強制初始化所有 lazy 關聯，確保在 Session 內完成
+            Hibernate.initialize(cart.getCartItems());
+            if (cart.getCartItems() != null) {
+                // 觸發每個 cartItem 的 product 初始化
+                for (CartItem item : cart.getCartItems()) {
+                    if (item.getProduct() != null) {
+                        Hibernate.initialize(item.getProduct());
+                        // 訪問 product 的基本屬性以確保完全初始化
+                        item.getProduct().getId();
+                        item.getProduct().getName();
+                        item.getProduct().getPrice();
+                    }
+                }
+            }
+        }
         logger.debug("購物車查詢結果 - cartId: {}, found: {}", id, cart != null);
         return cart;
     }
@@ -74,6 +91,22 @@ public class CartServiceImpl implements CartService {
     public Cart getByCustomer(Customer customer) {
         logger.info("根據客戶取得購物車 - customerId: {}", customer.getId());
         Cart cart = cartDAO.findByCustomer(customer);
+        if (cart != null) {
+            // 強制初始化所有 lazy 關聯，確保在 Session 內完成
+            Hibernate.initialize(cart.getCartItems());
+            if (cart.getCartItems() != null) {
+                // 觸發每個 cartItem 的 product 初始化
+                for (CartItem item : cart.getCartItems()) {
+                    if (item.getProduct() != null) {
+                        Hibernate.initialize(item.getProduct());
+                        // 訪問 product 的基本屬性以確保完全初始化
+                        item.getProduct().getId();
+                        item.getProduct().getName();
+                        item.getProduct().getPrice();
+                    }
+                }
+            }
+        }
         logger.debug("購物車查詢結果 - customerId: {}, found: {}", customer.getId(), cart != null);
         return cart;
     }
@@ -104,6 +137,28 @@ public class CartServiceImpl implements CartService {
         if (cart == null) {
             logger.info("購物車不存在，建立新購物車 - customerId: {}", customer.getId());
             cart = createCart(customer);
+        } else {
+            // 強制初始化所有 lazy 關聯，確保在 Session 內完成
+            Hibernate.initialize(cart.getCartItems());
+            if (cart.getCartItems() != null && !cart.getCartItems().isEmpty()) {
+                // 觸發每個 cartItem 的 product 初始化
+                for (CartItem item : cart.getCartItems()) {
+                    if (item.getProduct() != null) {
+                        Hibernate.initialize(item.getProduct());
+                        // 訪問 product 的基本屬性以確保完全初始化
+                        // 必須在訪問 getPrice() 之前確保 product 完全初始化
+                        item.getProduct().getId();
+                        item.getProduct().getName();
+                        BigDecimal price = item.getProduct().getPrice(); // 明確調用以初始化
+                        // 確保 price 不為 null
+                        if (price == null) {
+                            logger.warn("商品價格為 null - productId: {}", item.getProduct().getId());
+                        }
+                    }
+                }
+                // 現在可以安全地計算，因為所有數據都已初始化
+                // 但不在此處調用，讓 Controller 通過專門的方法調用
+            }
         }
         return cart;
     }
@@ -343,6 +398,17 @@ public class CartServiceImpl implements CartService {
             return BigDecimal.ZERO;
         }
         
+        // 強制初始化所有 lazy 關聯
+        Hibernate.initialize(cart.getCartItems());
+        if (cart.getCartItems() != null) {
+            for (CartItem item : cart.getCartItems()) {
+                if (item.getProduct() != null) {
+                    Hibernate.initialize(item.getProduct());
+                    item.getProduct().getPrice(); // 確保 price 已初始化
+                }
+            }
+        }
+        
         return cart.getTotalAmount();
     }
 
@@ -360,6 +426,16 @@ public class CartServiceImpl implements CartService {
         if (cart == null) {
             logger.warn("購物車不存在 - cartId: {}", cartId);
             return 0;
+        }
+        
+        // 強制初始化所有 lazy 關聯
+        Hibernate.initialize(cart.getCartItems());
+        if (cart.getCartItems() != null) {
+            for (CartItem item : cart.getCartItems()) {
+                if (item.getProduct() != null) {
+                    Hibernate.initialize(item.getProduct());
+                }
+            }
         }
         
         return cart.getTotalItems();

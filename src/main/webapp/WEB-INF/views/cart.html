@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
 	<link rel="stylesheet" type="text/css" th:href="@{/resources/css/loginReg.css}">
+    <script th:src="@{/resources/js/notice.js}"></script>
     <title>購物車</title>
     <style>
         body {
@@ -78,20 +79,19 @@
     </style>
 </head>
 <body>
+    <!-- Notice 元件 -->
+    <div th:replace="~{fragments/notice :: notice}"></div>
+
     <div class="header">
         <h1>購物車</h1>
         <nav>
             <a th:href="@{/home}">首頁</a> |
-            <a th:href="@{/products}">商品列表</a> |
+            <a th:href="@{/shop}">商品列表</a> |
             <a th:href="@{/orders/my}">我的訂單</a>
         </nav>
     </div>
 
-    <!-- 訊息提示 -->
-    <div th:if="${success}" class="message success" th:text="${success}"></div>
-    <div th:if="${error}" class="message error" th:text="${error}"></div>
-
-    <div th:if="${cart != null && cart.cartItems != null && !cart.cartItems.isEmpty()}">
+    <div th:if="${cartItems != null && !cartItems.isEmpty()}">
         <table>
             <thead>
                 <tr>
@@ -103,12 +103,12 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="item : ${cart.cartItems}">
+                <tr th:each="item : ${cartItems}">
                     <td>
                         <strong th:text="${item.productName}">商品名稱</strong><br>
                         <small th:if="${item.product != null}" th:text="${'庫存: ' + item.product.stockQuantity}"></small>
                     </td>
-                    <td th:text="${#numbers.formatDecimal(item.price, 0, 2)} + ' 元'">價格</td>
+                    <td th:text="${#numbers.formatDecimal(item.unitPrice, 0, 2)} + ' 元'">價格</td>
                     <td>
                         <form th:action="@{'/cart/update/' + ${item.product.id}}" method="post" style="display:inline;">
                             <input type="number" name="quantity" th:value="${item.quantity}" 
@@ -127,12 +127,12 @@
             <tfoot>
                 <tr>
                     <td colspan="3" class="text-right"><strong>總計：</strong></td>
-                    <td><strong th:text="${#numbers.formatDecimal(cart.totalAmount, 0, 2)} + ' 元'">總金額</strong></td>
+                    <td><strong th:text="${totalAmount != null ? (#numbers.formatDecimal(totalAmount, 0, 2) + ' 元') : '0.00 元'}">總金額</strong></td>
                     <td></td>
                 </tr>
                 <tr>
                     <td colspan="3" class="text-right"><strong>商品總數：</strong></td>
-                    <td><strong th:text="${cart.totalItems} + ' 件'">總數量</strong></td>
+                    <td><strong th:text="${totalItems != null ? (totalItems + ' 件') : '0 件'}">總數量</strong></td>
                     <td></td>
                 </tr>
             </tfoot>
@@ -143,14 +143,14 @@
             <form th:action="@{/cart/clear}" method="post" style="display:inline;">
                 <button type="submit" class="btn btn-primary" onclick="return confirm('確定要清空購物車嗎？')">清空購物車</button>
             </form>
-            <a th:href="@{/products}" class="btn btn-primary">繼續購物</a>
+            <a th:href="@{/shop}" class="btn btn-primary">繼續購物</a>
         </div>
     </div>
 
-    <div th:if="${cart == null || cart.cartItems == null || cart.cartItems.isEmpty()}" class="empty-cart">
+    <div th:if="${cartItems == null || cartItems.isEmpty()}" class="empty-cart">
         <h2>購物車是空的</h2>
         <p>快去選購您喜歡的商品吧！</p>
-        <a th:href="@{/products}" class="btn btn-primary">前往商品列表</a>
+        <a th:href="@{/shop}" class="btn btn-primary">前往商品列表</a>
     </div>
 </body>
 </html>
