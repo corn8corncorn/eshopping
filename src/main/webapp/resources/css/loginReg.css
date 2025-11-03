@@ -26,13 +26,13 @@ body {
     text-align: center;
     width: 500px;
     min-height: 300px;
-    background-color: rgba(158, 154, 154, 0.5); 
+    background-color: rgba(158, 154, 154, 0.7); 
     border-radius: 10px;
     padding: 20px;
     position: relative;
 }
 .loginRegForm:hover {
-	background-color: rgba(158, 154, 154, 0.6);
+	background-color: rgba(158, 154, 154, 0.7);
 }
 
 /* Logo 容器 - 頁面中央上方（表單外面） */
@@ -188,7 +188,7 @@ body {
     justify-content: center;
     width: 60px;
     height: 60px;
-    background-color: rgba(158, 154, 154, 0.5);
+    background-color: rgba(158, 154, 154, 0.7);
     border-radius: 50%;
     text-decoration: none;
     transition: all 0.3s;
@@ -216,7 +216,7 @@ body {
 
 .header h1 {
     margin: 0;
-    color: #333;
+    color: #c19677;
 }
 
 .header-content {
