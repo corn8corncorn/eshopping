@@ -1,73 +1,64 @@
 ## Git Commit Message
 
 ### Type: fix
-### Scope: product-stock-quantity
-### Subject: 修復商品庫存數量欄位缺失及更新問題
+### Scope: test-files
+### Subject: 修正測試檔案中的編譯錯誤
 
 ### Body:
-添加商品庫存數量欄位到新增/編輯商品表單，並修復庫存數量無法正確更新到資料庫的問題。
+修正 CartModelTest、OrderDAOTest、OrderModelTest、OrderServiceTest 中的編譯錯誤，確保測試檔案符合實際模型類的 API 設計。
 
 **主要變更:**
 
-1. **表單欄位添加**
-   - **add-product.html**：
-     - 在價格和描述欄位之間添加「庫存數量」欄位
-     - 欄位屬性：`type="number"`, `min="0"`, `required`
-     - 綁定到 `stockQuantity` 欄位
-     - 包含錯誤訊息顯示區域
-   - **edit-product.html**：
-     - 同樣添加「庫存數量」欄位
-     - 確保編輯時可以修改庫存數量
+1. **CartModelTest.java**
+   - 移除 `CartItem.updateUnitPrice()` 方法調用
+     - 原因：`CartItem` 的單價是從 `Product` 動態獲取的，不需要手動更新
+     - 調整：測試商品價格變更後，驗證 `CartItem` 會自動從 `Product` 獲取新價格
+   - 移除 `CartItem.syncProductInfo()` 方法調用
+     - 原因：`CartItem` 沒有此方法，它會自動從 `Product` 獲取資訊
+     - 調整：改為測試動態獲取商品資訊的功能
+   - 移除 `Cart.calculateTotalAmount()` 方法調用
+     - 原因：`Cart.getTotalAmount()` 是動態計算的，不需要手動調用
+     - 調整：移除不必要的調用，直接驗證 `getTotalAmount()` 的結果
 
-2. **後端模型驗證**
-   - **Product.java**：
-     - 為 `stockQuantity` 添加 `@NotNull` 驗證註解
-     - 添加 `@Min(value = 0)` 驗證註解，確保不能為負數
-     - 添加 `@DecimalMin` 和 `@NotNull` 到 `price` 欄位（補充之前的驗證）
+2. **OrderDAOTest.java**
+   - 修正 `Order` 構造函數調用
+     - 舊：`new Order(customer, "收件人", "台北市信義區", Order.PaymentMethod.CREDIT_CARD)`
+     - 新：`new Order(customer, Order.PaymentMethod.CREDIT_CARD)`
+   - 添加 `OrderAddress` 的建立和設置
+     - 使用 `OrderAddress` 構造函數建立訂單地址
+     - 通過 `order.setOrderAddress()` 設置到訂單中
+   - 添加 `OrderAddress` 的 import 語句
 
-3. **Service 層修復**
-   - **ProductServiceImpl.java**：
-     - 在 `updateProduct()` 方法中添加 `stockQuantity` 的更新邏輯
-     - 添加詳細的調試日誌追蹤庫存數量更新過程
-     - 確保 `stockQuantity` 不為 null 時才更新
+3. **OrderModelTest.java**
+   - 修正 `Order` 構造函數調用：改為 2 參數構造函數
+   - 添加 `OrderAddress` 的建立和設置
+   - 添加 `OrderAddress` 的 import 語句
 
-4. **DAO 層優化**
-   - **ProductDAOImpl.java**：
-     - 將 `saveOrUpdate()` 改為使用 `merge()` 處理現有商品更新
-     - 對於新商品使用 `save()`，對於現有商品使用 `merge()`
-     - 添加 `flush()` 確保立即寫入資料庫
-     - 增強日誌記錄，包含 `stockQuantity` 資訊
-
-5. **Controller 優化**
-   - **ProductController.java**：
-     - 簡化日誌輸出，保留必要的追蹤資訊
-     - 確保驗證錯誤正確處理
+4. **OrderServiceTest.java**
+   - 修正所有 `Order` 構造函數調用：將 4 參數改為 2 參數
+   - 在所有建立訂單的地方添加 `OrderAddress` 的建立和設置
+   - 添加 `OrderAddress` 的 import 語句
 
 **問題修復:**
 
-- **問題**: 新增商品後，所有商品都是缺貨狀態
-  - **原因**: 表單缺少庫存數量欄位，預設值為 0，導致 `updateStatusBasedOnStock()` 自動設為 `OUT_OF_STOCK`
-  - **解決**: 添加庫存數量欄位，允許用戶輸入庫存數量
-
-- **問題**: 編輯商品數量後，沒有寫進資料庫
+- **問題**: 測試檔案無法編譯，出現多個編譯錯誤
   - **原因**: 
-    1. 表單缺少 `stockQuantity` 欄位
-    2. Service 層的 `updateProduct()` 方法沒有更新 `stockQuantity`
-    3. DAO 層使用 `saveOrUpdate()` 可能無法正確處理更新
+    1. 測試檔案使用了不存在的 `CartItem` 方法（`updateUnitPrice()`, `syncProductInfo()`）
+    2. 測試檔案使用了不存在的 `Cart` 方法（`calculateTotalAmount()`）
+    3. 測試檔案使用了錯誤的 `Order` 構造函數（4 參數而非 2 參數）
   - **解決**: 
-    1. 添加表單欄位
-    2. 在 Service 層添加 `stockQuantity` 更新邏輯
-    3. DAO 層改用 `merge()` 並添加 `flush()`
+    1. 移除不存在的方法調用，改為測試實際的動態獲取功能
+    2. 修正 `Order` 構造函數調用，並正確設置 `OrderAddress`
+    3. 確保所有測試符合實際模型類的 API 設計
 
 **技術細節:**
 
-- 使用 Hibernate `merge()` 確保實體狀態正確合併
-- 使用 `flush()` 強制立即同步到資料庫
-- 添加驗證註解確保資料完整性
-- 庫存數量更新時會自動觸發 `updateStatusBasedOnStock()` 更新商品狀態
+- `CartItem` 的 `getUnitPrice()` 和 `getProductName()` 是動態方法，從關聯的 `Product` 獲取資訊
+- `Cart.getTotalAmount()` 是動態計算方法，遍歷所有 `CartItem` 並累加小計
+- `Order` 構造函數只需要 `Customer` 和 `PaymentMethod` 兩個參數
+- `OrderAddress` 是獨立的實體類，需要單獨建立並設置到 `Order` 中
 
-**測試建議:**
-1. 測試新增商品時輸入庫存數量
-2. 測試編輯商品時修改庫存數量
-3. 驗證庫存數量為 0 時商品狀態自動變為缺貨
-4. 驗證庫存數量 > 0 時商品狀態自動變為上架中
+**驗證:**
+
+- 所有測試檔案已成功編譯，無語法錯誤
+- 使用 `mvn test-compile` 驗證編譯成功

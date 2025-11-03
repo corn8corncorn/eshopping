@@ -117,20 +117,17 @@ public class CartModelTest {
         assertEquals("商品1數量應為3", Integer.valueOf(3), item1.getQuantity());
         assertEquals("商品1小計應為300.00", new BigDecimal("300.00"), item1.getSubtotal());
         
-        // 測試單價更新
-        item1.updateUnitPrice(new BigDecimal("120.00"));
-        assertEquals("商品1單價應為120.00", new BigDecimal("120.00"), item1.getUnitPrice());
-        assertEquals("商品1小計應為360.00", new BigDecimal("360.00"), item1.getSubtotal());
-        
         // 測試商品資訊快照
         assertEquals("商品1名稱快照應正確", "測試商品1", item1.getProductName());
         
-        // 測試同步商品資訊
+        // 測試商品資訊動態獲取（CartItem 從 Product 動態獲取價格和名稱）
         product1.setPrice(new BigDecimal("150.00"));
         product1.setName("更新後的商品名稱");
-        item1.syncProductInfo();
-        assertEquals("商品1單價應同步為150.00", new BigDecimal("150.00"), item1.getUnitPrice());
-        assertEquals("商品1名稱應同步", "更新後的商品名稱", item1.getProductName());
+        // CartItem 的單價和名稱是從 Product 動態獲取的，所以會自動反映變更
+        assertEquals("商品1單價應動態獲取為150.00", new BigDecimal("150.00"), item1.getUnitPrice());
+        assertEquals("商品1名稱應動態獲取", "更新後的商品名稱", item1.getProductName());
+        // 小計會自動根據新的價格計算
+        assertEquals("商品1小計應為450.00", new BigDecimal("450.00"), item1.getSubtotal());
         
         System.out.println("CartItem 模型測試通過！");
         System.out.println("購物車項目: " + item1.getProductName() + " x" + item1.getQuantity() + " = " + item1.getSubtotal());
@@ -171,7 +168,7 @@ public class CartModelTest {
         
         // 更新商品數量
         item1.updateQuantity(5);  // 500.00
-        cart.calculateTotalAmount();
+        // Cart 的總金額是動態計算的，不需要手動調用 calculateTotalAmount()
         assertEquals("更新後購物車總金額應為680.00", new BigDecimal("680.00"), cart.getTotalAmount());
         assertEquals("更新後購物車總商品數量應為9", Integer.valueOf(9), cart.getTotalItems());
         

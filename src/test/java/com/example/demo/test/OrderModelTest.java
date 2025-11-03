@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import com.example.demo.model.Customer;
 import com.example.demo.model.Order;
+import com.example.demo.model.OrderAddress;
 import com.example.demo.model.OrderItem;
 import com.example.demo.model.Product;
 import com.example.demo.model.User;
@@ -36,7 +37,10 @@ public class OrderModelTest {
         Product product2 = new Product("測試商品2", "服飾", new BigDecimal("50.00"), 5);
         
         // 建立訂單
-        Order order = new Order(customer, "收件人", "台北市信義區", Order.PaymentMethod.CREDIT_CARD);
+        Order order = new Order(customer, Order.PaymentMethod.CREDIT_CARD);
+        // 設置訂單地址
+        OrderAddress orderAddress = new OrderAddress(order, "收件人", "0912345678", "台北市信義區");
+        order.setOrderAddress(orderAddress);
         
         // 驗證訂單基本屬性
         assertNotNull("訂單編號不應為空", order.getOrderNumber());
