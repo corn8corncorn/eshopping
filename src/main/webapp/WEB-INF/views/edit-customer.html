@@ -49,9 +49,16 @@
                 <div class="form-group">
                     <div class="input-row">
                         <label for="phone">電話：</label>
-                        <input id="phone" type="text" th:field="*{phone}" />
+                        <input id="phone" type="text" th:field="*{phone}" 
+                               pattern="^09\d{8}$" 
+                               placeholder="例如：0912345678"
+                               oninput="validatePhone(this)" />
                     </div>
                     <div class="error-message" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                    <div id="phoneError" class="error-message" style="display: none;"></div>
+                    <div style="font-size: 0.85em; color: #666; margin-top: 5px;">
+                        <span>※ 請輸入10碼手機號碼（09開頭 + 8碼數字，不能有空白或其他符號）</span>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -86,5 +93,47 @@
             </form>
         </div>
     </div>
+
+    <script>
+        function validatePhone(input) {
+            const phone = input.value.trim();
+            const phoneError = document.getElementById('phoneError');
+            const phonePattern = /^09\d{8}$/;
+            
+            // 如果欄位為空，清除錯誤訊息（因為電話是可選欄位）
+            if (phone === '') {
+                phoneError.style.display = 'none';
+                phoneError.textContent = '';
+                input.setCustomValidity('');
+                return true;
+            }
+            
+            // 驗證電話格式
+            if (!phonePattern.test(phone)) {
+                phoneError.style.display = 'block';
+                phoneError.textContent = '電話號碼必須以09開頭，後面接8碼數字，共10碼，不能有空白或其他符號';
+                input.setCustomValidity('電話號碼格式錯誤');
+                return false;
+            } else {
+                phoneError.style.display = 'none';
+                phoneError.textContent = '';
+                input.setCustomValidity('');
+                return true;
+            }
+        }
+        
+        // 表單提交時驗證
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const phoneInput = document.getElementById('phone');
+            
+            form.addEventListener('submit', function(e) {
+                if (!validatePhone(phoneInput)) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
+    </script>
 </body>
 </html>

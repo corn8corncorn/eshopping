@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "customers")
@@ -27,6 +28,7 @@ public class Customer {
     private String fullName;
 
     @Column(name = "phone", length = 20)
+    @Pattern(regexp = "^$|^09\\d{8}$", message = "電話號碼必須以09開頭，後面接8碼數字，共10碼，不能有空白或其他符號")
     private String phone;
 
     // 預設建構子

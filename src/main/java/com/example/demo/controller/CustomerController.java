@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.validation.BindingResult;
 
 import com.example.demo.model.Customer;
+
+import javax.validation.Valid;
 import com.example.demo.model.User;
 import com.example.demo.service.CustomerService;
 import com.example.demo.service.UserService;
@@ -87,10 +90,17 @@ public class CustomerController {
      * @return 更新成功後重定向到客戶資料頁面
      */
     @PostMapping("/update")
-    public String updateCustomer(@ModelAttribute("customer") Customer customer,
+    public String updateCustomer(@Valid @ModelAttribute("customer") Customer customer,
+                                BindingResult bindingResult,
                                 RedirectAttributes redirectAttributes) {
         try {
             logger.info("更新客戶資料 - customerId: {}", customer.getId());
+            
+            // 如果表單驗證失敗，返回編輯頁面並顯示錯誤
+            if (bindingResult.hasErrors()) {
+                logger.warn("客戶資料驗證失敗 - customerId: {}, errors: {}", customer.getId(), bindingResult.getAllErrors());
+                return "edit-customer";
+            }
             
             // 如果 password 為空，設為 null，避免更新密碼
             if (customer.getUser() != null && 
