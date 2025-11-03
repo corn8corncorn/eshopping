@@ -280,6 +280,51 @@
             border-radius: 5px;
             margin-bottom: 20px;
         }
+        
+        .header-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header-gradient h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .header-gradient p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-primary {
+            background: #667eea;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+        }
     </style>
 </head>
 <body>
@@ -290,10 +335,10 @@
         </div>
         
         <ul class="nav-tabs">
-            <li><a href="/account">總覽</a></li>
-            <li><a href="/orders/my">我的訂單</a></li>
-            <li><a href="/customers/profile">個人資料</a></li>
-            <li><a href="/customers/edit">編輯資料</a></li>
+            <li><a th:href="@{/account}">總覽</a></li>
+            <li><a th:href="@{/orders/my}">我的訂單</a></li>
+            <li><a th:href="@{/customers/profile}">個人資料</a></li>
+            <li><a th:href="@{/customers/edit}">編輯資料</a></li>
         </ul>
         
         <div class="content">
@@ -302,77 +347,78 @@
             <div th:if="${customer != null}">
                 <!-- 歡迎區塊 -->
                 <div class="welcome-section">
-                    <div class="avatar" th:text="${customer.fullName != null and !customer.fullName.isEmpty() ? customer.fullName.substring(0, 1) : user.username.substring(0, 1)}"></div>
+                    <div class="avatar" th:text="${(customer.fullName != null && !customer.fullName.isEmpty()) ? customer.fullName.substring(0, 1) : (user.username != null ? user.username.substring(0, 1) : '?')}"></div>
                     <div class="user-info">
-                        <h2 th:text="'你好，' + ${customer.fullName != null and !customer.fullName.isEmpty() ? customer.fullName : user.username}"></h2>
-                        <p th:text="'帳號：' + ${user.username}"></p>
+                        <h2 th:text="'你好，' + ${(customer.fullName != null && !customer.fullName.isEmpty()) ? customer.fullName : (user.username != null ? user.username : '用戶')}"></h2>
+                        <p th:text="'帳號：' + ${user.username != null ? user.username : ''}"></p>
                     </div>
                 </div>
                 
                 <!-- 統計資料 -->
                 <div class="stats">
-                    <div class="stat-card" onclick="location.href='/orders/my'">
+                    <a th:href="@{/orders/my}" class="stat-card" style="text-decoration: none; color: inherit;">
                         <h3>總訂單數</h3>
                         <div class="number" th:text="${totalOrders}">0</div>
                         <div class="description">查看所有訂單</div>
-                    </div>
-                    <div class="stat-card" onclick="location.href='/orders/my?status=PENDING'">
+                    </a>
+                    <a th:href="@{/orders/my(status='PENDING')}" class="stat-card" style="text-decoration: none; color: inherit;">
                         <h3>待處理訂單</h3>
                         <div class="number" th:text="${pendingOrders}">0</div>
                         <div class="description">需要處理的訂單</div>
-                    </div>
-                    <div class="stat-card" onclick="location.href='/cart'">
+                    </a>
+                    <a th:href="@{/cart}" class="stat-card" style="text-decoration: none; color: inherit;">
                         <h3>購物車</h3>
                         <div class="number">📦</div>
                         <div class="description">查看購物車內容</div>
-                    </div>
+                    </a>
                 </div>
                 
                 <!-- 最近的訂單 -->
                 <div class="recent-orders">
                     <h2>最近的訂單</h2>
                     
-                    <div class="order-list" th:if="${recentOrders != null and !recentOrders.isEmpty()}">
+                    <div class="order-list" th:if="${recentOrders != null && !recentOrders.isEmpty()}">
                         <div class="order-item" th:each="order : ${recentOrders}">
                             <div class="order-info">
-                                <h4 th:text="'訂單編號：' + ${order.orderNumber}"></h4>
-                                <p th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm')}"></p>
+                                <h4 th:text="'訂單編號：' + ${order.orderNumber != null ? order.orderNumber : 'N/A'}"></h4>
+                                <p th:text="${order.createdAt != null ? #temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm') : 'N/A'}"></p>
                             </div>
-                            <div class="order-status" 
-                                 th:classappend="${order.status.name() == 'PENDING' ? 'status-pending' : ''}"
-                                 th:classappend="${order.status.name() == 'CONFIRMED' ? 'status-confirmed' : ''}"
-                                 th:classappend="${order.status.name() == 'PROCESSING' ? 'status-processing' : ''}"
-                                 th:classappend="${order.status.name() == 'SHIPPED' ? 'status-shipped' : ''}"
-                                 th:classappend="${order.status.name() == 'DELIVERED' ? 'status-delivered' : ''}"
-                                 th:text="${order.status.description}"></div>
-                            <div class="order-amount" th:text="'$' + ${#numbers.formatDecimal(order.finalAmount, 0, 2)}"></div>
+                            <div th:class="${'order-status ' + (order.status != null ? (
+                                     order.status.name() == 'PENDING' ? 'status-pending' :
+                                     order.status.name() == 'CONFIRMED' ? 'status-confirmed' :
+                                     order.status.name() == 'PROCESSING' ? 'status-processing' :
+                                     order.status.name() == 'SHIPPED' ? 'status-shipped' :
+                                     order.status.name() == 'DELIVERED' ? 'status-delivered' : ''
+                                 ) : '')}"
+                                 th:text="${order.status != null ? order.status.description : 'N/A'}"></div>
+                            <div class="order-amount" th:text="'$' + ${order.finalAmount != null ? #numbers.formatDecimal(order.finalAmount, 0, 2) : '0.00'}"></div>
                             <div class="order-actions">
-                                <a th:href="@{'/orders/' + ${order.id}}" class="btn btn-primary">查看詳情</a>
+                                <a th:href="@{'/orders/' + ${order.id}}" th:if="${order.id != null}" class="btn btn-primary">查看詳情</a>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="no-orders" th:if="${recentOrders == null or recentOrders.isEmpty()}">
+                    <div class="no-orders" th:if="${recentOrders == null || recentOrders.isEmpty()}">
                         <p>您還沒有任何訂單</p>
-                        <a href="/shop" class="btn btn-primary">立即購物</a>
+                        <a th:href="@{/shop}" class="btn btn-primary">立即購物</a>
                     </div>
                 </div>
                 
                 <!-- 快速操作 -->
                 <div class="quick-actions">
-                    <a href="/shop" class="action-card">
+                    <a th:href="@{/shop}" class="action-card">
                         <h3>🛍️ 購物</h3>
                         <p>瀏覽商品</p>
                     </a>
-                    <a href="/orders/my" class="action-card">
+                    <a th:href="@{/orders/my}" class="action-card">
                         <h3>📋 訂單</h3>
                         <p>查看所有訂單</p>
                     </a>
-                    <a href="/cart" class="action-card">
+                    <a th:href="@{/cart}" class="action-card">
                         <h3>🛒 購物車</h3>
                         <p>管理購物車</p>
                     </a>
-                    <a href="/customers/edit" class="action-card">
+                    <a th:href="@{/customers/edit}" class="action-card">
                         <h3>⚙️ 設定</h3>
                         <p>編輯個人資料</p>
                     </a>
@@ -388,7 +434,7 @@
                 </div>
                 <div class="no-orders">
                     <p>尚未建立客戶資料，請先完善您的個人資料</p>
-                    <a href="/customers/edit" class="btn btn-primary">建立個人資料</a>
+                    <a th:href="@{/customers/edit}" class="btn btn-primary">建立個人資料</a>
                 </div>
             </div>
         </div>

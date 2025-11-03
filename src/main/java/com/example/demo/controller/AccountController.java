@@ -88,27 +88,39 @@ public class AccountController {
 
             // 取得最近的訂單（最多 5 筆）
             List<Order> recentOrders = null;
-            int totalOrders = 0;
+            long totalOrders = 0;
             long pendingOrders = 0;
             
             if (customer != null) {
                 try {
-                    recentOrders = orderService.getByCustomer(customer);
+                    // 獲取所有訂單
+                    List<Order> allOrders = orderService.getByCustomer(customer);
                     
-                    if (recentOrders != null && recentOrders.size() > 5) {
-                        recentOrders = recentOrders.subList(0, 5);
-                    }
-
-                    // 計算統計資料
-                    if (recentOrders != null) {
-                        totalOrders = recentOrders.size();
-                        pendingOrders = recentOrders.stream()
+                    // 計算統計資料（使用所有訂單）
+                    if (allOrders != null) {
+                        totalOrders = allOrders.size();
+                        pendingOrders = allOrders.stream()
                                 .filter(order -> order.getStatus() == Order.OrderStatus.PENDING)
                                 .count();
+                        
+                        // 取得最近的 5 筆訂單（按建立時間降序排序）
+                        recentOrders = allOrders.stream()
+                                .filter(order -> order.getCreatedAt() != null)
+                                .sorted((o1, o2) -> {
+                                    if (o1.getCreatedAt() == null) return 1;
+                                    if (o2.getCreatedAt() == null) return -1;
+                                    return o2.getCreatedAt().compareTo(o1.getCreatedAt());
+                                })
+                                .limit(5)
+                                .collect(java.util.stream.Collectors.toList());
+                    } else {
+                        recentOrders = new java.util.ArrayList<>();
                     }
                 } catch (Exception e) {
                     logger.error("取得訂單資料時發生錯誤", e);
-                    recentOrders = null;
+                    recentOrders = new java.util.ArrayList<>();
+                    totalOrders = 0;
+                    pendingOrders = 0;
                 }
             }
 

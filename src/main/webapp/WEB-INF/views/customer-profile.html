@@ -3,47 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" type="text/css" th:href="@{/resources/css/loginReg.css}">
-    <title>客戶資料</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/resources/css/loginReg.css}">
+    <script th:src="@{/resources/js/notice.js}"></script>
+    <title>個人資料 - 電子商城</title>
+    <style>
+        .product-list-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .product-card {
+            background-color: rgba(158, 154, 154, 0.7);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            transition: background-color 0.3s;
+            width: 100%;
+            min-width: 800px;
+        }
+
+        .product-card:hover {
+            background-color: rgba(158, 154, 154, 0.7);
+        }
+
+        .product-info {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .product-info-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .product-info-label {
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .product-info-value {
+            color: #fbd5ba;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>我的客戶資料</h1>
-    
-    <div>
-        <a th:href="@{/home}">返回首頁</a>
-        <a th:href="@{/customers/edit}">編輯資料</a>
+    <!-- Notice 元件 -->
+    <div th:replace="~{fragments/notice :: notice}"></div>
+
+    <!-- Logo - 頁面中央上方 -->
+    <div class="page-logo-container">
+        <a th:href="@{/home}">
+            <img th:src="@{/resources/images/logo.png}" alt="logo" class="page-logo">
+        </a>
     </div>
-    
-    <div th:if="${customer}">
-        <h2>個人資訊</h2>
-        
-        <table border="1">
-            <tr>
-                <th>項目</th>
-                <th>內容</th>
-            </tr>
-            <tr>
-                <td>用戶名稱</td>
-                <td th:text="${customer.user.username}"></td>
-            </tr>
-            <tr>
-                <td>姓名</td>
-                <td th:text="${customer.fullName}"></td>
-            </tr>
-            <tr>
-                <td>電話</td>
-                <td th:text="${customer.phone}"></td>
-            </tr>
-            <tr>
-                <td>電子郵件</td>
-                <td th:text="${customer.user.email}"></td>
-            </tr>
-        </table>
-    </div>
-    
-    <div th:unless="${customer}">
-        <p>尚未建立客戶資料。</p>
-        <a th:href="@{/customers/edit}">建立客戶資料</a>
+
+    <!-- 個人資料容器 -->
+    <div style="position: relative; margin-top: 350px; width: 100%; display: flex; justify-content: center;">
+        <div class="product-list-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: white; margin: 0;">我的客戶資料</h2>
+                <div>
+                    <a th:href="@{/customers/edit}" style="text-decoration: none;">
+                        <button class="btn btn-primary">編輯資料</button>
+                    </a>
+                    <a th:href="@{/home}" style="text-decoration: none; margin-left: 10px;">
+                        <button class="btn btn-primary">返回首頁</button>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 客戶資料卡片 -->
+            <div th:if="${customer}">
+                <div class="product-card">
+                    <div class="product-info">
+                        <div class="product-info-item">
+                            <span class="product-info-label">用戶名稱：</span>
+                            <span class="product-info-value" th:text="${customer.user != null ? customer.user.username : 'N/A'}"></span>
+                        </div>
+                        <div class="product-info-item">
+                            <span class="product-info-label">姓名：</span>
+                            <span class="product-info-value" th:text="${customer.fullName != null ? customer.fullName : '未設定'}"></span>
+                        </div>
+                        <div class="product-info-item">
+                            <span class="product-info-label">電話：</span>
+                            <span class="product-info-value" th:text="${customer.phone != null ? customer.phone : '未設定'}"></span>
+                        </div>
+                        <div class="product-info-item">
+                            <span class="product-info-label">電子郵件：</span>
+                            <span class="product-info-value" th:text="${customer.user != null ? customer.user.email : 'N/A'}"></span>
+                        </div>
+                    </div>
+                    <div class="product-actions">
+                        <a th:href="@{/customers/edit}" style="text-decoration: none;">
+                            <button class="btn btn-primary" type="button">編輯</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 無資料訊息 -->
+            <div th:unless="${customer}" class="product-card">
+                <div style="color: white; text-align: center; width: 100%;">
+                    <p style="margin: 0 0 20px 0;">尚未建立客戶資料</p>
+                    <a th:href="@{/customers/edit}" style="text-decoration: none;">
+                        <button class="btn btn-primary">建立客戶資料</button>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>

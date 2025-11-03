@@ -3,31 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" type="text/css" th:href="@{/resources/css/loginReg.css}">
-    <title>編輯客戶資料</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/resources/css/loginReg.css}">
+    <script th:src="@{/resources/js/notice.js}"></script>
+    <title>編輯客戶資料 - 電子商城</title>
 </head>
 <body>
-    <h1>編輯客戶資料</h1>
-    
-    <div>
-        <a th:href="@{/home}">返回首頁</a>
-        <a th:href="@{/customers/profile}">查看資料</a>
+    <!-- Notice 元件 -->
+    <div th:replace="~{fragments/notice :: notice}"></div>
+
+    <!-- Logo - 頁面中央上方 -->
+    <div class="page-logo-container">
+        <a th:href="@{/home}">
+            <img th:src="@{/resources/images/logo.png}" alt="logo" class="page-logo">
+        </a>
     </div>
-    
-    <form th:action="@{/customers/update}" method="post" th:object="${customer}">
-        <input type="hidden" th:field="*{id}">
-        
-        <div>
-            <label for="fullName">姓名：</label>
-            <input type="text" id="fullName" th:field="*{fullName}" required>
+
+    <!-- 編輯客戶資料表單 -->
+    <div class="login-row">
+        <div class="loginRegForm">
+            <div class="home-icon-top-right">
+                <a th:href="@{/home}" class="home-icon" title="返回首頁">
+                    <span>🏠</span>
+                </a>
+            </div>
+            <h2>編輯客戶資料</h2>
+            <form th:action="@{/customers/update}" method="post" th:object="${customer}">
+                <input type="hidden" th:field="*{id}">
+                
+                <div class="form-group">
+                    <div class="input-row">
+                        <label for="fullName">姓名：</label>
+                        <input id="fullName" type="text" th:field="*{fullName}" required />
+                    </div>
+                    <div class="error-message" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-row">
+                        <label for="phone">電話：</label>
+                        <input id="phone" type="tel" th:field="*{phone}" />
+                    </div>
+                    <div class="error-message" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-row">
+                        <label></label>
+                        <div style="display: flex; justify-content: space-between; width: 200px;">
+                            <button type="submit" class="btn btn-primary">更新資料</button>
+                            <a th:href="@{/customers/profile}">
+                                <button type="button" class="btn btn-primary">取消</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
-        
-        <div>
-            <label for="phone">電話：</label>
-            <input type="tel" id="phone" th:field="*{phone}">
-        </div>
-        
-        <button type="submit" class="btn btn-primary">更新資料</button>
-    </form>
+    </div>
 </body>
 </html>
