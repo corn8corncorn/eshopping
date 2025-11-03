@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
 	<link rel="stylesheet" type="text/css" th:href="@{/resources/css/loginReg.css}">
     <script th:src="@{/resources/js/notice.js}"></script>
+    <script th:src="@{/resources/js/confirm-modal.js}"></script>
     <title>購物車</title>
     <style>
         body {
@@ -118,8 +119,16 @@
                     </td>
                     <td th:text="${#numbers.formatDecimal(item.subtotal, 0, 2)} + ' 元'">小計</td>
                     <td>
-                        <form th:action="@{'/cart/remove/' + ${item.product.id}}" method="post" style="display:inline;">
-                            <button type="submit" class="btn btn-primary" onclick="return confirm('確定要移除此商品嗎？')">移除</button>
+                        <button type="button" 
+                                class="btn btn-primary" 
+                                th:data-delete-form="'removeForm-' + ${item.product.id}"
+                                th:data-delete-message="'確定要移除此商品「' + ${item.productName} + '」嗎？'">
+                            移除
+                        </button>
+                        <form th:id="'removeForm-' + ${item.product.id}" 
+                              th:action="@{'/cart/remove/' + ${item.product.id}}" 
+                              method="post" 
+                              style="display:none;">
                         </form>
                     </td>
                 </tr>
@@ -152,6 +161,9 @@
         <p>快去選購您喜歡的商品吧！</p>
         <a th:href="@{/shop}" class="btn btn-primary">前往商品列表</a>
     </div>
+
+    <!-- 確認刪除 Modal -->
+    <div th:replace="~{fragments/confirm-modal :: confirm-delete-modal}"></div>
 </body>
 </html>
 
