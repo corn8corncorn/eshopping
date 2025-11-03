@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.model.Customer;
 import com.example.demo.model.User;
@@ -79,17 +80,37 @@ public class CustomerController {
 
     /**
      * 更新客戶資料
-     * 保存修改後的客戶資訊
+     * 保存修改後的客戶資訊，包括 Customer 和 User 的欄位
      * 
-     * @param customer 包含更新後客戶資料的物件
-     * @return 更新成功後重定向到首頁
+     * @param customer 包含更新後客戶資料的物件（包含 User 資訊）
+     * @param redirectAttributes 用於傳遞重定向訊息
+     * @return 更新成功後重定向到客戶資料頁面
      */
     @PostMapping("/update")
-    public String updateCustomer(@ModelAttribute("customer") Customer customer) {
-        logger.info("更新客戶資料 - customerId: {}", customer.getId());
-        customerService.update(customer.getId(), customer);
-        logger.info("客戶資料更新成功 - customerId: {}", customer.getId());
-        return "redirect:/home";
+    public String updateCustomer(@ModelAttribute("customer") Customer customer,
+                                RedirectAttributes redirectAttributes) {
+        try {
+            logger.info("更新客戶資料 - customerId: {}", customer.getId());
+            
+            // 如果 password 為空，設為 null，避免更新密碼
+            if (customer.getUser() != null && 
+                (customer.getUser().getPassword() == null || customer.getUser().getPassword().trim().isEmpty())) {
+                customer.getUser().setPassword(null);
+            }
+            
+            customerService.update(customer.getId(), customer);
+            logger.info("客戶資料更新成功 - customerId: {}", customer.getId());
+            redirectAttributes.addFlashAttribute("success", "客戶資料更新成功");
+            return "redirect:/customers/profile";
+        } catch (IllegalArgumentException e) {
+            logger.error("更新客戶資料失敗 - customerId: {}, error: {}", customer.getId(), e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "更新失敗：" + e.getMessage());
+            return "redirect:/customers/edit";
+        } catch (Exception e) {
+            logger.error("更新客戶資料時發生錯誤 - customerId: {}", customer.getId(), e);
+            redirectAttributes.addFlashAttribute("error", "更新客戶資料時發生錯誤，請稍後再試");
+            return "redirect:/customers/edit";
+        }
     }
 
     /**

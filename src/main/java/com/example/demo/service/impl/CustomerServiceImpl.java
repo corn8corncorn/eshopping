@@ -12,6 +12,7 @@ import com.example.demo.dao.CustomerDAO;
 import com.example.demo.model.Customer;
 import com.example.demo.model.User;
 import com.example.demo.service.CustomerService;
+import com.example.demo.service.UserService;
 
 /**
  * 客戶服務層實作類別
@@ -25,6 +26,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private CustomerDAO customerDAO;
+
+    @Autowired
+    private UserService userService;
 
     /**
      * 取得所有客戶
@@ -97,10 +101,27 @@ public class CustomerServiceImpl implements CustomerService {
             existingCustomer.setFullName(customer.getFullName());
             existingCustomer.setPhone(customer.getPhone());
             
+            // 如果 Customer 有關聯的 User，且 User 有更新，則一併更新 User（只更新 password，email 不可修改）
+            if (customer.getUser() != null && existingCustomer.getUser() != null) {
+                User userToUpdate = customer.getUser();
+                User existingUser = existingCustomer.getUser();
+                
+                // 更新 password（只有在提供新密碼時才更新）
+                if (userToUpdate.getPassword() != null && !userToUpdate.getPassword().isEmpty()) {
+                    String encodedPassword = userService.encodePassword(userToUpdate.getPassword());
+                    existingUser.setPassword(encodedPassword);
+                    logger.debug("更新用戶密碼 - userId: {}", existingUser.getId());
+                    
+                    // 保存更新後的 User
+                    userService.saveUser(existingUser);
+                }
+            }
+            
             customerDAO.save(existingCustomer);
             logger.info("客戶更新成功 - customerId: {}", id);
         } else {
             logger.warn("客戶不存在 - customerId: {}", id);
+            throw new IllegalArgumentException("客戶不存在");
         }
     }
 
