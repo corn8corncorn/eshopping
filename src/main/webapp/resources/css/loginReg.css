@@ -216,7 +216,7 @@ body {
 
 .header h1 {
     margin: 0;
-    color: #c19677;
+    color: #c99773;
 }
 
 .header-content {
@@ -236,7 +236,7 @@ body {
 
 .nav a {
     text-decoration: none;
-    color: #c19677;
+    color: #c99773;
     padding: 5px 10px;
 }
 
@@ -249,14 +249,14 @@ body {
     position: relative;
     display: inline-block;
     text-decoration: none;
-    color: #c19677;
+    color: #c99773;
     padding: 8px 12px;
-    border: 1px solid #c19677;
+    border: 1px solid #c99773;
     border-radius: 4px;
 }
 
 .cart-icon:hover {
-    background-color: #c19677;
+    background-color: #c99773;
     color: white;
 }
 
@@ -329,7 +329,7 @@ body {
 
 /* 主要按鈕樣式 - 統一所有按鈕使用此樣式 */
 .btn-primary {
-    background-color: #c19677;
+    background-color: #c99773;
     color: white;
 }
 

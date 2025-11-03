@@ -14,7 +14,7 @@
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
-            color: #c19677;
+            color: #c99773;
             /* 背景由 loginReg.css 統一管理 */
         }
         .container {
@@ -28,6 +28,7 @@
             border-radius: 8px;
             margin-bottom: 30px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            color: #ffff;
         }
         .search-bar {
             margin: 20px 0;
@@ -46,7 +47,7 @@
         }
         .search-bar button {
             padding: 10px 20px;
-            background-color: #c19677;
+            background-color: #c99773;
             color: white;
             border: none;
             border-radius: 4px;
@@ -63,11 +64,11 @@
             background-color: #f0f0f0;
             border-radius: 20px;
             text-decoration: none;
-            color: #c19677;
+            color: #c99773;
             transition: background-color 0.3s;
         }
         .category-tag:hover {
-            background-color: #c19677;
+            background-color: #c99773;
             color: white;
         }
         .product-section {
@@ -81,8 +82,8 @@
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 20px;
-            color: #c19677;
-            border-bottom: 2px solid #c19677;
+            color: #c99773;
+            border-bottom: 2px solid #c99773;
             padding-bottom: 10px;
         }
         .products-grid {
@@ -122,7 +123,7 @@
         .product-name {
             font-weight: bold;
             margin-bottom: 8px;
-            color: #c19677;
+            color: #c99773;
         }
         .product-price {
             color: #28a745;
@@ -134,7 +135,7 @@
             margin-top: 20px;
         }
         .more-link a {
-            color: #c19677;
+            color: #c99773;
             text-decoration: none;
             font-weight: bold;
         }
@@ -163,7 +164,7 @@
                           th:text="${cartItemCount}">0</span>
                 </a>
                 <a th:href="@{/orders/my}">我的訂單</a>
-                <a th:href="@{/account}" style="font-weight: bold; color: #c19677;">會員中心</a>
+                <a th:href="@{/account}" style="font-weight: bold; color: #c99773;">會員中心</a>
                 <span th:if="${isLoggedIn}">
                     <span th:text="${'歡迎，' + username}">歡迎</span>
                     <form th:action="@{/logout}" method="post" style="display: inline;">
