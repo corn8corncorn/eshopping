@@ -140,7 +140,7 @@
                     </td>
                     <td th:text="${order.paymentMethod != null ? order.paymentMethod.description : 'N/A'}">付款方式</td>
                     <td class="text-right">
-                        <strong th:text="${#numbers.formatDecimal(order.finalAmount, 0, 2)} + ' 元'">金額</strong>
+                        <strong th:text="${'NT$' + #numbers.formatDecimal(order.finalAmount, 0, 0)}">金額</strong>
                     </td>
                     <td>
                         <a th:href="@{'/orders/' + ${order.id}}" class="btn btn-primary">查看詳情</a>

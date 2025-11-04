@@ -241,7 +241,7 @@
                             <a th:href="@{'/shop/product/' + ${product.id}}" th:text="${product.name}">商品名稱</a>
                         </div>
                         <div class="product-type" th:text="${'分類: ' + product.type}">分類</div>
-                        <div class="product-price" th:text="${#numbers.formatDecimal(product.price, 0, 0) + ' 元'}">價格</div>
+                        <div class="product-price" th:text="${'NT$' + #numbers.formatDecimal(product.price, 0, 0)}">價格</div>
                         <div class="product-stock">
                             <span th:if="${product.stockQuantity > 0 && product.stockQuantity > product.minStockThreshold}" 
                                   class="stock-available"

@@ -391,7 +391,7 @@
                                      order.status.name() == 'DELIVERED' ? 'status-delivered' : ''
                                  ) : '')}"
                                  th:text="${order.status != null ? order.status.description : 'N/A'}"></div>
-                            <div class="order-amount" th:text="'$' + ${order.finalAmount != null ? #numbers.formatDecimal(order.finalAmount, 0, 2) : '0.00'}"></div>
+                            <div class="order-amount" th:text="'NT$' + ${order.finalAmount != null ? #numbers.formatDecimal(order.finalAmount, 0, 0) : '0'}"></div>
                             <div class="order-actions">
                                 <a th:href="@{'/orders/' + ${order.id}}" th:if="${order.id != null}" class="btn btn-primary">查看詳情</a>
                             </div>

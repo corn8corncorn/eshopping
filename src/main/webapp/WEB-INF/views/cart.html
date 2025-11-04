@@ -113,10 +113,11 @@
         .cart-summary-label {
             min-width: 80px;
             text-align: right;
+            color: white;
         }
 
         .cart-summary-value {
-            color: #fbd5ba;
+            color: white;
             font-size: 1.2em;
         }
 
@@ -191,26 +192,10 @@
                 </div>
             </div>
 
-            <!-- 購物車摘要 -->
-            <div th:if="${cartItems != null && !cartItems.isEmpty()}" class="cart-summary-card">
-                <div class="cart-summary-item">
-                    <span class="cart-summary-label">商品總數：</span>
-                    <span class="cart-summary-value" th:text="${totalItems != null ? (totalItems + ' 件') : '0 件'}">0 件</span>
-                </div>
-                <div class="cart-summary-item">
-                    <span class="cart-summary-label">總金額：</span>
-                    <span class="cart-summary-value" th:text="${totalAmount != null ? ('$' + #numbers.formatDecimal(totalAmount, 0, 'COMMA', 0, 'POINT')) : '$0'}">$0</span>
-                </div>
-            </div>
-
             <!-- 購物車項目列表 -->
             <div th:if="${cartItems != null && !cartItems.isEmpty()}">
                 <div th:each="item : ${cartItems}" class="cart-item-card">
                     <div class="cart-item-info">
-                        <div class="cart-item-info-item" th:if="${item.product != null}">
-                            <span class="cart-item-info-label">ID：</span>
-                            <span class="cart-item-info-value" th:text="${item.product.id}"></span>
-                        </div>
                         <div class="cart-item-info-item">
                             <span class="cart-item-info-label">名稱：</span>
                             <span class="cart-item-info-value" th:text="${item.productName}"></span>
@@ -221,7 +206,7 @@
                         </div>
                         <div class="cart-item-info-item">
                             <span class="cart-item-info-label">單價：</span>
-                            <span class="cart-item-info-value" th:text="${'$' + #numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT')}"></span>
+                            <span class="cart-item-info-value" th:text="${'NT$' + #numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT')}"></span>
                         </div>
                         <div class="cart-item-info-item">
                             <span class="cart-item-info-label">數量：</span>
@@ -236,7 +221,7 @@
                         </div>
                         <div class="cart-item-info-item">
                             <span class="cart-item-info-label">小計：</span>
-                            <span class="cart-item-info-value" th:text="${'$' + #numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')}"></span>
+                            <span class="cart-item-info-value" th:text="${'NT$' + #numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')}"></span>
                         </div>
                         <div class="cart-item-info-item" th:if="${item.product != null && item.product.stockQuantity != null}">
                             <span class="cart-item-info-label">庫存：</span>
@@ -275,15 +260,21 @@
 
             <!-- 操作按鈕 -->
             <div th:if="${cartItems != null && !cartItems.isEmpty()}" class="actions-container">
-                <div>
+                <div></div>
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div class="cart-summary-item">
+                        <span class="cart-summary-label">商品總數：</span>
+                        <span class="cart-summary-value" th:text="${totalItems != null ? (totalItems + ' 件') : '0 件'}">0 件</span>
+                    </div>
+                    <div class="cart-summary-item">
+                        <span class="cart-summary-label">總金額：</span>
+                        <span class="cart-summary-value" th:text="${totalAmount != null ? ('NT$' + #numbers.formatDecimal(totalAmount, 0, 'COMMA', 0, 'POINT')) : 'NT$0'}">NT$0</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px;">
                     <a th:href="@{/shop}" style="text-decoration: none;">
                         <button class="btn btn-primary" type="button">繼續購物</button>
                     </a>
-                </div>
-                <div style="display: flex; gap: 10px;">
-                    <form th:action="@{/cart/clear}" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-primary" onclick="return confirm('確定要清空購物車嗎？')">清空購物車</button>
-                    </form>
                     <a th:href="@{/orders/checkout}" style="text-decoration: none;">
                         <button class="btn btn-primary" type="button">前往結帳</button>
                     </a>

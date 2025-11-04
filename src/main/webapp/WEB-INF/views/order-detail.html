@@ -245,9 +245,9 @@
                     <td>
                         <strong th:text="${item.productName}">商品名稱</strong>
                     </td>
-                    <td th:text="${#numbers.formatDecimal(item.price, 0, 2)} + ' 元'">單價</td>
+                    <td th:text="${'NT$' + #numbers.formatDecimal(item.price, 0, 0)}">單價</td>
                     <td th:text="${item.quantity}">數量</td>
-                    <td class="text-right" th:text="${#numbers.formatDecimal(item.subtotal, 0, 2)} + ' 元'">小計</td>
+                    <td class="text-right" th:text="${'NT$' + #numbers.formatDecimal(item.subtotal, 0, 0)}">小計</td>
                 </tr>
             </tbody>
         </table>
@@ -256,19 +256,19 @@
         <div class="order-summary">
             <div class="summary-row">
                 <span>商品總計：</span>
-                <span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 2)} + ' 元'">商品總計</span>
+                <span th:text="${'NT$' + #numbers.formatDecimal(order.totalAmount, 0, 0)}">商品總計</span>
             </div>
             <div class="summary-row" th:if="${order.shippingFee != null && order.shippingFee.compareTo(java.math.BigDecimal.ZERO) > 0}">
                 <span>運費：</span>
-                <span th:text="${#numbers.formatDecimal(order.shippingFee, 0, 2)} + ' 元'">運費</span>
+                <span th:text="${'NT$' + #numbers.formatDecimal(order.shippingFee, 0, 0)}">運費</span>
             </div>
             <div class="summary-row" th:if="${order.discountAmount != null && order.discountAmount.compareTo(java.math.BigDecimal.ZERO) > 0}">
                 <span>折扣：</span>
-                <span th:text="${'-' + #numbers.formatDecimal(order.discountAmount, 0, 2)} + ' 元'">折扣</span>
+                <span th:text="${'-NT$' + #numbers.formatDecimal(order.discountAmount, 0, 0)}">折扣</span>
             </div>
             <div class="summary-row">
                 <span>應付總額：</span>
-                <span th:text="${#numbers.formatDecimal(order.finalAmount, 0, 2)} + ' 元'">應付總額</span>
+                <span th:text="${'NT$' + #numbers.formatDecimal(order.finalAmount, 0, 0)}">應付總額</span>
             </div>
         </div>
 

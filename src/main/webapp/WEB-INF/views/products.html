@@ -160,7 +160,7 @@
                         </div>
                         <div class="product-info-item">
                             <span class="product-info-label">價格：</span>
-                            <span class="product-info-value" th:text="${'$' + #numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')}"></span>
+                            <span class="product-info-value" th:text="${'NT$' + #numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')}"></span>
                         </div>
                         <div class="product-info-item">
                             <span class="product-info-label">狀態：</span>

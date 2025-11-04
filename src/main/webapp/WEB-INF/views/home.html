@@ -227,7 +227,7 @@
                     </div>
                     <div class="product-info">
                         <div class="product-name" th:text="${product.name}">商品名稱</div>
-                        <div class="product-price" th:text="${#numbers.formatDecimal(product.price, 0, 0) + ' 元'}">價格</div>
+                        <div class="product-price" th:text="${'NT$' + #numbers.formatDecimal(product.price, 0, 0)}">價格</div>
                     </div>
                 </a>
             </div>
@@ -252,7 +252,7 @@
                     </div>
                     <div class="product-info">
                         <div class="product-name" th:text="${product.name}">商品名稱</div>
-                        <div class="product-price" th:text="${#numbers.formatDecimal(product.price, 0, 0) + ' 元'}">價格</div>
+                        <div class="product-price" th:text="${'NT$' + #numbers.formatDecimal(product.price, 0, 0)}">價格</div>
                     </div>
                 </a>
             </div>
@@ -277,7 +277,7 @@
                     </div>
                     <div class="product-info">
                         <div class="product-name" th:text="${product.name}">商品名稱</div>
-                        <div class="product-price" th:text="${#numbers.formatDecimal(product.price, 0, 0) + ' 元'}">價格</div>
+                        <div class="product-price" th:text="${'NT$' + #numbers.formatDecimal(product.price, 0, 0)}">價格</div>
                     </div>
                 </a>
             </div>

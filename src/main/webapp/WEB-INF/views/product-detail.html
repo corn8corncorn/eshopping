@@ -208,7 +208,7 @@
             <div class="product-info-section">
                 <h2 class="product-name" th:text="${product.name}">商品名稱</h2>
                 <div class="product-type" th:text="${'分類: ' + product.type}">商品分類</div>
-                <div class="product-price" th:text="${#numbers.formatDecimal(product.price, 0, 0) + ' 元'}">商品價格</div>
+                <div class="product-price" th:text="${'NT$' + #numbers.formatDecimal(product.price, 0, 0)}">商品價格</div>
                 
                 <!-- 庫存資訊 -->
                 <div class="product-stock">

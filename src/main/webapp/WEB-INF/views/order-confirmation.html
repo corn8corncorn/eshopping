@@ -194,7 +194,7 @@
                 </div>
                 <div class="summary-row summary-total">
                     <span>訂單總金額：</span>
-                    <span th:text="${#numbers.formatDecimal(order.finalAmount, 0, 2)} + ' 元'">總金額</span>
+                    <span th:text="${'NT$' + #numbers.formatDecimal(order.finalAmount, 0, 0)}">總金額</span>
                 </div>
             </div>
 
