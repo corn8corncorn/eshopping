@@ -122,7 +122,7 @@
         }
 
         .actions-container {
-            background-color: rgba(158, 154, 154, 0.7);
+            background-color: rgba(158, 154, 154, 0.9);
             border-radius: 10px;
             padding: 15px 20px;
             margin-top: 20px;
@@ -180,13 +180,13 @@
     <!-- 購物車列表容器 -->
     <div style="position: relative; margin-top: 350px; width: 100%; display: flex; justify-content: center;">
         <div class="cart-list-container">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="color: white; margin: 0;">購物車</h2>
-                <div>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h2 style="color: white; margin: 0 0 15px 0;">購物車</h2>
+                <div style="display: flex; justify-content: center; gap: 10px;">
                     <a th:href="@{/shop}" style="text-decoration: none;">
                         <button class="btn btn-primary">繼續購物</button>
                     </a>
-                    <a th:href="@{/home}" style="text-decoration: none; margin-left: 10px;">
+                    <a th:href="@{/home}" style="text-decoration: none;">
                         <button class="btn btn-primary">回首頁</button>
                     </a>
                 </div>
