@@ -7,12 +7,147 @@
     <script th:src="@{/resources/js/confirm-modal.js}"></script>
     <title>購物車</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        .cart-list-container {
+            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
+
+        .cart-item-card {
+            background-color: rgba(158, 154, 154, 0.7);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            transition: background-color 0.3s;
+            /* width: 100%; */
+            min-width: 800px;
+        }
+
+        .cart-item-card:hover {
+            background-color: rgba(158, 154, 154, 0.7);
+        }
+
+        .cart-item-info {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .cart-item-info-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .cart-item-info-label {
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .cart-item-info-value {
+            color: #fbd5ba;
+        }
+
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .cart-item-actions {
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+        }
+
+        .quantity-form {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .quantity-input {
+            width: 60px;
+            padding: 5px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .quantity-input::-webkit-inner-spin-button,
+        .quantity-input::-webkit-outer-spin-button {
+            opacity: 1;
+        }
+
+        .cart-summary-card {
+            background-color: rgba(158, 154, 154, 0.7);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .cart-summary-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .cart-summary-label {
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .cart-summary-value {
+            color: #fbd5ba;
+            font-size: 1.2em;
+        }
+
+        .actions-container {
+            background-color: rgba(158, 154, 154, 0.7);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .empty-cart {
+            background-color: rgba(158, 154, 154, 0.7);
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .empty-cart h2 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .empty-cart p {
+            color: #fbd5ba;
+            margin-bottom: 25px;
+        }
+
         .message {
             padding: 10px;
             margin-bottom: 20px;
@@ -28,138 +163,133 @@
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
-        .cart-summary {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        .cart-summary h3 {
-            margin-top: 0;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-        }
-        .quantity-input {
-            width: 60px;
-            padding: 5px;
-            text-align: center;
-        }
-        .btn {
-            padding: 8px 16px;
-            margin: 5px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .text-right {
-            text-align: right;
-        }
-        .empty-cart {
-            text-align: center;
-            padding: 40px;
-            color: #6c757d;
-        }
-        .actions {
-            margin-top: 20px;
-            text-align: right;
-        }
     </style>
 </head>
 <body>
     <!-- Notice 元件 -->
     <div th:replace="~{fragments/notice :: notice}"></div>
 
-    <div class="header">
-        <h1>購物車</h1>
-        <nav>
-            <a th:href="@{/home}">首頁</a> |
-            <a th:href="@{/shop}">商品列表</a> |
-            <a th:href="@{/orders/my}">我的訂單</a>
-        </nav>
+    <!-- Logo - 頁面中央上方 -->
+    <div class="page-logo-container">
+        <a th:href="@{/home}">
+            <img th:src="@{/resources/images/logo.png}" alt="logo" class="page-logo">
+        </a>
     </div>
 
-    <div th:if="${cartItems != null && !cartItems.isEmpty()}">
-        <table>
-            <thead>
-                <tr>
-                    <th>商品名稱</th>
-                    <th>單價</th>
-                    <th>數量</th>
-                    <th>小計</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="item : ${cartItems}">
-                    <td>
-                        <strong th:text="${item.productName}">商品名稱</strong><br>
-                        <small th:if="${item.product != null}" th:text="${'庫存: ' + item.product.stockQuantity}"></small>
-                    </td>
-                    <td th:text="${#numbers.formatDecimal(item.unitPrice, 0, 2)} + ' 元'">價格</td>
-                    <td>
-                        <form th:action="@{'/cart/update/' + ${item.product.id}}" method="post" style="display:inline;">
-                            <input type="number" name="quantity" th:value="${item.quantity}" 
-                                   class="quantity-input" min="1" th:max="${item.product != null ? item.product.stockQuantity : 999}">
-                            <button type="submit" class="btn btn-primary">更新</button>
-                        </form>
-                    </td>
-                    <td th:text="${#numbers.formatDecimal(item.subtotal, 0, 2)} + ' 元'">小計</td>
-                    <td>
+    <!-- 購物車列表容器 -->
+    <div style="position: relative; margin-top: 350px; width: 100%; display: flex; justify-content: center;">
+        <div class="cart-list-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: white; margin: 0;">購物車</h2>
+                <div>
+                    <a th:href="@{/shop}" style="text-decoration: none;">
+                        <button class="btn btn-primary">繼續購物</button>
+                    </a>
+                    <a th:href="@{/home}" style="text-decoration: none; margin-left: 10px;">
+                        <button class="btn btn-primary">回首頁</button>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 購物車摘要 -->
+            <div th:if="${cartItems != null && !cartItems.isEmpty()}" class="cart-summary-card">
+                <div class="cart-summary-item">
+                    <span class="cart-summary-label">商品總數：</span>
+                    <span class="cart-summary-value" th:text="${totalItems != null ? (totalItems + ' 件') : '0 件'}">0 件</span>
+                </div>
+                <div class="cart-summary-item">
+                    <span class="cart-summary-label">總金額：</span>
+                    <span class="cart-summary-value" th:text="${totalAmount != null ? ('$' + #numbers.formatDecimal(totalAmount, 0, 'COMMA', 0, 'POINT')) : '$0'}">$0</span>
+                </div>
+            </div>
+
+            <!-- 購物車項目列表 -->
+            <div th:if="${cartItems != null && !cartItems.isEmpty()}">
+                <div th:each="item : ${cartItems}" class="cart-item-card">
+                    <div class="cart-item-info">
+                        <div class="cart-item-info-item" th:if="${item.product != null}">
+                            <span class="cart-item-info-label">ID：</span>
+                            <span class="cart-item-info-value" th:text="${item.product.id}"></span>
+                        </div>
+                        <div class="cart-item-info-item">
+                            <span class="cart-item-info-label">名稱：</span>
+                            <span class="cart-item-info-value" th:text="${item.productName}"></span>
+                        </div>
+                        <div class="cart-item-info-item" th:if="${item.product != null}">
+                            <span class="cart-item-info-label">類型：</span>
+                            <span class="cart-item-info-value" th:text="${item.product.type}"></span>
+                        </div>
+                        <div class="cart-item-info-item">
+                            <span class="cart-item-info-label">單價：</span>
+                            <span class="cart-item-info-value" th:text="${'$' + #numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT')}"></span>
+                        </div>
+                        <div class="cart-item-info-item">
+                            <span class="cart-item-info-label">數量：</span>
+                            <span class="cart-item-info-value">
+                                <form th:if="${item.product != null}" th:action="@{'/cart/update/' + ${item.product.id}}" method="post" class="quantity-form">
+                                    <input type="number" name="quantity" th:value="${item.quantity}" 
+                                           class="quantity-input" min="1" th:max="${item.product != null ? item.product.stockQuantity : 999}">
+                                    <button type="submit" class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">更新</button>
+                                </form>
+                                <span th:if="${item.product == null}" th:text="${item.quantity}"></span>
+                            </span>
+                        </div>
+                        <div class="cart-item-info-item">
+                            <span class="cart-item-info-label">小計：</span>
+                            <span class="cart-item-info-value" th:text="${'$' + #numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')}"></span>
+                        </div>
+                        <div class="cart-item-info-item" th:if="${item.product != null && item.product.stockQuantity != null}">
+                            <span class="cart-item-info-label">庫存：</span>
+                            <span class="cart-item-info-value" th:text="${item.product.stockQuantity + ' 件'}"></span>
+                        </div>
+                        <div class="cart-item-info-item" th:if="${item.product != null && item.product.imageUrl != null && !item.product.imageUrl.isEmpty()}">
+                            <img th:src="${item.product.imageUrl}" alt="商品圖片" class="cart-item-image" 
+                                 onerror="this.src='/resources/images/default-product.png'; this.onerror=null;">
+                        </div>
+                    </div>
+                    <div class="cart-item-actions">
                         <button type="button" 
-                                class="btn btn-primary" 
-                                th:data-delete-form="'removeForm-' + ${item.product.id}"
+                                class="btn btn-primary delete-btn" 
+                                th:data-delete-form="'removeForm-' + ${item.product != null ? item.product.id : ''}"
                                 th:data-delete-message="'確定要移除此商品「' + ${item.productName} + '」嗎？'">
                             移除
                         </button>
-                        <form th:id="'removeForm-' + ${item.product.id}" 
+                        <form th:if="${item.product != null}" 
+                              th:id="'removeForm-' + ${item.product.id}" 
                               th:action="@{'/cart/remove/' + ${item.product.id}}" 
                               method="post" 
                               style="display:none;">
                         </form>
-                    </td>
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="3" class="text-right"><strong>總計：</strong></td>
-                    <td><strong th:text="${totalAmount != null ? (#numbers.formatDecimal(totalAmount, 0, 2) + ' 元') : '0.00 元'}">總金額</strong></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td colspan="3" class="text-right"><strong>商品總數：</strong></td>
-                    <td><strong th:text="${totalItems != null ? (totalItems + ' 件') : '0 件'}">總數量</strong></td>
-                    <td></td>
-                </tr>
-            </tfoot>
-        </table>
+                    </div>
+                </div>
+            </div>
 
-        <div class="actions">
-            <a th:href="@{/orders/checkout}" class="btn btn-primary">前往結帳</a>
-            <form th:action="@{/cart/clear}" method="post" style="display:inline;">
-                <button type="submit" class="btn btn-primary" onclick="return confirm('確定要清空購物車嗎？')">清空購物車</button>
-            </form>
-            <a th:href="@{/shop}" class="btn btn-primary">繼續購物</a>
+            <!-- 無商品訊息 -->
+            <div th:if="${cartItems == null || cartItems.isEmpty()}" class="empty-cart">
+                <h2>購物車是空的</h2>
+                <p>快去選購您喜歡的商品吧！</p>
+                <a th:href="@{/shop}" style="text-decoration: none;">
+                    <button class="btn btn-primary">前往商品列表</button>
+                </a>
+            </div>
+
+            <!-- 操作按鈕 -->
+            <div th:if="${cartItems != null && !cartItems.isEmpty()}" class="actions-container">
+                <div>
+                    <a th:href="@{/shop}" style="text-decoration: none;">
+                        <button class="btn btn-primary" type="button">繼續購物</button>
+                    </a>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <form th:action="@{/cart/clear}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-primary" onclick="return confirm('確定要清空購物車嗎？')">清空購物車</button>
+                    </form>
+                    <a th:href="@{/orders/checkout}" style="text-decoration: none;">
+                        <button class="btn btn-primary" type="button">前往結帳</button>
+                    </a>
+                </div>
+            </div>
         </div>
-    </div>
-
-    <div th:if="${cartItems == null || cartItems.isEmpty()}" class="empty-cart">
-        <h2>購物車是空的</h2>
-        <p>快去選購您喜歡的商品吧！</p>
-        <a th:href="@{/shop}" class="btn btn-primary">前往商品列表</a>
     </div>
 
     <!-- 確認刪除 Modal -->
