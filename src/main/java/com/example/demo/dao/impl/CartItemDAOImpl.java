@@ -256,8 +256,6 @@ public class CartItemDAOImpl implements CartItemDAO {
     @Override
     public void deleteAllByCartId(Long cartId) {
         logger.info("根據購物車刪除所有購物車項目 - cartId: {}", cartId);
-        // 先刷新 session，確保所有待處理的操作都已完成
-        getCurrentSession().flush();
         Query<?> query = getCurrentSession().createQuery(
                 "DELETE FROM CartItem WHERE cart.id = :cartId");
         query.setParameter("cartId", cartId);

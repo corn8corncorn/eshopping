@@ -123,31 +123,28 @@
             <tbody>
                 <tr th:each="order : ${orders}">
                     <td>
-                        <strong th:text="${order.orderNumber != null ? order.orderNumber : 'N/A'}">訂單編號</strong>
+                        <strong th:text="${order.orderNumber}">訂單編號</strong>
                     </td>
-                    <td>
-                        <span th:if="${order.createdAt != null}" th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm')}">訂單日期</span>
-                        <span th:if="${order.createdAt == null}">N/A</span>
-                    </td>
+                    <td th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm')}">訂單日期</td>
                     <td th:if="${isMyOrders == null || !isMyOrders}" 
                         th:text="${order.customer != null ? order.customer.fullName : 'N/A'}">客戶</td>
                     <td>
                         <span class="status" 
-                              th:classappend="${order.status != null ? ('status-' + order.status.name()) : ''}"
-                              th:text="${order.status != null ? order.status.description : 'N/A'}">訂單狀態</span>
+                              th:classappend="${'status-' + order.status.name()}"
+                              th:text="${order.status.description}">訂單狀態</span>
                     </td>
                     <td>
                         <span class="payment-status" 
-                              th:classappend="${order.paymentStatus != null ? ('payment-status-' + order.paymentStatus.name()) : ''}"
-                              th:text="${order.paymentStatus != null ? order.paymentStatus.description : 'N/A'}">付款狀態</span>
+                              th:classappend="${'payment-status-' + order.paymentStatus.name()}"
+                              th:text="${order.paymentStatus.description}">付款狀態</span>
                     </td>
                     <td th:text="${order.paymentMethod != null ? order.paymentMethod.description : 'N/A'}">付款方式</td>
                     <td class="text-right">
-                        <strong th:text="${order.finalAmount != null ? ('NT$' + #numbers.formatDecimal(order.finalAmount, 0, 'COMMA', 0, 'POINT')) : 'NT$0'}">金額</strong>
+                        <strong th:text="${'NT$' + #numbers.formatDecimal(order.finalAmount, 0, 0)}">金額</strong>
                     </td>
                     <td>
                         <a th:href="@{'/orders/' + ${order.id}}" class="btn btn-primary">查看詳情</a>
-                        <span th:if="${(isMyOrders != null && isMyOrders) && order.status != null && order.status.name() == 'PENDING'}">
+                        <span th:if="${(isMyOrders != null && isMyOrders) && order.status.name() == 'PENDING'}">
                             <form th:action="@{'/orders/' + ${order.id} + '/cancel'}" method="post" style="display:inline;">
                                 <button type="submit" class="btn btn-primary" 
                                         onclick="return confirm('確定要取消此訂單嗎？')">取消訂單</button>
