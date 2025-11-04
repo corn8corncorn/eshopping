@@ -27,6 +27,9 @@
         }
         .checkout-form {
             flex: 2;
+            background-color: rgba(158, 154, 154, 0.7);
+            padding: 20px;
+            border-radius: 10px;
         }
         .order-summary {
             flex: 1;
@@ -186,16 +189,16 @@
                     <div style="font-weight: bold;" th:text="${item.productName}">商品名稱</div>
                     <div style="font-size: 14px; color: #666;">
                         數量：<span th:text="${item.quantity}">1</span> × 
-                        <span th:text="${'NT$' + #numbers.formatDecimal(item.price, 0, 0)}">價格</span>
+                        <span th:text="${'NT$' + #numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT')}">價格</span>
                     </div>
                     <div style="text-align: right; margin-top: 5px;">
-                        <strong th:text="${'NT$' + #numbers.formatDecimal(item.subtotal, 0, 0)}">小計</strong>
+                        <strong th:text="${'NT$' + #numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')}">小計</strong>
                     </div>
                 </div>
 
                 <div class="summary-item">
                     <span>商品總計：</span>
-                    <span th:text="${'NT$' + #numbers.formatDecimal(cart.totalAmount, 0, 0)}">商品總計</span>
+                    <span th:text="${'NT$' + #numbers.formatDecimal(cart.totalAmount, 0, 'COMMA', 0, 'POINT')}">商品總計</span>
                 </div>
                 <div class="summary-item">
                     <span>運費：</span>
@@ -204,7 +207,7 @@
                 <div class="summary-total">
                     <div style="display: flex; justify-content: space-between;">
                         <span>應付總額：</span>
-                        <span th:text="${'NT$' + #numbers.formatDecimal(cart.totalAmount, 0, 0)}">總金額</span>
+                        <span th:text="${'NT$' + #numbers.formatDecimal(cart.totalAmount, 0, 'COMMA', 0, 'POINT')}">總金額</span>
                     </div>
                 </div>
                 
