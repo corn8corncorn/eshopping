@@ -124,7 +124,22 @@ public class OrderController {
 
             // 取得客戶的所有訂單
             List<Order> orders = orderService.getByCustomer(customer);
-            logger.debug("載入我的訂單列表 - customerId: {}, 共 {} 筆訂單", customer.getId(), orders.size());
+            logger.info("載入我的訂單列表 - customerId: {}, username: {}, 共 {} 筆訂單", 
+                       customer.getId(), currentUser.getUsername(), orders.size());
+            
+            // 調試：記錄訂單詳情
+            if (orders.isEmpty()) {
+                logger.warn("客戶沒有任何訂單 - customerId: {}, username: {}", customer.getId(), currentUser.getUsername());
+                // 嘗試使用 customerId 查詢
+                List<Order> ordersById = orderService.getByCustomerId(customer.getId());
+                logger.info("使用 customerId 查詢結果 - customerId: {}, 共 {} 筆訂單", customer.getId(), ordersById.size());
+            } else {
+                for (Order order : orders) {
+                    logger.debug("訂單詳情 - orderId: {}, orderNumber: {}, customerId: {}", 
+                               order.getId(), order.getOrderNumber(), 
+                               order.getCustomer() != null ? order.getCustomer().getId() : "null");
+                }
+            }
             
             model.addAttribute("orders", orders);
             model.addAttribute("isMyOrders", true);

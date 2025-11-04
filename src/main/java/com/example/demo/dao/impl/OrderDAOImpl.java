@@ -73,7 +73,8 @@ public class OrderDAOImpl implements OrderDAO {
     @Transactional(readOnly = true)
     public List<Order> findAll() {
         logger.info("查找所有訂單");
-        Query<Order> query = getCurrentSession().createQuery("FROM Order ORDER BY createdAt DESC", Order.class);
+        Query<Order> query = getCurrentSession().createQuery(
+                "SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.customer ORDER BY o.createdAt DESC", Order.class);
         List<Order> orders = query.getResultList();
         logger.debug("查詢到訂單數量: {}", orders.size());
         return orders;
@@ -105,11 +106,18 @@ public class OrderDAOImpl implements OrderDAO {
     @Transactional(readOnly = true)
     public List<Order> findByCustomer(Customer customer) {
         logger.info("根據客戶查找訂單 - customerId: {}", customer.getId());
+        // 使用 customer.id 來查詢，避免對象比較問題
         Query<Order> query = getCurrentSession().createQuery(
-                "FROM Order WHERE customer = :customer ORDER BY createdAt DESC", Order.class);
-        query.setParameter("customer", customer);
+                "SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.customer WHERE o.customer.id = :customerId ORDER BY o.createdAt DESC", Order.class);
+        query.setParameter("customerId", customer.getId());
         List<Order> orders = query.getResultList();
-        logger.debug("客戶訂單查詢結果 - customerId: {}, orderCount: {}", customer.getId(), orders.size());
+        logger.info("客戶訂單查詢結果 - customerId: {}, orderCount: {}", customer.getId(), orders.size());
+        // 調試：記錄查詢到的訂單編號
+        if (!orders.isEmpty()) {
+            for (Order order : orders) {
+                logger.debug("查詢到的訂單 - orderId: {}, orderNumber: {}", order.getId(), order.getOrderNumber());
+            }
+        }
         return orders;
     }
 
@@ -123,7 +131,7 @@ public class OrderDAOImpl implements OrderDAO {
     public List<Order> findByCustomerId(Long customerId) {
         logger.info("根據客戶ID查找訂單 - customerId: {}", customerId);
         Query<Order> query = getCurrentSession().createQuery(
-                "FROM Order WHERE customer.id = :customerId ORDER BY createdAt DESC", Order.class);
+                "SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.customer WHERE o.customer.id = :customerId ORDER BY o.createdAt DESC", Order.class);
         query.setParameter("customerId", customerId);
         List<Order> orders = query.getResultList();
         logger.debug("客戶訂單查詢結果 - customerId: {}, orderCount: {}", customerId, orders.size());
