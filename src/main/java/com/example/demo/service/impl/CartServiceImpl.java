@@ -265,12 +265,19 @@ public class CartServiceImpl implements CartService {
             throw new IllegalArgumentException("購物車不存在: " + cartId);
         }
         
+        // 使用 HQL DELETE 直接刪除數據庫中的記錄（繞過 session 中的實體管理）
         cartItemDAO.deleteAllByCartId(cartId);
-        cart.clearCart();
-        Cart updatedCart = cartDAO.save(cart);
+        
+        // 重新加載購物車以確保狀態一致（此時購物車項目已從數據庫刪除）
+        // 重新加載會從數據庫獲取最新狀態，列表應該已經是空的
+        cart = cartDAO.findById(cartId);
+        if (cart == null) {
+            logger.warn("清空購物車後重新載入失敗 - cartId: {}", cartId);
+            throw new IllegalStateException("清空購物車失敗");
+        }
         
         logger.info("購物車清空成功 - cartId: {}", cartId);
-        return updatedCart;
+        return cart;
     }
 
     /**

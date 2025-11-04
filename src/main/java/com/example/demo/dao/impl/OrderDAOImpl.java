@@ -60,8 +60,13 @@ public class OrderDAOImpl implements OrderDAO {
     @Transactional(readOnly = true)
     public Order findById(Long id) {
         logger.info("根據ID查找訂單 - orderId: {}", id);
-        Order order = getCurrentSession().get(Order.class, id);
-        logger.debug("訂單查詢結果 - orderId: {}, found: {}", id, order != null);
+        // 使用 JOIN FETCH 預加載關聯數據，確保在 session 內完成所有數據加載
+        Query<Order> query = getCurrentSession().createQuery(
+                "SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.customer LEFT JOIN FETCH o.orderAddress WHERE o.id = :id", Order.class);
+        query.setParameter("id", id);
+        Order order = query.uniqueResult();
+        logger.debug("訂單查詢結果 - orderId: {}, found: {}, orderNumber: {}", 
+                    id, order != null, order != null ? order.getOrderNumber() : "N/A");
         return order;
     }
 
@@ -105,11 +110,18 @@ public class OrderDAOImpl implements OrderDAO {
     @Transactional(readOnly = true)
     public List<Order> findByCustomer(Customer customer) {
         logger.info("根據客戶查找訂單 - customerId: {}", customer.getId());
+        // 使用 customer.id 來查詢，避免對象比較問題，並使用 JOIN FETCH 預加載關聯數據
         Query<Order> query = getCurrentSession().createQuery(
-                "FROM Order WHERE customer = :customer ORDER BY createdAt DESC", Order.class);
-        query.setParameter("customer", customer);
+                "SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.customer WHERE o.customer.id = :customerId ORDER BY o.createdAt DESC", Order.class);
+        query.setParameter("customerId", customer.getId());
         List<Order> orders = query.getResultList();
-        logger.debug("客戶訂單查詢結果 - customerId: {}, orderCount: {}", customer.getId(), orders.size());
+        logger.info("客戶訂單查詢結果 - customerId: {}, orderCount: {}", customer.getId(), orders.size());
+        // 調試：記錄查詢到的訂單編號
+        if (!orders.isEmpty()) {
+            for (Order order : orders) {
+                logger.debug("查詢到的訂單 - orderId: {}, orderNumber: {}", order.getId(), order.getOrderNumber());
+            }
+        }
         return orders;
     }
 
