@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.validation.BindingResult;
 
 import com.example.demo.model.Product;
 import com.example.demo.service.ProductService;
+import com.example.demo.service.GCPStorageService;
 
 import javax.validation.Valid;
 
@@ -33,6 +35,9 @@ public class ProductController {
 
 	@Autowired
 	private ProductService productService;
+
+	@Autowired
+	private GCPStorageService gcpStorageService;
 
 	/**
 	 * 顯示商品列表頁面
@@ -126,6 +131,7 @@ public class ProductController {
 	public String updateProduct(@PathVariable("id") Long id, 
 	                           @Valid @ModelAttribute("product") Product product,
 	                           BindingResult bindingResult,
+	                           @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
 	                           RedirectAttributes redirectAttributes) {
 		if (bindingResult.hasErrors()) {
 			logger.warn("商品更新驗證失敗 - productId: {}, errors: {}", id, bindingResult.getAllErrors());
@@ -136,6 +142,29 @@ public class ProductController {
 		try {
 			logger.info("開始更新商品 - productId: {}, productName: {}, stockQuantity: {}", 
 			           id, product.getName(), product.getStockQuantity());
+			
+			// 處理圖片上傳
+			if (imageFile != null && !imageFile.isEmpty()) {
+				try {
+					// 刪除舊圖片
+					Product existingProduct = productService.getById(id);
+					if (existingProduct != null && existingProduct.getImageUrl() != null 
+					    && !existingProduct.getImageUrl().isEmpty()) {
+						gcpStorageService.deleteImage(existingProduct.getImageUrl());
+						logger.info("舊圖片已刪除 - productId: {}, oldImageUrl: {}", id, existingProduct.getImageUrl());
+					}
+					
+					// 上傳新圖片
+					String imageUrl = gcpStorageService.uploadImage(imageFile, "products");
+					product.setImageUrl(imageUrl);
+					logger.info("新圖片上傳成功 - productId: {}, imageUrl: {}", id, imageUrl);
+				} catch (Exception e) {
+					logger.error("圖片上傳失敗", e);
+					redirectAttributes.addFlashAttribute("error", "圖片上傳失敗：" + e.getMessage());
+					return "redirect:/products/edit/" + id;
+				}
+			}
+			
 			productService.updateProduct(id, product);
 			logger.info("商品更新成功 - productId: {}", id);
 			redirectAttributes.addFlashAttribute("success", "商品「" + product.getName() + "」更新成功");
@@ -157,6 +186,7 @@ public class ProductController {
 	@PostMapping("/save")
 	public String saveUser(@Valid @ModelAttribute Product product, 
 	                     BindingResult bindingResult,
+	                     @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
 	                     RedirectAttributes redirectAttributes) {
 		if (bindingResult.hasErrors()) {
 			logger.warn("商品新增驗證失敗 - errors: {}", bindingResult.getAllErrors());
@@ -166,6 +196,20 @@ public class ProductController {
 		
 		try {
 			logger.info("開始儲存新商品 - productName: {}", product.getName());
+			
+			// 處理圖片上傳
+			if (imageFile != null && !imageFile.isEmpty()) {
+				try {
+					String imageUrl = gcpStorageService.uploadImage(imageFile, "products");
+					product.setImageUrl(imageUrl);
+					logger.info("圖片上傳成功 - productName: {}, imageUrl: {}", product.getName(), imageUrl);
+				} catch (Exception e) {
+					logger.error("圖片上傳失敗", e);
+					redirectAttributes.addFlashAttribute("error", "圖片上傳失敗：" + e.getMessage());
+					return "redirect:/products/add";
+				}
+			}
+			
 			productService.saveProduct(product);
 			logger.info("商品儲存成功 - productId: {}", product.getId());
 			redirectAttributes.addFlashAttribute("success", "商品「" + product.getName() + "」新增成功");

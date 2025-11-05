@@ -1,8 +1,8 @@
 # Database configuration
 jdbc.driverClassName=com.mysql.cj.jdbc.Driver
 jdbc.url=jdbc:mysql://localhost:3306/eshopping?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-jdbc.username=corn
-jdbc.password=Abc123!@#
+jdbc.username=your_username
+jdbc.password=your_password
 
 # Hibernate configuration
 hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
@@ -15,7 +15,8 @@ hibernate.hbm2ddl.auto=update
 # 設定方式：
 # 1. 環境變數：export GOOGLE_APPLICATION_CREDENTIALS=/path/to/key.json
 # 2. 或設定 credentials-path（確保金鑰檔案不在 Git 追蹤中）
-gcp.storage.project-id=${GCP_PROJECT_ID:luminous-smithy-477304-p9}
-gcp.storage.bucket-name=${GCP_BUCKET_NAME:eshopping-images}
+gcp.storage.project-id=${GCP_PROJECT_ID:your-project-id}
+gcp.storage.bucket-name=${GCP_BUCKET_NAME:your-bucket-name}
 # 如果使用環境變數 GOOGLE_APPLICATION_CREDENTIALS，此項可留空
-gcp.storage.credentials-path=${GCP_CREDENTIALS_PATH:classpath:luminous-smithy-477304-p9-544c644bc77f.json}
+gcp.storage.credentials-path=${GCP_CREDENTIALS_PATH:}
+

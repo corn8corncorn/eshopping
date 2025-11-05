@@ -28,3 +28,12 @@ build/
 # Linux / Windows 相關檔案
 *.swp
 Thumbs.db
+
+# GCP 服務帳號金鑰檔案（敏感資訊，不應提交到 Git）
+**/luminous-smithy-*.json
+**/*-544c644bc77f.json
+**/gcp-service-account-key.json
+**/gcp-*.json
+*.json
+!package.json
+!tsconfig.json

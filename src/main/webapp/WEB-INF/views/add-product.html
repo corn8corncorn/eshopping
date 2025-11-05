@@ -29,7 +29,7 @@
                 </a>
             </div>
             <h2>新增商品</h2>
-            <form th:action="@{/products/save}" method="post" th:object="${product}" id="addProductForm" onsubmit="return validatePrice(this)">
+            <form th:action="@{/products/save}" method="post" th:object="${product}" id="addProductForm" enctype="multipart/form-data" onsubmit="return validatePrice(this)">
                 <div class="form-group">
                     <div class="input-row">
                         <label for="name">名稱：</label>
@@ -72,9 +72,13 @@
 
                 <div class="form-group">
                     <div class="input-row">
-                        <label for="imageUrl">圖片連結：</label>
-                        <input id="imageUrl" type="text" th:field="*{imageUrl}" />
+                        <label for="imageFile">商品圖片：</label>
+                        <input id="imageFile" type="file" name="imageFile" accept="image/*" onchange="previewImage(this)" />
                     </div>
+                    <div id="imagePreview" style="margin-top: 10px; display: none;">
+                        <img id="previewImg" src="" alt="預覽圖片" style="max-width: 300px; max-height: 300px; border: 1px solid #ddd; padding: 5px; border-radius: 4px;" />
+                    </div>
+                    <input type="hidden" id="imageUrl" name="imageUrl" th:field="*{imageUrl}" />
                     <div class="error-message" th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}"></div>
                 </div>
 
@@ -118,6 +122,31 @@
             }
             
             return true;
+        }
+
+        // 圖片預覽功能
+        function previewImage(input) {
+            const preview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+            const imageUrlInput = document.getElementById('imageUrl');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                    // 清空隱藏的 imageUrl，因為我們使用上傳的檔案
+                    if (imageUrlInput) {
+                        imageUrlInput.value = '';
+                    }
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.style.display = 'none';
+                previewImg.src = '';
+            }
         }
     </script>
 </body>
