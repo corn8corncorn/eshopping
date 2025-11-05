@@ -289,13 +289,30 @@ public class OrderController {
                 }
             }
 
+            // 在事務範圍內初始化所有需要的關聯，確保模板可以訪問
+            if (order.getCustomer() != null) {
+                order.getCustomer().getId(); // 確保 customer 已載入
+            }
+            if (order.getOrderAddress() != null) {
+                order.getOrderAddress().getId(); // 確保 orderAddress 已載入
+                order.getOrderAddress().getRecipientName(); // 預載入常用欄位
+            }
+
             // 取得訂單項目
             List<OrderItem> orderItems = orderItemService.getByOrderId(id);
             logger.debug("載入訂單項目 - orderId: {}, 共 {} 項", id, orderItems.size());
 
+            // 格式化日期為字串，避免模板中的日期格式化問題
+            String formattedDate = null;
+            if (order.getCreatedAt() != null) {
+                formattedDate = order.getCreatedAt().toString().replace('T', ' ').substring(0, 16);
+            }
+
             model.addAttribute("order", order);
             model.addAttribute("orderItems", orderItems);
-            logger.info("訂單詳情頁面載入完成 - orderId: {}", id);
+            model.addAttribute("formattedOrderDate", formattedDate);
+            logger.info("訂單詳情頁面載入完成 - orderId: {}, orderNumber: {}, hasOrderAddress: {}", 
+                       id, order.getOrderNumber(), order.getOrderAddress() != null);
             
         } catch (Exception e) {
             logger.error("載入訂單詳情時發生錯誤 - orderId: {}", id, e);

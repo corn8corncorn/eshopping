@@ -176,19 +176,19 @@
                 </div>
                 <div class="info-row">
                     <span>訂單日期：</span>
-                    <span th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}">訂單日期</span>
+                    <span th:text="${formattedOrderDate != null ? formattedOrderDate : (order.createdAt != null ? #temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss') : 'N/A')}">訂單日期</span>
                 </div>
                 <div class="info-row">
                     <span>訂單狀態：</span>
                     <span class="status" 
-                          th:classappend="${'status-' + order.status.name()}"
-                          th:text="${order.status.description}">訂單狀態</span>
+                          th:classappend="${order.status != null ? ('status-' + order.status.name()) : ''}"
+                          th:text="${order.status != null ? order.status.description : 'N/A'}">訂單狀態</span>
                 </div>
                 <div class="info-row">
                     <span>付款狀態：</span>
                     <span class="payment-status" 
-                          th:classappend="${'payment-status-' + order.paymentStatus.name()}"
-                          th:text="${order.paymentStatus.description}">付款狀態</span>
+                          th:classappend="${order.paymentStatus != null ? ('payment-status-' + order.paymentStatus.name()) : ''}"
+                          th:text="${order.paymentStatus != null ? order.paymentStatus.description : 'N/A'}">付款狀態</span>
                 </div>
                 <div class="info-row">
                     <span>付款方式：</span>
@@ -231,7 +231,7 @@
 
         <!-- 訂單項目 -->
         <h2>訂單項目</h2>
-        <table th:if="${orderItems != null && !orderItems.isEmpty()}">
+        <table th:if="${orderItems != null and !orderItems.isEmpty()}">
             <thead>
                 <tr>
                     <th>商品名稱</th>
@@ -245,9 +245,9 @@
                     <td>
                         <strong th:text="${item.productName}">商品名稱</strong>
                     </td>
-                    <td th:text="${'NT$' + #numbers.formatDecimal(item.price, 0, 0)}">單價</td>
+                    <td th:text="${item.unitPrice != null ? ('NT$' + #numbers.formatDecimal(item.unitPrice, 0, 0)) : 'N/A'}">單價</td>
                     <td th:text="${item.quantity}">數量</td>
-                    <td class="text-right" th:text="${'NT$' + #numbers.formatDecimal(item.subtotal, 0, 0)}">小計</td>
+                    <td class="text-right" th:text="${item.subtotal != null ? ('NT$' + #numbers.formatDecimal(item.subtotal, 0, 0)) : 'N/A'}">小計</td>
                 </tr>
             </tbody>
         </table>
@@ -256,19 +256,19 @@
         <div class="order-summary">
             <div class="summary-row">
                 <span>商品總計：</span>
-                <span th:text="${'NT$' + #numbers.formatDecimal(order.totalAmount, 0, 0)}">商品總計</span>
+                <span th:text="${order.totalAmount != null ? ('NT$' + #numbers.formatDecimal(order.totalAmount, 0, 0)) : 'NT$0'}">商品總計</span>
             </div>
-            <div class="summary-row" th:if="${order.shippingFee != null && order.shippingFee.compareTo(java.math.BigDecimal.ZERO) > 0}">
+            <div class="summary-row" th:if="${order != null and order.shippingFee != null}">
                 <span>運費：</span>
-                <span th:text="${'NT$' + #numbers.formatDecimal(order.shippingFee, 0, 0)}">運費</span>
+                <span th:text="${order.shippingFee != null ? ('NT$' + #numbers.formatDecimal(order.shippingFee, 0, 0)) : 'NT$0'}">運費</span>
             </div>
-            <div class="summary-row" th:if="${order.discountAmount != null && order.discountAmount.compareTo(java.math.BigDecimal.ZERO) > 0}">
+            <div class="summary-row" th:if="${order != null and order.discountAmount != null}">
                 <span>折扣：</span>
-                <span th:text="${'-NT$' + #numbers.formatDecimal(order.discountAmount, 0, 0)}">折扣</span>
+                <span th:text="${order.discountAmount != null ? ('-NT$' + #numbers.formatDecimal(order.discountAmount, 0, 0)) : 'NT$0'}">折扣</span>
             </div>
             <div class="summary-row">
                 <span>應付總額：</span>
-                <span th:text="${'NT$' + #numbers.formatDecimal(order.finalAmount, 0, 0)}">應付總額</span>
+                <span th:text="${order.finalAmount != null ? ('NT$' + #numbers.formatDecimal(order.finalAmount, 0, 0)) : 'NT$0'}">應付總額</span>
             </div>
         </div>
 
@@ -281,7 +281,7 @@
         <!-- 用戶操作 -->
         <div style="margin-top: 30px;">
             <a th:href="@{/orders/my}" class="btn btn-primary">返回訂單列表</a>
-            <span th:if="${order.status.name() == 'PENDING'}">
+            <span th:if="${order != null && order.status != null && order.status.name() == 'PENDING'}">
                 <form th:action="@{'/orders/' + ${order.id} + '/cancel'}" method="post" style="display:inline;">
                     <button type="submit" class="btn btn-primary" 
                             onclick="return confirm('確定要取消此訂單嗎？')">取消訂單</button>
