@@ -37,8 +37,9 @@
             border-bottom: 1px solid #ddd;
         }
         th {
-            background-color: #f8f9fa;
+            background-color: rgba(103,103,103,0.6);
             font-weight: bold;
+            color: white;
         }
         .status {
             padding: 5px 10px;
@@ -123,6 +124,23 @@
             background-color: #4f3f66;
             color: #fbd5ba;
         }
+        .table-container {
+            background-color: rgba(103,103,103,0.6);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        nav {
+            color: white;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+        }
+        nav a:hover {
+            color: #fbd5ba;
+        }
     </style>
 </head>
 <body>
@@ -146,7 +164,8 @@
     <div th:if="${error}" class="message error" th:text="${error}"></div>
 
     <div th:if="${orders != null && !orders.isEmpty()}">
-        <table>
+        <div class="table-container">
+            <table>
             <thead>
                 <tr>
                     <th>訂單編號</th>
@@ -197,6 +216,7 @@
                 </tr>
             </tbody>
         </table>
+        </div>
 
         <!-- 分頁導航（僅在「我的訂單」頁面顯示） -->
         <div class="pagination" th:if="${isMyOrders != null && isMyOrders && totalPages != null && totalPages > 1}">

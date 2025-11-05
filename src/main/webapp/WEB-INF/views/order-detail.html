@@ -33,20 +33,22 @@
             margin-bottom: 30px;
         }
         .info-card {
-            background-color: #f8f9fa;
+            background-color: rgba(103,103,103,0.6);
             padding: 20px;
-            border-radius: 5px;
+            border-radius: 10px;
+            color: white;
         }
         .info-card h3 {
             margin-top: 0;
             border-bottom: 2px solid #c99773;
             padding-bottom: 10px;
+            color: white;
         }
         .info-row {
             display: flex;
             justify-content: space-between;
             padding: 10px 0;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
         }
         .info-row:last-child {
             border-bottom: none;
@@ -85,32 +87,54 @@
             border-bottom: 1px solid #ddd;
         }
         th {
-            background-color: #f8f9fa;
+            background-color: rgba(103,103,103,0.6);
             font-weight: bold;
+            color: white;
         }
         .text-right {
             text-align: right;
         }
-        .order-summary {
-            background-color: #f8f9fa;
+        .table-container {
+            background-color: rgba(103,103,103,0.6);
+            border-radius: 10px;
             padding: 20px;
-            border-radius: 5px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        h2 {
+            color: #c99773;
+        }
+        nav {
+            color: white;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+        }
+        nav a:hover {
+            color: #fbd5ba;
+        }
+        .order-summary {
+            background-color: rgba(103,103,103,0.6);
+            padding: 20px;
+            border-radius: 10px;
             margin-top: 20px;
+            color: white;
         }
         .summary-row {
             display: flex;
             justify-content: space-between;
             padding: 10px 0;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
         }
         .summary-row:last-child {
             border-bottom: none;
             font-size: 20px;
             font-weight: bold;
-            color: #28a745;
+            color: #fbd5ba;
             margin-top: 10px;
             padding-top: 10px;
-            border-top: 2px solid #28a745;
+            border-top: 2px solid #fbd5ba;
         }
         .btn {
             padding: 8px 16px;
@@ -231,7 +255,8 @@
 
         <!-- 訂單項目 -->
         <h2>訂單項目</h2>
-        <table th:if="${orderItems != null and !orderItems.isEmpty()}">
+        <div class="table-container" th:if="${orderItems != null and !orderItems.isEmpty()}">
+            <table>
             <thead>
                 <tr>
                     <th>商品名稱</th>
@@ -251,6 +276,7 @@
                 </tr>
             </tbody>
         </table>
+        </div>
 
         <!-- 訂單摘要 -->
         <div class="order-summary">
