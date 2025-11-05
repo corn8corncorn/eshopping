@@ -42,6 +42,16 @@ public class OrderAddressServiceImpl implements OrderAddressService {
         logger.info("建立訂單地址 - orderId: {}, recipientName: {}", 
                    order.getId(), recipientName);
         
+        // 驗證必填欄位
+        if (recipientName == null || recipientName.trim().isEmpty()) {
+            throw new IllegalArgumentException("收件人姓名不能為空");
+        }
+        
+        // 確保 phone 不為 null（使用空字串代替）
+        if (phone == null) {
+            phone = "";
+        }
+        
         OrderAddress orderAddress = new OrderAddress(order, recipientName, phone, streetAddress);
         orderAddress.setCountry(country);
         orderAddress.setCity(city);

@@ -94,14 +94,18 @@ public class OrderController {
 
     /**
      * 顯示我的訂單列表頁面（用戶功能）
-     * 獲取當前登入用戶的所有訂單並顯示
+     * 獲取當前登入用戶的所有訂單並顯示，支援分頁功能
      * 
+     * @param page 頁碼（從 0 開始，預設為 0）
+     * @param size 每頁顯示數量（預設為 10）
      * @param model 用於傳遞訂單資料到前端頁面
      * @return 我的訂單列表頁面模板名稱
      */
     @GetMapping("/my")
-    public String listMyOrders(Model model) {
-        logger.info("進入我的訂單列表頁面");
+    public String listMyOrders(@RequestParam(value = "page", defaultValue = "0") int page,
+                               @RequestParam(value = "size", defaultValue = "10") int size,
+                               Model model) {
+        logger.info("進入我的訂單列表頁面 - page: {}, size: {}", page, size);
         
         try {
             // 取得目前登入的用戶
@@ -123,12 +127,55 @@ public class OrderController {
             }
 
             // 取得客戶的所有訂單
-            List<Order> orders = orderService.getByCustomer(customer);
-            logger.debug("載入我的訂單列表 - customerId: {}, 共 {} 筆訂單", customer.getId(), orders.size());
+            List<Order> allOrders = orderService.getByCustomer(customer);
+            logger.info("載入我的訂單列表 - customerId: {}, 共 {} 筆訂單", customer.getId(), allOrders.size());
             
-            model.addAttribute("orders", orders);
+            // 在事務範圍內初始化所有訂單的關聯，確保模板可以訪問
+            if (allOrders != null && !allOrders.isEmpty()) {
+                for (Order order : allOrders) {
+                    // 初始化 customer 關聯，避免 lazy loading 問題
+                    if (order.getCustomer() != null) {
+                        order.getCustomer().getId(); // 觸發 lazy loading
+                    }
+                    logger.debug("訂單資訊 - orderId: {}, orderNumber: {}, createdAt: {}, customerId: {}", 
+                               order.getId(), order.getOrderNumber(), order.getCreatedAt(),
+                               order.getCustomer() != null ? order.getCustomer().getId() : "null");
+                }
+            } else {
+                logger.warn("訂單列表為空 - customerId: {}", customer.getId());
+            }
+            
+            // 分頁計算
+            int totalOrders = allOrders != null ? allOrders.size() : 0;
+            int totalPages = totalOrders > 0 ? (int) Math.ceil((double) totalOrders / size) : 0;
+            
+            // 確保頁碼不超出範圍
+            if (page < 0) {
+                page = 0;
+            }
+            if (totalPages > 0 && page >= totalPages) {
+                page = totalPages - 1;
+            }
+            
+            // 計算當前頁的訂單範圍
+            List<Order> paginatedOrders;
+            if (totalOrders > 0) {
+                int start = page * size;
+                int end = Math.min(start + size, totalOrders);
+                paginatedOrders = allOrders.subList(start, end);
+            } else {
+                paginatedOrders = java.util.Collections.emptyList();
+            }
+            
+            model.addAttribute("orders", paginatedOrders);
             model.addAttribute("isMyOrders", true);
-            logger.info("我的訂單列表頁面載入完成");
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", totalPages);
+            model.addAttribute("totalOrders", totalOrders);
+            model.addAttribute("pageSize", size);
+            
+            logger.info("我的訂單列表頁面載入完成 - 總數: {}, 當前頁: {}/{}, 顯示: {} 筆", 
+                       totalOrders, page + 1, totalPages, paginatedOrders.size());
             
         } catch (Exception e) {
             logger.error("載入我的訂單列表時發生錯誤", e);
@@ -176,8 +223,24 @@ public class OrderController {
                 }
             }
 
+            // 在事務範圍內初始化所有需要的關聯，確保模板可以訪問
+            if (order.getCustomer() != null) {
+                order.getCustomer().getId(); // 確保 customer 已載入
+            }
+            if (order.getOrderAddress() != null) {
+                order.getOrderAddress().getId(); // 確保 orderAddress 已載入
+                order.getOrderAddress().getRecipientName(); // 預載入常用欄位
+            }
+
+            // 格式化日期為字串，避免模板中的日期格式化問題
+            if (order.getCreatedAt() != null) {
+                String formattedDate = order.getCreatedAt().toString().replace('T', ' ').substring(0, 16);
+                model.addAttribute("formattedOrderDate", formattedDate);
+            }
+
             model.addAttribute("order", order);
-            logger.info("訂單確認頁面載入完成 - orderId: {}, orderNumber: {}", orderId, order.getOrderNumber());
+            logger.info("訂單確認頁面載入完成 - orderId: {}, orderNumber: {}, hasOrderAddress: {}", 
+                       orderId, order.getOrderNumber(), order.getOrderAddress() != null);
             
         } catch (Exception e) {
             logger.error("載入訂單確認頁面時發生錯誤 - orderId: {}", orderId, e);
@@ -392,6 +455,9 @@ public class OrderController {
                 recipientPhone != null ? recipientPhone : "", 
                 streetAddress,
                 country, city, district, postCode);
+            
+            // 設置雙向關聯
+            order.setOrderAddress(orderAddress);
 
             // 從購物車項目建立訂單項目
             for (CartItem cartItem : cart.getCartItems()) {

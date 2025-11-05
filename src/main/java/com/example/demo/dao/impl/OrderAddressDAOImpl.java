@@ -44,8 +44,10 @@ public class OrderAddressDAOImpl implements OrderAddressDAO {
         logger.info("開始儲存訂單地址到資料庫 - orderId: {}", 
                    orderAddress.getOrder() != null ? orderAddress.getOrder().getId() : "null");
         getCurrentSession().saveOrUpdate(orderAddress);
+        // 立即 flush 以檢查約束錯誤
+        getCurrentSession().flush();
         logger.info("訂單地址儲存成功 - orderAddressId: {}, orderId: {}", 
-                   orderAddress.getId(), orderAddress.getOrder().getId());
+                   orderAddress.getId(), orderAddress.getOrder() != null ? orderAddress.getOrder().getId() : "null");
         return orderAddress;
     }
 

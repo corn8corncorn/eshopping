@@ -163,10 +163,7 @@
                 
                 <div class="summary-row">
                     <span class="summary-label">訂單日期：</span>
-                    <span class="summary-value">
-                        <span th:if="${order != null && order.createdAt != null}" th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}">日期</span>
-                        <span th:if="${order == null || order.createdAt == null}">N/A</span>
-                    </span>
+                    <span class="summary-value" th:text="${formattedOrderDate != null ? formattedOrderDate : (order != null && order.createdAt != null ? order.createdAt.toString().substring(0, 16).replace('T', ' ') : 'N/A')}">日期</span>
                 </div>
                 <div class="summary-row">
                     <span class="summary-label">收件人：</span>

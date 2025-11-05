@@ -47,6 +47,8 @@ public class OrderDAOImpl implements OrderDAO {
     public Order save(Order order) {
         logger.info("開始儲存訂單到資料庫 - orderNumber: {}", order.getOrderNumber());
         getCurrentSession().save(order);
+        // 立即 flush 以確保訂單 ID 已生成，並檢查約束錯誤
+        getCurrentSession().flush();
         logger.info("訂單儲存成功 - orderId: {}, orderNumber: {}", order.getId(), order.getOrderNumber());
         return order;
     }
@@ -65,6 +67,19 @@ public class OrderDAOImpl implements OrderDAO {
                 "SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.customer LEFT JOIN FETCH o.orderAddress WHERE o.id = :id", Order.class);
         query.setParameter("id", id);
         Order order = query.uniqueResult();
+        
+        // 在事務範圍內初始化所有需要的關聯，避免 lazy loading 問題
+        if (order != null) {
+            // 初始化 customer 關聯
+            if (order.getCustomer() != null) {
+                order.getCustomer().getId();
+            }
+            // 初始化 orderAddress 關聯
+            if (order.getOrderAddress() != null) {
+                order.getOrderAddress().getId();
+            }
+        }
+        
         logger.debug("訂單查詢結果 - orderId: {}, found: {}, orderNumber: {}", 
                     id, order != null, order != null ? order.getOrderNumber() : "N/A");
         return order;
@@ -110,17 +125,27 @@ public class OrderDAOImpl implements OrderDAO {
     @Transactional(readOnly = true)
     public List<Order> findByCustomer(Customer customer) {
         logger.info("根據客戶查找訂單 - customerId: {}", customer.getId());
-        // 使用 customer.id 來查詢，避免對象比較問題，並使用 JOIN FETCH 預加載關聯數據
+        // 使用 customer.id 來查詢，避免對象比較問題
+        // 使用 JOIN FETCH 預載入 customer，避免 lazy loading 問題
+        // 使用 Set 來去重，避免 JOIN FETCH 導致的重複結果
         Query<Order> query = getCurrentSession().createQuery(
                 "SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.customer WHERE o.customer.id = :customerId ORDER BY o.createdAt DESC", Order.class);
         query.setParameter("customerId", customer.getId());
         List<Order> orders = query.getResultList();
         logger.info("客戶訂單查詢結果 - customerId: {}, orderCount: {}", customer.getId(), orders.size());
-        // 調試：記錄查詢到的訂單編號
+        // 在事務範圍內初始化 customer 關聯，確保在模板中可以訪問
         if (!orders.isEmpty()) {
             for (Order order : orders) {
-                logger.debug("查詢到的訂單 - orderId: {}, orderNumber: {}", order.getId(), order.getOrderNumber());
+                // 初始化 customer 關聯，避免 lazy loading 問題
+                if (order.getCustomer() != null) {
+                    order.getCustomer().getId(); // 觸發 lazy loading
+                }
+                logger.debug("查詢到的訂單 - orderId: {}, orderNumber: {}, createdAt: {}, customerId: {}", 
+                           order.getId(), order.getOrderNumber(), order.getCreatedAt(),
+                           order.getCustomer() != null ? order.getCustomer().getId() : "null");
             }
+        } else {
+            logger.warn("未查詢到任何訂單 - customerId: {}", customer.getId());
         }
         return orders;
     }

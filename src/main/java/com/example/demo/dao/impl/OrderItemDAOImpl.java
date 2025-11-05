@@ -45,10 +45,15 @@ public class OrderItemDAOImpl implements OrderItemDAO {
     @Override
     public OrderItem save(OrderItem orderItem) {
         logger.info("開始儲存訂單項目到資料庫 - orderId: {}, productId: {}", 
-                   orderItem.getOrder().getId(), orderItem.getProduct().getId());
+                   orderItem.getOrder() != null ? orderItem.getOrder().getId() : "null",
+                   orderItem.getProduct() != null ? orderItem.getProduct().getId() : "null");
         getCurrentSession().save(orderItem);
+        // 立即 flush 以檢查約束錯誤
+        getCurrentSession().flush();
         logger.info("訂單項目儲存成功 - orderItemId: {}, orderId: {}, productId: {}", 
-                   orderItem.getId(), orderItem.getOrder().getId(), orderItem.getProduct().getId());
+                   orderItem.getId(), 
+                   orderItem.getOrder() != null ? orderItem.getOrder().getId() : "null",
+                   orderItem.getProduct() != null ? orderItem.getProduct().getId() : "null");
         return orderItem;
     }
 

@@ -84,6 +84,45 @@
             padding: 40px;
             color: #c99773;
         }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        .pagination-info {
+            color: #c99773;
+            font-weight: bold;
+            margin: 0 15px;
+        }
+        .pagination-btn {
+            padding: 8px 16px;
+            background-color: #c99773;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        .pagination-btn:hover:not(.disabled) {
+            color: #fbd5ba;
+            background-color: #4f3f66;
+        }
+        .pagination-btn.disabled {
+            background-color: rgba(158, 154, 154, 0.3);
+            color: rgba(255, 255, 255, 0.5);
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .pagination-btn.active {
+            background-color: #4f3f66;
+            color: #fbd5ba;
+        }
     </style>
 </head>
 <body>
@@ -125,7 +164,11 @@
                     <td>
                         <strong th:text="${order.orderNumber}">訂單編號</strong>
                     </td>
-                    <td th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm')}">訂單日期</td>
+                    <td>
+                        <span th:if="${order.createdAt != null}" 
+                              th:text="${order.createdAt.toString().substring(0, 16).replace('T', ' ')}">訂單日期</span>
+                        <span th:if="${order.createdAt == null}">N/A</span>
+                    </td>
                     <td th:if="${isMyOrders == null || !isMyOrders}" 
                         th:text="${order.customer != null ? order.customer.fullName : 'N/A'}">客戶</td>
                     <td>
@@ -154,6 +197,40 @@
                 </tr>
             </tbody>
         </table>
+
+        <!-- 分頁導航（僅在「我的訂單」頁面顯示） -->
+        <div class="pagination" th:if="${isMyOrders != null && isMyOrders && totalPages != null && totalPages > 1}">
+            <!-- 上一頁按鈕 -->
+            <a th:href="@{/orders/my(page=${currentPage > 0 ? currentPage - 1 : 0})}" 
+               class="pagination-btn" 
+               th:class="${currentPage == 0 ? 'pagination-btn disabled' : 'pagination-btn'}">
+                上一頁
+            </a>
+
+            <!-- 頁碼按鈕 -->
+            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                <a th:each="pageNum : ${#numbers.sequence(1, totalPages)}"
+                   th:href="@{/orders/my(page=${pageNum - 1})}"
+                   th:class="${(pageNum - 1) == currentPage ? 'pagination-btn active' : 'pagination-btn'}"
+                   th:text="${pageNum}">
+                </a>
+            </div>
+
+            <!-- 下一頁按鈕 -->
+            <a th:href="@{/orders/my(page=${currentPage < totalPages - 1 ? currentPage + 1 : totalPages - 1})}" 
+               class="pagination-btn" 
+               th:class="${currentPage >= totalPages - 1 ? 'pagination-btn disabled' : 'pagination-btn'}">
+                下一頁
+            </a>
+
+            <!-- 分頁資訊 -->
+            <div class="pagination-info">
+                第 <span th:text="${currentPage + 1}"></span> 頁 / 共 <span th:text="${totalPages}"></span> 頁
+                <span style="margin-left: 10px;">
+                    （共 <span th:text="${totalOrders}"></span> 筆訂單）
+                </span>
+            </div>
+        </div>
     </div>
 
     <div th:if="${orders == null || orders.isEmpty()}" class="empty-orders">
