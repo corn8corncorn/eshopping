@@ -30,6 +30,7 @@
             </div>
             <h2>編輯商品</h2>
             <form th:action="@{'/products/update/' + ${product.id}}" method="post" th:object="${product}" id="editProductForm" enctype="multipart/form-data" onsubmit="return validatePrice(this)">
+                <input type="hidden" name="page" th:value="${currentPage != null ? currentPage : 0}" />
                 <div class="form-group">
                     <div class="input-row">
                         <label for="name">名稱：</label>
@@ -106,7 +107,7 @@
                         <label></label>
                         <div style="display: flex; justify-content: space-between; width: 200px;">
                             <button type="submit" class="btn btn-primary">更新</button>
-                            <a th:href="@{/products}">
+                            <a th:href="@{/products(page=${currentPage != null ? currentPage : 0})}">
                                 <button type="button" class="btn btn-primary">取消</button>
                             </a>
                         </div>

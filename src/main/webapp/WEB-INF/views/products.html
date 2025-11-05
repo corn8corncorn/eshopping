@@ -174,7 +174,7 @@
                         </div>
                     </div>
                     <div class="product-actions">
-                        <a th:href="@{'/products/edit/' + ${p.id}}" style="text-decoration: none;">
+                        <a th:href="@{'/products/edit/' + ${p.id} + '?page=' + ${currentPage}}" style="text-decoration: none;">
                             <button class="btn btn-primary" type="button">編輯</button>
                         </a>
                         <button type="button" 

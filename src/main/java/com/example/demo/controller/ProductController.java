@@ -106,15 +106,19 @@ public class ProductController {
 	 * 根據商品 ID 獲取商品資料供編輯
 	 * 
 	 * @param id 商品 ID
+	 * @param page 來源頁碼（用於編輯後返回原頁面）
 	 * @param model 用於傳遞商品資料到前端頁面
 	 * @return 編輯商品頁面模板名稱
 	 */
 	@GetMapping("/edit/{id}")
-	public String showEditForm(@PathVariable("id") Long id, Model model) {
-		logger.info("進入編輯商品頁面 - productId: {}", id);
+	public String showEditForm(@PathVariable("id") Long id,
+	                          @RequestParam(value = "page", defaultValue = "0") int page,
+	                          Model model) {
+		logger.info("進入編輯商品頁面 - productId: {}, page: {}", id, page);
 		Product product = productService.getById(id);
 		model.addAttribute("product", product);
-		logger.debug("商品資料載入完成 - productId: {}, productName: {}", id, product.getName());
+		model.addAttribute("currentPage", page);
+		logger.debug("商品資料載入完成 - productId: {}, productName: {}, page: {}", id, product.getName(), page);
 		return "edit-product";
 	}
 
@@ -132,16 +136,17 @@ public class ProductController {
 	                           @Valid @ModelAttribute("product") Product product,
 	                           BindingResult bindingResult,
 	                           @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
+	                           @RequestParam(value = "page", defaultValue = "0") int page,
 	                           RedirectAttributes redirectAttributes) {
 		if (bindingResult.hasErrors()) {
 			logger.warn("商品更新驗證失敗 - productId: {}, errors: {}", id, bindingResult.getAllErrors());
 			redirectAttributes.addFlashAttribute("error", "商品更新失敗：請檢查輸入資料是否正確");
-			return "redirect:/products/edit/" + id;
+			return "redirect:/products/edit/" + id + "?page=" + page;
 		}
 		
 		try {
-			logger.info("開始更新商品 - productId: {}, productName: {}, stockQuantity: {}", 
-			           id, product.getName(), product.getStockQuantity());
+			logger.info("開始更新商品 - productId: {}, productName: {}, stockQuantity: {}, page: {}", 
+			           id, product.getName(), product.getStockQuantity(), page);
 			
 			// 處理圖片上傳
 			if (imageFile != null && !imageFile.isEmpty()) {
@@ -161,18 +166,18 @@ public class ProductController {
 				} catch (Exception e) {
 					logger.error("圖片上傳失敗", e);
 					redirectAttributes.addFlashAttribute("error", "圖片上傳失敗：" + e.getMessage());
-					return "redirect:/products/edit/" + id;
+					return "redirect:/products/edit/" + id + "?page=" + page;
 				}
 			}
 			
 			productService.updateProduct(id, product);
-			logger.info("商品更新成功 - productId: {}", id);
+			logger.info("商品更新成功 - productId: {}, page: {}", id, page);
 			redirectAttributes.addFlashAttribute("success", "商品「" + product.getName() + "」更新成功");
 		} catch (Exception e) {
 			logger.error("更新商品失敗 - productId: {}", id, e);
 			redirectAttributes.addFlashAttribute("error", "商品更新失敗：" + e.getMessage());
 		}
-		return "redirect:/products";
+		return "redirect:/products?page=" + page;
 	}
 
 	/**
