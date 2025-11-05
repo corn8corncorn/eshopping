@@ -40,13 +40,26 @@ public class OrderDAOImpl implements OrderDAO {
 
     /**
      * 儲存訂單到資料庫
+     * 如果訂單已有 ID，則更新；否則插入新記錄
      * @param order 要儲存的訂單物件
      * @return 儲存後的訂單物件（包含自動生成的 ID）
      */
     @Override
     public Order save(Order order) {
-        logger.info("開始儲存訂單到資料庫 - orderNumber: {}", order.getOrderNumber());
-        getCurrentSession().save(order);
+        logger.info("開始儲存訂單到資料庫 - orderNumber: {}, orderId: {}", 
+                   order.getOrderNumber(), order.getId());
+        
+        // 使用 saveOrUpdate 確保如果訂單已有 ID 則更新，否則插入
+        if (order.getId() == null) {
+            // 新訂單，使用 save
+            getCurrentSession().save(order);
+            logger.debug("插入新訂單");
+        } else {
+            // 已有 ID 的訂單，使用 update 或 merge
+            getCurrentSession().merge(order);
+            logger.debug("更新現有訂單");
+        }
+        
         // 立即 flush 以確保訂單 ID 已生成，並檢查約束錯誤
         getCurrentSession().flush();
         logger.info("訂單儲存成功 - orderId: {}, orderNumber: {}", order.getId(), order.getOrderNumber());

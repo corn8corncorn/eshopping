@@ -213,10 +213,14 @@ public class Order {
 
     /**
      * 生成訂單編號
+     * 使用時間戳和隨機數確保唯一性
      * @return 訂單編號
      */
     private String generateOrderNumber() {
-        return "ORD" + System.currentTimeMillis();
+        // 使用時間戳 + 隨機數確保唯一性
+        long timestamp = System.currentTimeMillis();
+        int random = (int)(Math.random() * 10000); // 0-9999 的隨機數
+        return "ORD" + timestamp + String.format("%04d", random);
     }
 
     /**

@@ -406,7 +406,21 @@ public class OrderController {
                              @RequestParam("paymentMethod") String paymentMethod,
                              @RequestParam(value = "notes", required = false) String notes,
                              RedirectAttributes redirectAttributes) {
-        logger.info("建立訂單 - recipientName: {}, paymentMethod: {}", recipientName, paymentMethod);
+        logger.info("建立訂單 - recipientName: {}, paymentMethod: {}, streetAddress: {}", 
+                   recipientName, paymentMethod, streetAddress);
+        
+        // 驗證必填欄位
+        if (recipientName == null || recipientName.trim().isEmpty()) {
+            logger.warn("收件人姓名為空");
+            redirectAttributes.addFlashAttribute("error", "收件人姓名不能為空");
+            return "redirect:/orders/checkout";
+        }
+        
+        if (streetAddress == null || streetAddress.trim().isEmpty()) {
+            logger.warn("街道地址為空");
+            redirectAttributes.addFlashAttribute("error", "街道地址不能為空");
+            return "redirect:/orders/checkout";
+        }
         
         try {
             // 取得目前登入的用戶
@@ -470,11 +484,15 @@ public class OrderController {
             OrderAddress orderAddress = orderAddressService.createOrderAddress(
                 order, recipientName, 
                 recipientPhone != null ? recipientPhone : "", 
-                streetAddress,
-                country, city, district, postCode);
+                streetAddress != null ? streetAddress : "",
+                country != null ? country : "",
+                city != null ? city : "",
+                district != null ? district : "",
+                postCode != null ? postCode : "");
             
-            // 設置雙向關聯
+            // 設置雙向關聯並保存
             order.setOrderAddress(orderAddress);
+            order = orderService.saveOrder(order);
 
             // 從購物車項目建立訂單項目
             for (CartItem cartItem : cart.getCartItems()) {

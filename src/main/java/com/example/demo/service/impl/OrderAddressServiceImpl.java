@@ -47,9 +47,24 @@ public class OrderAddressServiceImpl implements OrderAddressService {
             throw new IllegalArgumentException("收件人姓名不能為空");
         }
         
-        // 確保 phone 不為 null（使用空字串代替）
+        // 確保所有可選欄位不為 null（使用空字串代替）
         if (phone == null) {
             phone = "";
+        }
+        if (streetAddress == null) {
+            streetAddress = "";
+        }
+        if (country == null) {
+            country = "";
+        }
+        if (city == null) {
+            city = "";
+        }
+        if (district == null) {
+            district = "";
+        }
+        if (postCode == null) {
+            postCode = "";
         }
         
         OrderAddress orderAddress = new OrderAddress(order, recipientName, phone, streetAddress);
