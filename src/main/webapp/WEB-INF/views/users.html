@@ -7,43 +7,201 @@
     <script th:src="@{/resources/js/notice.js}"></script>
     <script th:src="@{/resources/js/confirm-modal.js}"></script>
     <title>用戶管理 - 電子商城</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .admin-header {
+            background-color: rgba(79, 63, 102, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            color: white;
+        }
+        .admin-header h1 {
+            margin: 0 0 10px 0;
+            color: #fbd5ba;
+        }
+        .admin-nav {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        .admin-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            background-color: rgba(201, 151, 115, 0.8);
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .admin-nav a:hover {
+            background-color: #c99773;
+            color: #fbd5ba;
+        }
+        .user-list-container {
+            background-color: rgba(103,103,103,0.6);
+            border-radius: 10px;
+            padding: 25px;
+            color: white;
+        }
+        .user-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .user-list-header h2 {
+            margin: 0;
+            color: #fbd5ba;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: #c99773;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        .btn:hover {
+            background-color: #4f3f66;
+            color: #fbd5ba;
+        }
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        th {
+            background-color: rgba(79, 63, 102, 0.8);
+            color: white;
+            font-weight: bold;
+        }
+        td {
+            color: white;
+        }
+        tr:hover {
+            background-color: rgba(201, 151, 115, 0.2);
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: #fbd5ba;
+        }
+        nav {
+            color: white;
+            margin-top: 20px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+        nav a:hover {
+            color: #fbd5ba;
+        }
+    </style>
 </head>
 <body>
     <!-- Notice 元件 -->
     <div th:replace="~{fragments/notice :: notice}"></div>
 
-    <div class="container mt-4">
-        <h1>用戶列表</h1>
-        
-        <a th:href="@{/users/add}" class="btn btn-primary mb-3">新增用戶</a>
-        
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>使用者名稱</th>
-                    <th>Email</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="user : ${users}">
-                    <td th:text="${user.id}"></td>
-                    <td th:text="${user.username}"></td>
-                    <td th:text="${user.email}"></td>
-                    <td>
-                        <a th:href="@{/users/edit/{id}(id=${user.id})}" class="btn btn-primary btn-sm">編輯</a>
-                        <button type="button" 
-                                class="btn btn-primary btn-sm delete-btn" 
-                                data-delete-url="@{/users/delete/{id}(id=${user.id})}"
-                                th:data-delete-url="@{'/users/delete/' + ${user.id}}"
-                                th:data-delete-message="'確定要刪除用戶「' + ${user.username} + '」嗎？'">
-                            刪除
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="admin-header">
+        <h1>用戶管理</h1>
+        <nav>
+            <a th:href="@{/home}">回首頁</a> |
+            <a th:href="@{/admin/dashboard}">後台管理</a> |
+            <a th:href="@{/products}">商品管理</a> |
+            <a th:href="@{/users}">用戶管理</a> |
+            <a th:href="@{/orders}">訂單管理</a>
+        </nav>
+    </div>
+
+    <div class="user-list-container">
+        <div class="user-list-header">
+            <h2>用戶列表</h2>
+            <a th:href="@{/users/add}" class="btn">新增用戶</a>
+        </div>
+
+        <div class="table-container" th:if="${users != null && !users.isEmpty()}">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>使用者名稱</th>
+                        <th>Email</th>
+                        <th>角色</th>
+                        <th>狀態</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.id}"></td>
+                        <td th:text="${user.username}"></td>
+                        <td th:text="${user.email}"></td>
+                        <td>
+                            <span th:text="${user.role != null ? user.role.description : 'N/A'}" 
+                                  th:style="${user.role != null && user.role.name() == 'ADMIN' ? 'color: #fbd5ba; font-weight: bold;' : ''}">
+                                角色
+                            </span>
+                        </td>
+                        <td>
+                            <span th:if="${user.enabled != null && user.enabled}" 
+                                  style="color: #28a745; font-weight: bold;">啟用</span>
+                            <span th:if="${user.enabled != null && !user.enabled}" 
+                                  style="color: #dc3545; font-weight: bold;">停用</span>
+                            <span th:if="${user.enabled == null}">N/A</span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a th:href="@{/users/edit/{id}(id=${user.id})}" class="btn btn-sm">編輯</a>
+                                <button type="button" 
+                                        class="btn btn-sm delete-btn" 
+                                        th:data-delete-form="'deleteForm-' + ${user.id}"
+                                        th:data-delete-message="'確定要刪除用戶「' + ${user.username} + '」嗎？'">
+                                    刪除
+                                </button>
+                                <form th:id="'deleteForm-' + ${user.id}" 
+                                      th:action="@{'/users/delete/' + ${user.id}}" 
+                                      method="get" 
+                                      style="display:none;">
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="empty-message" th:if="${users == null || users.isEmpty()}">
+            <h3>目前沒有用戶</h3>
+            <p>點擊「新增用戶」按鈕來添加第一個用戶</p>
+        </div>
     </div>
 
     <!-- 確認刪除 Modal -->

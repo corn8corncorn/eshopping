@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.validation.BindingResult;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.example.demo.model.Product;
 import com.example.demo.service.ProductService;
@@ -95,6 +96,7 @@ public class ProductController {
 	 * @return 新增商品頁面模板名稱
 	 */
 	@GetMapping("/add")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String showAddForm(Model model) {
 		logger.info("進入新增商品頁面");
 		model.addAttribute("product", new Product());
@@ -111,6 +113,7 @@ public class ProductController {
 	 * @return 編輯商品頁面模板名稱
 	 */
 	@GetMapping("/edit/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String showEditForm(@PathVariable("id") Long id,
 	                          @RequestParam(value = "page", defaultValue = "0") int page,
 	                          Model model) {
@@ -132,6 +135,7 @@ public class ProductController {
 	 * @return 更新成功後重定向到商品列表頁面
 	 */
 	@PostMapping("/update/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String updateProduct(@PathVariable("id") Long id, 
 	                           @Valid @ModelAttribute("product") Product product,
 	                           BindingResult bindingResult,
@@ -189,6 +193,7 @@ public class ProductController {
 	 * @return 保存成功後重定向到商品列表頁面
 	 */
 	@PostMapping("/save")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String saveUser(@Valid @ModelAttribute Product product, 
 	                     BindingResult bindingResult,
 	                     @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
@@ -234,6 +239,7 @@ public class ProductController {
 	 * @return 刪除成功後重定向到商品列表頁面
 	 */
 	@PostMapping("/delete/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String deleteProduct(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
 		try {
 			logger.info("開始刪除商品 - productId: {}", id);

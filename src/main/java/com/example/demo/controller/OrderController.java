@@ -69,21 +69,127 @@ public class OrderController {
 
     /**
      * 顯示訂單列表頁面（管理員功能）
-     * 獲取所有訂單並顯示在列表中
+     * 獲取所有訂單並顯示在列表中，支援搜尋、篩選和分頁功能
      * 
+     * @param page 頁碼（從 0 開始，預設為 0）
+     * @param size 每頁顯示數量（預設為 10）
+     * @param search 搜尋關鍵字（訂單編號或客戶名稱）
+     * @param status 訂單狀態篩選
+     * @param paymentStatus 付款狀態篩選
      * @param model 用於傳遞訂單資料到前端頁面
      * @return 訂單列表頁面模板名稱
      */
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public String listOrders(Model model) {
-        logger.info("進入訂單列表頁面（管理員）");
+    public String listOrders(@RequestParam(value = "page", defaultValue = "0") int page,
+                            @RequestParam(value = "size", defaultValue = "10") int size,
+                            @RequestParam(value = "search", required = false) String search,
+                            @RequestParam(value = "status", required = false) String status,
+                            @RequestParam(value = "paymentStatus", required = false) String paymentStatus,
+                            Model model) {
+        logger.info("進入訂單列表頁面（管理員） - page: {}, size: {}, search: {}, status: {}, paymentStatus: {}", 
+                   page, size, search, status, paymentStatus);
         
         try {
-            List<Order> orders = orderService.getAll();
-            logger.debug("載入訂單列表 - 共 {} 筆訂單", orders.size());
-            model.addAttribute("orders", orders);
-            logger.info("訂單列表頁面載入完成");
+            // 獲取所有訂單
+            List<Order> allOrders = orderService.getAll();
+            logger.info("從資料庫獲取訂單總數: {}", allOrders != null ? allOrders.size() : 0);
+            
+            // 確保 allOrders 不為 null
+            if (allOrders == null) {
+                allOrders = java.util.Collections.emptyList();
+            }
+            
+            // 在事務範圍內初始化所有訂單的關聯，確保模板可以訪問（避免 lazy loading 問題）
+            if (!allOrders.isEmpty()) {
+                for (Order order : allOrders) {
+                    // 初始化 customer 關聯，避免 lazy loading 問題
+                    if (order.getCustomer() != null) {
+                        order.getCustomer().getId(); // 觸發 lazy loading
+                        order.getCustomer().getFullName(); // 預載入常用欄位
+                    }
+                    // 初始化 orderAddress 關聯（如果需要）
+                    if (order.getOrderAddress() != null) {
+                        order.getOrderAddress().getId(); // 觸發 lazy loading
+                    }
+                }
+                logger.debug("已初始化 {} 筆訂單的關聯對象", allOrders.size());
+            }
+            
+            // 應用搜尋篩選
+            if (search != null && !search.trim().isEmpty()) {
+                String searchLower = search.toLowerCase().trim();
+                allOrders = allOrders.stream()
+                    .filter(order -> 
+                        (order.getOrderNumber() != null && order.getOrderNumber().toLowerCase().contains(searchLower)) ||
+                        (order.getCustomer() != null && order.getCustomer().getFullName() != null && 
+                         order.getCustomer().getFullName().toLowerCase().contains(searchLower))
+                    )
+                    .collect(java.util.stream.Collectors.toList());
+            }
+            
+            // 應用狀態篩選
+            if (status != null && !status.trim().isEmpty()) {
+                try {
+                    OrderStatus filterStatus = OrderStatus.valueOf(status.toUpperCase());
+                    allOrders = allOrders.stream()
+                        .filter(order -> order.getStatus() == filterStatus)
+                        .collect(java.util.stream.Collectors.toList());
+                } catch (IllegalArgumentException e) {
+                    logger.warn("無效的訂單狀態篩選值: {}", status);
+                }
+            }
+            
+            // 應用付款狀態篩選
+            if (paymentStatus != null && !paymentStatus.trim().isEmpty()) {
+                try {
+                    PaymentStatus filterPaymentStatus = PaymentStatus.valueOf(paymentStatus.toUpperCase());
+                    allOrders = allOrders.stream()
+                        .filter(order -> order.getPaymentStatus() == filterPaymentStatus)
+                        .collect(java.util.stream.Collectors.toList());
+                } catch (IllegalArgumentException e) {
+                    logger.warn("無效的付款狀態篩選值: {}", paymentStatus);
+                }
+            }
+            
+            // 計算分頁
+            int totalOrders = allOrders.size();
+            int totalPages = totalOrders > 0 ? (int) Math.ceil((double) totalOrders / size) : 0;
+            
+            // 確保頁碼不超出範圍
+            if (page < 0) {
+                page = 0;
+            }
+            if (totalPages > 0 && page >= totalPages) {
+                page = totalPages - 1;
+            }
+            
+            // 計算當前頁的訂單範圍
+            List<Order> paginatedOrders;
+            if (totalOrders > 0) {
+                int start = page * size;
+                int end = Math.min(start + size, totalOrders);
+                paginatedOrders = allOrders.subList(start, end);
+            } else {
+                paginatedOrders = java.util.Collections.emptyList();
+            }
+            
+            // 添加所有可能的狀態選項供前端使用
+            model.addAttribute("orders", paginatedOrders);
+            model.addAttribute("isMyOrders", false); // 標記為管理員訂單列表
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", totalPages);
+            model.addAttribute("totalOrders", totalOrders);
+            model.addAttribute("pageSize", size);
+            model.addAttribute("search", search != null ? search : "");
+            model.addAttribute("selectedStatus", status != null ? status : "");
+            model.addAttribute("selectedPaymentStatus", paymentStatus != null ? paymentStatus : "");
+            model.addAttribute("orderStatuses", OrderStatus.values());
+            model.addAttribute("paymentStatuses", PaymentStatus.values());
+            
+            logger.info("訂單列表頁面載入完成 - 總數: {}, 當前頁: {}/{}, 顯示: {} 筆", 
+                       totalOrders, page + 1, totalPages, paginatedOrders.size());
+            
         } catch (Exception e) {
             logger.error("載入訂單列表時發生錯誤", e);
             model.addAttribute("error", "載入訂單列表失敗：" + e.getMessage());

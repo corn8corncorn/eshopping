@@ -6,29 +6,153 @@
     <link rel="stylesheet" type="text/css" th:href="@{/resources/css/loginReg.css}">
     <script th:src="@{/resources/js/notice.js}"></script>
     <title>新增用戶 - 電子商城</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .admin-header {
+            background-color: rgba(79, 63, 102, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            color: white;
+        }
+        .admin-header h1 {
+            margin: 0 0 10px 0;
+            color: #fbd5ba;
+        }
+        .admin-nav {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        .admin-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            background-color: rgba(201, 151, 115, 0.8);
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .admin-nav a:hover {
+            background-color: #c99773;
+            color: #fbd5ba;
+        }
+        .form-container {
+            background-color: rgba(103,103,103,0.6);
+            padding: 30px;
+            border-radius: 10px;
+            color: white;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: white;
+            font-weight: bold;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background-color: rgba(255,255,255,0.9);
+            color: #333;
+            font-size: 16px;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #c99773;
+            background-color: white;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: #c99773;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        .btn:hover {
+            background-color: #4f3f66;
+            color: #fbd5ba;
+        }
+        .help-text {
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+            margin-top: 5px;
+        }
+    </style>
 </head>
 <body>
     <!-- Notice 元件 -->
     <div th:replace="~{fragments/notice :: notice}"></div>
 
-<div class="container mt-4">
-    <h1>新增用戶</h1>
+    <div class="admin-header">
+        <h1>新增用戶</h1>
+        <nav class="admin-nav">
+            <a th:href="@{/home}">回首頁</a>
+            <a th:href="@{/admin/dashboard}">後台管理</a>
+            <a th:href="@{/users}">用戶列表</a>
+        </nav>
+    </div>
 
-    <!-- 表單提交到 /users/save -->
-    <form th:action="@{/users/save}" th:object="${user}" method="post">
-        <div class="mb-3">
-            <label for="name" class="form-label">Name</label>
-            <input type="text" th:field="*{name}" class="form-control" id="name" placeholder="Enter name" required>
-        </div>
+    <div class="form-container">
+        <form th:action="@{/users/save}" th:object="${user}" method="post">
+            <div class="form-group">
+                <label for="username">使用者名稱 *</label>
+                <input type="text" th:field="*{username}" id="username" placeholder="輸入使用者名稱" required>
+                <div class="help-text">使用者名稱必須唯一</div>
+            </div>
 
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" th:field="*{email}" class="form-control" id="email" placeholder="Enter email" required>
-        </div>
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" th:field="*{email}" id="email" placeholder="輸入 Email" required>
+                <div class="help-text">Email 必須唯一</div>
+            </div>
 
-        <button type="submit" class="btn btn-primary">Save</button>
-        <a th:href="@{/users}" class="btn btn-primary">Cancel</a>
-    </form>
-</div>
+            <div class="form-group">
+                <label for="password">密碼 *</label>
+                <input type="password" th:field="*{password}" id="password" placeholder="輸入密碼" required>
+                <div class="help-text">密碼將自動加密存儲</div>
+            </div>
+
+            <div class="form-group">
+                <label for="role">角色 *</label>
+                <select th:field="*{role}" id="role" required>
+                    <option value="USER">一般用戶</option>
+                    <option value="ADMIN">管理員</option>
+                </select>
+                <div class="help-text">選擇用戶角色：管理員可以訪問後台管理功能</div>
+            </div>
+
+            <div class="form-group">
+                <label for="enabled">帳號狀態</label>
+                <select th:field="*{enabled}" id="enabled">
+                    <option th:value="true">啟用</option>
+                    <option th:value="false">停用</option>
+                </select>
+                <div class="help-text">停用的帳號無法登入系統</div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <button type="submit" class="btn">儲存</button>
+                <a th:href="@{/users}" class="btn">取消</a>
+            </div>
+        </form>
+    </div>
 </body>
 </html>

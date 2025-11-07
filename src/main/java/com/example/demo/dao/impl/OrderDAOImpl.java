@@ -106,8 +106,26 @@ public class OrderDAOImpl implements OrderDAO {
     @Transactional(readOnly = true)
     public List<Order> findAll() {
         logger.info("查找所有訂單");
-        Query<Order> query = getCurrentSession().createQuery("FROM Order ORDER BY createdAt DESC", Order.class);
+        // 使用 JOIN FETCH 預加載關聯數據，避免 lazy loading 問題
+        Query<Order> query = getCurrentSession().createQuery(
+                "SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.customer LEFT JOIN FETCH o.orderAddress ORDER BY o.createdAt DESC", Order.class);
         List<Order> orders = query.getResultList();
+        
+        // 在事務範圍內初始化所有需要的關聯，確保在模板中可以訪問
+        if (!orders.isEmpty()) {
+            for (Order order : orders) {
+                // 初始化 customer 關聯，避免 lazy loading 問題
+                if (order.getCustomer() != null) {
+                    order.getCustomer().getId(); // 觸發 lazy loading
+                    order.getCustomer().getFullName(); // 預載入常用欄位
+                }
+                // 初始化 orderAddress 關聯
+                if (order.getOrderAddress() != null) {
+                    order.getOrderAddress().getId(); // 觸發 lazy loading
+                }
+            }
+        }
+        
         logger.debug("查詢到訂單數量: {}", orders.size());
         return orders;
     }

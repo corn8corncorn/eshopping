@@ -142,6 +142,16 @@ public class UserServiceImpl implements UserService {
                 logger.debug("更新密碼");
                 existingUser.setPassword(user.getPassword());
             }
+            // 更新角色
+            if (user.getRole() != null) {
+                logger.debug("更新角色 - role: {}", user.getRole());
+                existingUser.setRole(user.getRole());
+            }
+            // 更新啟用狀態
+            if (user.getEnabled() != null) {
+                logger.debug("更新啟用狀態 - enabled: {}", user.getEnabled());
+                existingUser.setEnabled(user.getEnabled());
+            }
             
             User updatedUser = userDAO.update(existingUser);
             logger.info("使用者更新成功 - userId: {}", id);

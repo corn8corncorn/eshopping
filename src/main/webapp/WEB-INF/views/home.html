@@ -156,15 +156,14 @@
             <nav class="nav">
                 <a th:href="@{/home}" th:text="#{nav.home}">首頁</a>
                 <a th:href="@{/shop}">商品展示</a>
-                <a th:href="@{/products}" th:text="#{nav.products}">商品管理</a>
                 <a th:href="@{/cart}" class="cart-icon">
                     購物車
                     <span th:if="${cartItemCount != null && cartItemCount > 0}" 
                           class="cart-badge" 
                           th:text="${cartItemCount}">0</span>
                 </a>
-                <a th:href="@{/orders/my}">我的訂單</a>
-                <a th:href="@{/account}" style="font-weight: bold; color: #c99773;">會員中心</a>
+                <a th:href="@{/orders/my}" th:if="${isLoggedIn}">我的訂單</a>
+                <a th:href="@{/account}" th:if="${isLoggedIn}" style="font-weight: bold; color: #c99773;">會員中心</a>
                 <span th:if="${isLoggedIn}">
                     <span th:text="${'歡迎，' + username}">歡迎</span>
                     <form th:action="@{/logout}" method="post" style="display: inline;">
@@ -175,11 +174,12 @@
                     <a th:href="@{/login}" th:text="#{button.login}">登入</a>
                     <a th:href="@{/register}" th:text="#{button.register}">註冊</a>
                 </span>
-                <span th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
-                    <a th:href="@{/users}" th:text="#{nav.user.management}">用戶管理</a>
-                    <a th:href="@{/customers}" th:text="#{nav.customer.management}">客戶管理</a>
-                    <a th:href="@{/orders}">訂單管理</a>
-                </span>
+                <!-- 管理員可以點擊此連結進入後台 -->
+                <a th:href="@{/admin/dashboard}" 
+                   th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+                   style="background-color: #c99773; color: white; padding: 5px 10px; border-radius: 5px; text-decoration: none;">
+                    後台管理
+                </a>
             </nav>
         </div>
     </div>

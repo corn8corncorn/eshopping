@@ -22,13 +22,23 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
 
+        // 記錄用戶角色資訊（用於調試）
+        String roleName = user.getRole() != null ? user.getRole().name() : "UNKNOWN";
+        String authority = "ROLE_" + roleName;
+        System.out.println("=== 用戶角色資訊 ===");
+        System.out.println("Username: " + username);
+        System.out.println("Role enum: " + user.getRole());
+        System.out.println("Role name: " + roleName);
+        System.out.println("Authority: " + authority);
+        System.out.println("==================");
+
         // 使用 Spring Security 內建的 User.builder() 來建立 UserDetails
         // enabled 狀態由 is_enabled 欄位控制
         // accountExpired, accountLocked, credentialsExpired 都設為 false (不過期/不鎖定)
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())
                 .password(user.getPassword())
-                .authorities("ROLE_" + user.getRole().name())
+                .authorities(authority)
                 .accountExpired(false)      // 帳號未過期
                 .accountLocked(false)        // 帳號未鎖定
                 .credentialsExpired(false)   // 憑證未過期

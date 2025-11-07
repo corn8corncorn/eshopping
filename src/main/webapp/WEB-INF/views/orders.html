@@ -141,21 +141,83 @@
         nav a:hover {
             color: #fbd5ba;
         }
+        .admin-header {
+            background-color: rgba(79, 63, 102, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        .admin-header h1 {
+            margin: 0 0 10px 0;
+            color: #fbd5ba;
+        }
+        .filter-section {
+            background-color: rgba(103,103,103,0.6);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        .filter-form {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .filter-group label {
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .filter-group input,
+        .filter-group select {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background-color: rgba(255,255,255,0.9);
+            color: #333;
+        }
+        .filter-group input {
+            min-width: 200px;
+        }
+        .filter-group select {
+            min-width: 150px;
+        }
+        .btn-primary {
+            background-color: #c99773;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #4f3f66;
+            color: #fbd5ba;
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1 th:text="${isMyOrders != null && isMyOrders ? '我的訂單' : '訂單列表'}">訂單列表</h1>
+    <div class="admin-header" th:if="${isMyOrders == null || !isMyOrders}">
+        <h1>訂單管理</h1>
+        <nav>
+            <a th:href="@{/home}">回首頁</a> |
+            <a th:href="@{/admin/dashboard}">後台管理</a> |
+            <a th:href="@{/products}">商品管理</a> |
+            <a th:href="@{/users}">用戶管理</a> |
+            <a th:href="@{/orders}">訂單管理</a>
+        </nav>
+    </div>
+    
+    <div class="header" th:if="${isMyOrders != null && isMyOrders}">
+        <h1>我的訂單</h1>
         <nav>
             <a th:href="@{/home}">首頁</a> |
             <a th:href="@{/products}">商品列表</a> |
-            <a th:href="@{/cart}">購物車</a>
-            <span th:if="${isMyOrders == null || !isMyOrders}">
-                | <a th:href="@{/orders/my}">我的訂單</a>
-            </span>
-            <span th:if="${isMyOrders != null && isMyOrders}">
-                | <a th:href="@{/orders}">所有訂單（管理員）</a>
-            </span>
+            <a th:href="@{/cart}">購物車</a> |
+            <a th:href="@{/orders}">所有訂單（管理員）</a>
         </nav>
     </div>
 
@@ -163,7 +225,47 @@
     <div th:if="${success}" class="message success" th:text="${success}"></div>
     <div th:if="${error}" class="message error" th:text="${error}"></div>
 
-    <div th:if="${orders != null && !orders.isEmpty()}">
+    <!-- 搜尋和篩選區域（僅管理員訂單列表顯示） -->
+    <div class="filter-section" th:if="${isMyOrders == null || !isMyOrders}">
+        <form th:action="@{/orders}" method="get" class="filter-form">
+            <div class="filter-group">
+                <label for="search">搜尋（訂單編號/客戶名稱）</label>
+                <input type="text" id="search" name="search" 
+                       th:value="${search != null ? search : ''}" 
+                       placeholder="輸入訂單編號或客戶名稱">
+            </div>
+            <div class="filter-group">
+                <label for="status">訂單狀態</label>
+                <select id="status" name="status">
+                    <option value="">全部</option>
+                    <option th:each="s : ${orderStatuses}" 
+                            th:value="${s.name()}" 
+                            th:text="${s.description}"
+                            th:selected="${selectedStatus == s.name()}">
+                    </option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="paymentStatus">付款狀態</label>
+                <select id="paymentStatus" name="paymentStatus">
+                    <option value="">全部</option>
+                    <option th:each="ps : ${paymentStatuses}" 
+                            th:value="${ps.name()}" 
+                            th:text="${ps.description}"
+                            th:selected="${selectedPaymentStatus == ps.name()}">
+                    </option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <button type="submit" class="btn btn-primary">搜尋</button>
+            </div>
+            <div class="filter-group" th:if="${search != null && !search.isEmpty() || (selectedStatus != null && !selectedStatus.isEmpty()) || (selectedPaymentStatus != null && !selectedPaymentStatus.isEmpty())}">
+                <a th:href="@{/orders}" class="btn btn-primary">清除篩選</a>
+            </div>
+        </form>
+    </div>
+
+    <div th:if="${orders != null and !orders.isEmpty()}">
         <div class="table-container">
             <table>
             <thead>
@@ -218,10 +320,15 @@
         </table>
         </div>
 
-        <!-- 分頁導航（僅在「我的訂單」頁面顯示） -->
-        <div class="pagination" th:if="${isMyOrders != null && isMyOrders && totalPages != null && totalPages > 1}">
+        <!-- 分頁導航 -->
+        <div class="pagination" th:if="${totalPages != null && totalPages > 1}">
             <!-- 上一頁按鈕 -->
-            <a th:href="@{/orders/my(page=${currentPage > 0 ? currentPage - 1 : 0})}" 
+            <a th:href="${isMyOrders != null && isMyOrders ? 
+                         '/orders/my?page=' + (currentPage > 0 ? currentPage - 1 : 0) : 
+                         '/orders?page=' + (currentPage > 0 ? currentPage - 1 : 0) + 
+                         (search != null && !search.isEmpty() ? '&search=' + search : '') + 
+                         (selectedStatus != null && !selectedStatus.isEmpty() ? '&status=' + selectedStatus : '') + 
+                         (selectedPaymentStatus != null && !selectedPaymentStatus.isEmpty() ? '&paymentStatus=' + selectedPaymentStatus : '')}" 
                class="pagination-btn" 
                th:class="${currentPage == 0 ? 'pagination-btn disabled' : 'pagination-btn'}">
                 上一頁
@@ -230,14 +337,24 @@
             <!-- 頁碼按鈕 -->
             <div style="display: flex; gap: 5px; flex-wrap: wrap;">
                 <a th:each="pageNum : ${#numbers.sequence(1, totalPages)}"
-                   th:href="@{/orders/my(page=${pageNum - 1})}"
+                   th:href="${isMyOrders != null && isMyOrders ? 
+                            '/orders/my?page=' + (pageNum - 1) : 
+                            '/orders?page=' + (pageNum - 1) + 
+                            (search != null && !search.isEmpty() ? '&search=' + search : '') + 
+                            (selectedStatus != null && !selectedStatus.isEmpty() ? '&status=' + selectedStatus : '') + 
+                            (selectedPaymentStatus != null && !selectedPaymentStatus.isEmpty() ? '&paymentStatus=' + selectedPaymentStatus : '')}"
                    th:class="${(pageNum - 1) == currentPage ? 'pagination-btn active' : 'pagination-btn'}"
                    th:text="${pageNum}">
                 </a>
             </div>
 
             <!-- 下一頁按鈕 -->
-            <a th:href="@{/orders/my(page=${currentPage < totalPages - 1 ? currentPage + 1 : totalPages - 1})}" 
+            <a th:href="${isMyOrders != null && isMyOrders ? 
+                         '/orders/my?page=' + (currentPage < totalPages - 1 ? currentPage + 1 : totalPages - 1) : 
+                         '/orders?page=' + (currentPage < totalPages - 1 ? currentPage + 1 : totalPages - 1) + 
+                         (search != null && !search.isEmpty() ? '&search=' + search : '') + 
+                         (selectedStatus != null && !selectedStatus.isEmpty() ? '&status=' + selectedStatus : '') + 
+                         (selectedPaymentStatus != null && !selectedPaymentStatus.isEmpty() ? '&paymentStatus=' + selectedPaymentStatus : '')}" 
                class="pagination-btn" 
                th:class="${currentPage >= totalPages - 1 ? 'pagination-btn disabled' : 'pagination-btn'}">
                 下一頁
