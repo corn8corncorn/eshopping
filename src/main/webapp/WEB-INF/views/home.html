@@ -154,16 +154,16 @@
         <div class="header-content">
             <h1 th:text="#{home.title}">歡迎來到電商網站</h1>
             <nav class="nav">
-                <a th:href="@{/home}" th:text="#{nav.home}">首頁</a>
-                <a th:href="@{/shop}">商品展示</a>
+                <a th:href="@{/home}" class="cart-icon" th:text="#{nav.home}">首頁</a>
+                <a th:href="@{/shop}" class="cart-icon">商品展示</a>
                 <a th:href="@{/cart}" class="cart-icon">
                     購物車
                     <span th:if="${cartItemCount != null && cartItemCount > 0}" 
                           class="cart-badge" 
                           th:text="${cartItemCount}">0</span>
                 </a>
-                <a th:href="@{/orders/my}" th:if="${isLoggedIn}">我的訂單</a>
-                <a th:href="@{/account}" th:if="${isLoggedIn}" style="font-weight: bold; color: #c99773;">會員中心</a>
+                <a th:href="@{/orders/my}" class="cart-icon" th:if="${isLoggedIn}">我的訂單</a>
+                <a th:href="@{/account}" class="cart-icon" th:if="${isLoggedIn}">會員中心</a>
                 <span th:if="${isLoggedIn}">
                     <span th:text="${'歡迎，' + username}">歡迎</span>
                     <form th:action="@{/logout}" method="post" style="display: inline;">
@@ -171,13 +171,13 @@
                     </form>
                 </span>
                 <span th:unless="${isLoggedIn}">
-                    <a th:href="@{/login}" th:text="#{button.login}">登入</a>
-                    <a th:href="@{/register}" th:text="#{button.register}">註冊</a>
+                    <a th:href="@{/login}" class="cart-icon" th:text="#{button.login}">登入</a>
+                    <a th:href="@{/register}" class="cart-icon" th:text="#{button.register}">註冊</a>
                 </span>
                 <!-- 管理員可以點擊此連結進入後台 -->
                 <a th:href="@{/admin/dashboard}" 
-                   th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
-                   style="background-color: #c99773; color: white; padding: 5px 10px; border-radius: 5px; text-decoration: none;">
+                   class="cart-icon"
+                   th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
                     後台管理
                 </a>
             </nav>
