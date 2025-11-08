@@ -260,10 +260,13 @@
 <body>
     <div class="header">
         <div class="header-content">
-            <form class="search-bar" th:action="@{/shop/search}" method="get">
-                <input type="text" name="q" th:value="${searchKeyword}" placeholder="搜尋商品名稱或描述..." required>
-                <button type="submit" class="btn btn-primary">🔍 搜尋</button>
-            </form>
+            <h1>搜尋結果</h1>
+            <nav class="nav">
+                <a th:href="@{/home}">首頁</a>
+                <a th:href="@{/shop}">商品列表</a>
+                <a th:href="@{/cart}">購物車</a>
+                <a th:href="@{/orders/my}">我的訂單</a>
+            </nav>
         </div>
     </div>
 
