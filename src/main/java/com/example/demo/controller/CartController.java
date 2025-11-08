@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.example.demo.model.Cart;
 import com.example.demo.model.CartItem;
 import com.example.demo.model.Customer;
@@ -120,13 +122,46 @@ public class CartController {
      * @param productId 商品ID
      * @param quantity 商品數量，預設為1
      * @param redirectAttributes 用於傳遞重定向訊息
-     * @return 重定向到購物車頁面
+     * @param request HTTP請求，用於獲取來源頁面
+     * @return 重定向回來源頁面（商品列表或商品詳情頁）
      */
     @PostMapping("/add")
     public String addToCart(@RequestParam("productId") Long productId,
                            @RequestParam(value = "quantity", defaultValue = "1") Integer quantity,
-                           RedirectAttributes redirectAttributes) {
+                           RedirectAttributes redirectAttributes,
+                           HttpServletRequest request) {
         logger.info("添加商品到購物車 - productId: {}, quantity: {}", productId, quantity);
+        
+        // 獲取來源頁面，用於添加成功後重定向回去
+        String referer = request.getHeader("Referer");
+        String redirectUrl = "/shop"; // 默認重定向到商品列表
+        
+        // 如果來源是商品詳情頁，重定向回商品詳情頁
+        if (referer != null && referer.contains("/shop/product/")) {
+            redirectUrl = "/shop/product/" + productId;
+        } else if (referer != null && (referer.contains("/shop") || referer.contains("/search"))) {
+            // 如果來源是商品列表頁或搜索結果頁，重定向回原頁面
+            // 提取路徑部分，移除域名和上下文路徑
+            try {
+                java.net.URL url = new java.net.URL(referer);
+                String path = url.getPath();
+                // 移除上下文路徑（如果有）
+                if (path.startsWith("/eshop")) {
+                    path = path.substring("/eshop".length());
+                }
+                if (path.startsWith("/shop") || path.startsWith("/search")) {
+                    redirectUrl = path;
+                    // 保留查詢參數
+                    String query = url.getQuery();
+                    if (query != null && !query.isEmpty()) {
+                        redirectUrl += "?" + query;
+                    }
+                }
+            } catch (Exception e) {
+                logger.debug("無法解析 Referer URL: {}", referer, e);
+                // 如果解析失敗，使用默認值
+            }
+        }
         
         try {
             // 取得目前登入的用戶
@@ -173,8 +208,10 @@ public class CartController {
             logger.info("商品已添加到購物車 - cartId: {}, productId: {}, quantity: {}", 
                        cart.getId(), productId, quantity);
             
-            redirectAttributes.addFlashAttribute("success", "商品已成功添加到購物車");
-            return "redirect:/cart";
+            // 構建包含商品名稱的成功訊息
+            String successMessage = "已將【" + product.getName() + "】加入購物車";
+            redirectAttributes.addFlashAttribute("success", successMessage);
+            return "redirect:" + redirectUrl;
             
         } catch (IllegalStateException e) {
             // 庫存不足等業務邏輯錯誤，重定向回商品詳情頁

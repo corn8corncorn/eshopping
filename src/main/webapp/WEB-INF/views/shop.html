@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" type="text/css" th:href="@{/resources/css/loginReg.css}">
+    <script th:src="@{/resources/js/notice.js}"></script>
     <title>商品展示</title>
     <style>
         * {
@@ -186,6 +187,9 @@
 </head>
 <body>
     <div class="page-loader" style="display: none;"></div>
+    <!-- Notice 元件 -->
+    <div th:replace="~{fragments/notice :: notice}"></div>
+    
     <div class="header">
         <div class="header-content">
             <h1>商品展示</h1>
