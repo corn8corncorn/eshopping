@@ -218,7 +218,7 @@
                 <a th:href="@{/home}" class="cart-icon">首頁</a>
                 <a th:href="@{/shop}" class="cart-icon">商品列表</a>
                 <a th:href="@{/cart}" class="cart-icon">購物車</a>
-                <a th:href="@{/orders}" class="cart-icon">所有訂單（管理員）</a>
+                <a th:href="@{/orders}" class="cart-icon" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">所有訂單（管理員）</a>
                 <span th:if="${#authentication.isAuthenticated()}">
                     <span th:text="${'歡迎，' + #authentication.name}">歡迎</span>
                     <form th:action="@{/logout}" method="post" style="display: inline;">
