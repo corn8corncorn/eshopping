@@ -165,8 +165,10 @@
             border: 1px solid #f5c6cb;
         }
     </style>
+    <script th:src="@{/resources/js/page-transition.js}"></script>
 </head>
 <body>
+    <div class="page-loader" style="display: none;"></div>
     <!-- Notice 元件 -->
     <div th:replace="~{fragments/notice :: notice}"></div>
 
