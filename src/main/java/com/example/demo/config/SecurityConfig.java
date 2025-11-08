@@ -38,11 +38,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/", "/home", "/register", "/login", "/forgot-password", "/reset-password", "/shop/**", "/shop/search**", "/css/**", "/js/**", "/images/**", "/resources/**").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/users/**", "/customers").hasRole("ADMIN")
+                // 用戶訂單相關路由（必須在管理員路由之前，因為更具體）
+                .antMatchers("/orders/my", "/orders/my/**").hasRole("USER")
+                .antMatchers("/orders/checkout", "/orders/create", "/orders/confirmation/**").hasRole("USER")
+                .antMatchers("/orders/*/cancel").hasRole("USER")
+                // 管理員訂單相關路由
                 .antMatchers("/orders", "/orders/*/update-status", "/orders/*/update-payment-status").hasRole("ADMIN")
                 .antMatchers("/orders/{id}").hasAnyRole("ADMIN", "USER") // 管理員和用戶都可以查看訂單詳情
                 .antMatchers("/products/add", "/products/edit/**", "/products/delete/**", "/products/update/**", "/products/save").hasRole("ADMIN")
                 .antMatchers("/products", "/products/**").hasAnyRole("ADMIN", "USER")
-                .antMatchers("/cart/**", "/orders/my", "/orders/checkout", "/orders/create", "/orders/{id}/cancel", "/orders/confirmation/**", "/customers/edit", "/customers/profile", "/account/**").hasRole("USER")
+                .antMatchers("/cart/**", "/customers/edit", "/customers/profile", "/account/**").hasRole("USER")
                 .anyRequest().authenticated()
             .and()
             .formLogin()

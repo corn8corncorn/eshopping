@@ -325,12 +325,14 @@
         <!-- 分頁導航 -->
         <div class="pagination" th:if="${totalPages != null && totalPages > 1}">
             <!-- 上一頁按鈕 -->
-            <a th:href="${isMyOrders != null && isMyOrders ? 
-                         '/orders/my?page=' + (currentPage > 0 ? currentPage - 1 : 0) : 
-                         '/orders?page=' + (currentPage > 0 ? currentPage - 1 : 0) + 
-                         (search != null && !search.isEmpty() ? '&search=' + search : '') + 
-                         (selectedStatus != null && !selectedStatus.isEmpty() ? '&status=' + selectedStatus : '') + 
-                         (selectedPaymentStatus != null && !selectedPaymentStatus.isEmpty() ? '&paymentStatus=' + selectedPaymentStatus : '')}" 
+            <a th:if="${isMyOrders != null && isMyOrders}"
+               th:href="@{/orders/my(page=${currentPage > 0 ? currentPage - 1 : 0})}"
+               class="pagination-btn" 
+               th:class="${currentPage == 0 ? 'pagination-btn disabled' : 'pagination-btn'}">
+                上一頁
+            </a>
+            <a th:unless="${isMyOrders != null && isMyOrders}"
+               th:href="@{/orders(page=${currentPage > 0 ? currentPage - 1 : 0}, search=${search != null ? search : ''}, status=${selectedStatus != null ? selectedStatus : ''}, paymentStatus=${selectedPaymentStatus != null ? selectedPaymentStatus : ''})}"
                class="pagination-btn" 
                th:class="${currentPage == 0 ? 'pagination-btn disabled' : 'pagination-btn'}">
                 上一頁
@@ -338,25 +340,29 @@
 
             <!-- 頁碼按鈕 -->
             <div style="display: flex; gap: 5px; flex-wrap: wrap;">
-                <a th:each="pageNum : ${#numbers.sequence(1, totalPages)}"
-                   th:href="${isMyOrders != null && isMyOrders ? 
-                            '/orders/my?page=' + (pageNum - 1) : 
-                            '/orders?page=' + (pageNum - 1) + 
-                            (search != null && !search.isEmpty() ? '&search=' + search : '') + 
-                            (selectedStatus != null && !selectedStatus.isEmpty() ? '&status=' + selectedStatus : '') + 
-                            (selectedPaymentStatus != null && !selectedPaymentStatus.isEmpty() ? '&paymentStatus=' + selectedPaymentStatus : '')}"
+                <a th:if="${isMyOrders != null && isMyOrders}"
+                   th:each="pageNum : ${#numbers.sequence(1, totalPages)}"
+                   th:href="@{/orders/my(page=${pageNum - 1})}"
+                   th:class="${(pageNum - 1) == currentPage ? 'pagination-btn active' : 'pagination-btn'}"
+                   th:text="${pageNum}">
+                </a>
+                <a th:unless="${isMyOrders != null && isMyOrders}"
+                   th:each="pageNum : ${#numbers.sequence(1, totalPages)}"
+                   th:href="@{/orders(page=${pageNum - 1}, search=${search != null ? search : ''}, status=${selectedStatus != null ? selectedStatus : ''}, paymentStatus=${selectedPaymentStatus != null ? selectedPaymentStatus : ''})}"
                    th:class="${(pageNum - 1) == currentPage ? 'pagination-btn active' : 'pagination-btn'}"
                    th:text="${pageNum}">
                 </a>
             </div>
 
             <!-- 下一頁按鈕 -->
-            <a th:href="${isMyOrders != null && isMyOrders ? 
-                         '/orders/my?page=' + (currentPage < totalPages - 1 ? currentPage + 1 : totalPages - 1) : 
-                         '/orders?page=' + (currentPage < totalPages - 1 ? currentPage + 1 : totalPages - 1) + 
-                         (search != null && !search.isEmpty() ? '&search=' + search : '') + 
-                         (selectedStatus != null && !selectedStatus.isEmpty() ? '&status=' + selectedStatus : '') + 
-                         (selectedPaymentStatus != null && !selectedPaymentStatus.isEmpty() ? '&paymentStatus=' + selectedPaymentStatus : '')}" 
+            <a th:if="${isMyOrders != null && isMyOrders}"
+               th:href="@{/orders/my(page=${currentPage < totalPages - 1 ? currentPage + 1 : totalPages - 1})}"
+               class="pagination-btn" 
+               th:class="${currentPage >= totalPages - 1 ? 'pagination-btn disabled' : 'pagination-btn'}">
+                下一頁
+            </a>
+            <a th:unless="${isMyOrders != null && isMyOrders}"
+               th:href="@{/orders(page=${currentPage < totalPages - 1 ? currentPage + 1 : totalPages - 1}, search=${search != null ? search : ''}, status=${selectedStatus != null ? selectedStatus : ''}, paymentStatus=${selectedPaymentStatus != null ? selectedPaymentStatus : ''})}"
                class="pagination-btn" 
                th:class="${currentPage >= totalPages - 1 ? 'pagination-btn disabled' : 'pagination-btn'}">
                 下一頁
