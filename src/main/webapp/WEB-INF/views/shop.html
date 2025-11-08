@@ -192,6 +192,16 @@
                 <a th:href="@{/shop}" class="cart-icon">所有商品</a>
                 <a th:href="@{/cart}" class="cart-icon">購物車</a>
                 <a th:href="@{/orders/my}" class="cart-icon">我的訂單</a>
+                <span th:if="${#authentication.isAuthenticated()}">
+                    <span th:text="${'歡迎，' + #authentication.name}">歡迎</span>
+                    <form th:action="@{/logout}" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-primary">登出</button>
+                    </form>
+                </span>
+                <span th:unless="${#authentication.isAuthenticated()}">
+                    <a th:href="@{/login}" class="cart-icon">登入</a>
+                    <a th:href="@{/register}" class="cart-icon">註冊</a>
+                </span>
             </nav>
         </div>
     </div>
