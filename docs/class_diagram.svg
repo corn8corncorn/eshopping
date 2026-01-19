@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1000" viewBox="0 0 1400 1000" font-family="Arial, 'Microsoft JhengHei', sans-serif">
+    <defs>
+        <linearGradient id="bgGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#f5f7fa"/>
+            <stop offset="100%" stop-color="#e8ecf1"/>
+        </linearGradient>
+        <marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#546e7a"/>
+        </marker>
+        <marker id="arrowOne" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#1976d2"/>
+        </marker>
+    </defs>
+    
+    <!-- 背景 -->
+    <rect width="1400" height="1000" fill="url(#bgGradient)"/>
+    
+    <!-- 標題 -->
+    <text x="700" y="40" font-size="32" fill="#0b3d91" text-anchor="middle" font-weight="bold">eShopping 類別圖 (Class Diagram)</text>
+    <text x="700" y="70" font-size="18" fill="#1f4b8f" text-anchor="middle">Order • OrderItem • Product • Customer 關聯關係</text>
+    
+    <!-- Customer 類別 -->
+    <rect x="50" y="120" width="280" height="200" rx="8" fill="#ffffff" stroke="#26a69a" stroke-width="2"/>
+    <text x="190" y="150" font-size="20" fill="#00796b" font-weight="bold" text-anchor="middle">Customer</text>
+    <line x1="50" y1="170" x2="330" y2="170" stroke="#26a69a" stroke-width="1"/>
+    
+    <text x="70" y="200" font-size="14" fill="#333">- id: Long</text>
+    <text x="70" y="225" font-size="14" fill="#333">- fullName: String</text>
+    <text x="70" y="250" font-size="14" fill="#333">- phone: String</text>
+    <text x="70" y="275" font-size="14" fill="#333">- user: User</text>
+    
+    <line x1="50" y1="290" x2="330" y2="290" stroke="#26a69a" stroke-width="1"/>
+    
+    <text x="70" y="310" font-size="14" fill="#333">+ getId(): Long</text>
+    <text x="70" y="330" font-size="14" fill="#333">+ getFullName(): String</text>
+    
+    <!-- Order 類別 -->
+    <rect x="450" y="120" width="320" height="320" rx="8" fill="#ffffff" stroke="#5c6bc0" stroke-width="2"/>
+    <text x="610" y="150" font-size="20" fill="#3949ab" font-weight="bold" text-anchor="middle">Order</text>
+    <line x1="450" y1="170" x2="770" y2="170" stroke="#5c6bc0" stroke-width="1"/>
+    
+    <text x="470" y="200" font-size="14" fill="#333">- id: Long</text>
+    <text x="470" y="225" font-size="14" fill="#333">- orderNumber: String</text>
+    <text x="470" y="250" font-size="14" fill="#333">- status: OrderStatus &lt;&lt;enum&gt;&gt;</text>
+    <text x="470" y="275" font-size="14" fill="#333">- totalAmount: BigDecimal</text>
+    <text x="470" y="300" font-size="14" fill="#333">- finalAmount: BigDecimal</text>
+    <text x="470" y="325" font-size="14" fill="#333">- paymentMethod: PaymentMethod &lt;&lt;enum&gt;&gt;</text>
+    <text x="470" y="350" font-size="14" fill="#333">- paymentStatus: PaymentStatus &lt;&lt;enum&gt;&gt;</text>
+    <text x="470" y="375" font-size="14" fill="#333">- customer: Customer</text>
+    <text x="470" y="400" font-size="14" fill="#333">- orderItems: List&lt;OrderItem&gt;</text>
+    <text x="470" y="425" font-size="14" fill="#333">- orderAddress: OrderAddress</text>
+    
+    <line x1="450" y1="440" x2="770" y2="440" stroke="#5c6bc0" stroke-width="1"/>
+    
+    <text x="470" y="460" font-size="14" fill="#333">+ calculateTotalAmount()</text>
+    <text x="470" y="480" font-size="14" fill="#333">+ addOrderItem(item)</text>
+    
+    <!-- OrderItem 類別 -->
+    <rect x="900" y="120" width="320" height="280" rx="8" fill="#ffffff" stroke="#ef6c00" stroke-width="2"/>
+    <text x="1060" y="150" font-size="20" fill="#e65100" font-weight="bold" text-anchor="middle">OrderItem</text>
+    <line x1="900" y1="170" x2="1220" y2="170" stroke="#ef6c00" stroke-width="1"/>
+    
+    <text x="920" y="200" font-size="14" fill="#333">- id: Long</text>
+    <text x="920" y="225" font-size="14" fill="#333">- quantity: Integer</text>
+    <text x="920" y="250" font-size="14" fill="#333">- unitPrice: BigDecimal</text>
+    <text x="920" y="275" font-size="14" fill="#333">- subtotal: BigDecimal</text>
+    <text x="920" y="300" font-size="14" fill="#333">- productName: String</text>
+    <text x="920" y="325" font-size="14" fill="#333">- order: Order</text>
+    <text x="920" y="350" font-size="14" fill="#333">- product: Product</text>
+    
+    <line x1="900" y1="370" x2="1220" y2="370" stroke="#ef6c00" stroke-width="1"/>
+    
+    <text x="920" y="390" font-size="14" fill="#333">+ calculateSubtotal()</text>
+    
+    <!-- Product 類別 -->
+    <rect x="900" y="480" width="320" height="280" rx="8" fill="#ffffff" stroke="#42a5f5" stroke-width="2"/>
+    <text x="1060" y="510" font-size="20" fill="#1e88e5" font-weight="bold" text-anchor="middle">Product</text>
+    <line x1="900" y1="530" x2="1220" y2="530" stroke="#42a5f5" stroke-width="1"/>
+    
+    <text x="920" y="560" font-size="14" fill="#333">- id: Long</text>
+    <text x="920" y="585" font-size="14" fill="#333">- name: String</text>
+    <text x="920" y="610" font-size="14" fill="#333">- type: String</text>
+    <text x="920" y="635" font-size="14" fill="#333">- price: BigDecimal</text>
+    <text x="920" y="660" font-size="14" fill="#333">- stockQuantity: Integer</text>
+    <text x="920" y="685" font-size="14" fill="#333">- description: String</text>
+    <text x="920" y="710" font-size="14" fill="#333">- imageUrl: String</text>
+    <text x="920" y="735" font-size="14" fill="#333">- status: ProductStatus &lt;&lt;enum&gt;&gt;</text>
+    
+    <line x1="900" y1="750" x2="1220" y2="750" stroke="#42a5f5" stroke-width="1"/>
+    
+    <text x="920" y="770" font-size="14" fill="#333">+ hasEnoughStock(qty)</text>
+    <text x="920" y="790" font-size="14" fill="#333">+ reduceStock(qty)</text>
+    
+    <!-- 關聯線：Customer -> Order (1對多) -->
+    <line x1="330" y1="220" x2="450" y2="220" stroke="#546e7a" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="380" y="210" font-size="14" fill="#546e7a" text-anchor="middle">1</text>
+    <text x="380" y="235" font-size="14" fill="#546e7a" text-anchor="middle">*</text>
+    <text x="390" y="222" font-size="12" fill="#546e7a">customer</text>
+    
+    <!-- 關聯線：Order -> OrderItem (1對多) -->
+    <line x1="770" y1="280" x2="900" y2="280" stroke="#546e7a" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="820" y="270" font-size="14" fill="#546e7a" text-anchor="middle">1</text>
+    <text x="820" y="295" font-size="14" fill="#546e7a" text-anchor="middle">*</text>
+    <text x="830" y="282" font-size="12" fill="#546e7a">orderItems</text>
+    
+    <!-- 關聯線：Product -> OrderItem (1對多) -->
+    <line x1="1060" y1="480" x2="1060" y2="400" stroke="#546e7a" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="1080" y="440" font-size="14" fill="#546e7a">1</text>
+    <text x="1110" y="440" font-size="14" fill="#546e7a">*</text>
+    <text x="1095" y="455" font-size="12" fill="#546e7a">product</text>
+    
+    <!-- 圖例 -->
+    <rect x="50" y="850" width="400" height="120" rx="8" fill="#ffffff" stroke="#666" stroke-width="1"/>
+    <text x="250" y="880" font-size="16" fill="#333" font-weight="bold" text-anchor="middle">關聯說明</text>
+    <line x1="50" y1="900" x2="450" y2="900" stroke="#666" stroke-width="1"/>
+    
+    <text x="70" y="925" font-size="14" fill="#333">• Customer 1 ──&gt; * Order (一個客戶可以有多筆訂單)</text>
+    <text x="70" y="950" font-size="14" fill="#333">• Order 1 ──&gt; * OrderItem (一筆訂單可以有多個訂單項目)</text>
+    <text x="70" y="975" font-size="14" fill="#333">• Product 1 ──&gt; * OrderItem (一個商品可以出現在多個訂單項目中)</text>
+    
+    <!-- 註解框 -->
+    <rect x="500" y="850" width="400" height="120" rx="8" fill="#fff3e0" stroke="#ff9800" stroke-width="1"/>
+    <text x="700" y="880" font-size="16" fill="#e65100" font-weight="bold" text-anchor="middle">重要設計說明</text>
+    <line x1="500" y1="900" x2="900" y2="900" stroke="#ff9800" stroke-width="1"/>
+    
+    <text x="520" y="925" font-size="13" fill="#333">• OrderItem 儲存商品快照（名稱、價格、圖片）</text>
+    <text x="520" y="945" font-size="13" fill="#333">• 即使商品價格變動，歷史訂單價格不變</text>
+    <text x="520" y="965" font-size="13" fill="#333">• 使用 @ManyToOne、@OneToMany 建立關聯</text>
+    
+    <!-- 技術說明 -->
+    <rect x="950" y="850" width="400" height="120" rx="8" fill="#e3f2fd" stroke="#2196f3" stroke-width="1"/>
+    <text x="1150" y="880" font-size="16" fill="#1976d2" font-weight="bold" text-anchor="middle">技術實作</text>
+    <line x1="950" y1="900" x2="1350" y2="900" stroke="#2196f3" stroke-width="1"/>
+    
+    <text x="970" y="925" font-size="13" fill="#333">• JPA / Hibernate ORM</text>
+    <text x="970" y="945" font-size="13" fill="#333">• FetchType.LAZY (延遲載入)</text>
+    <text x="970" y="965" font-size="13" fill="#333">• CascadeType.ALL (級聯操作)</text>
+</svg>
+

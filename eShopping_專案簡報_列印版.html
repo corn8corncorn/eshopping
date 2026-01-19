@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eShopping 電商系統 - 專案簡報</title>
+    <style>
+        @page {
+            size: 10in 7.5in;
+            margin: 0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft JhengHei', '微軟正黑體', Arial, sans-serif;
+            background: white;
+        }
+        
+        .slide {
+            width: 10in;
+            height: 7.5in;
+            margin: 0;
+            background: white;
+            page-break-after: always;
+            display: flex;
+            flex-direction: column;
+            padding: 0.5in;
+            border: 1px solid #ddd;
+        }
+        
+        .slide-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #003366;
+            margin-bottom: 0.3in;
+            border-bottom: 3px solid #003366;
+            padding-bottom: 0.1in;
+        }
+        
+        .slide-content {
+            display: flex;
+            flex: 1;
+            gap: 0.3in;
+        }
+        
+        .slide-image {
+            width: 48%;
+            background: #f0f0f0;
+            border: 2px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 18px;
+            text-align: center;
+            padding: 20px;
+            min-height: 5in;
+        }
+        
+        .slide-text {
+            width: 48%;
+            font-size: 16px;
+            line-height: 1.8;
+            color: #333;
+        }
+        
+        .slide-text ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .slide-text li {
+            margin-bottom: 0.15in;
+            padding-left: 1.5em;
+            position: relative;
+        }
+        
+        .slide-text li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #003366;
+            font-weight: bold;
+        }
+        
+        .title-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #003366 0%, #0066cc 100%);
+            color: white;
+        }
+        
+        .title-slide h1 {
+            font-size: 48px;
+            margin-bottom: 0.3in;
+        }
+        
+        .title-slide h2 {
+            font-size: 28px;
+            font-weight: normal;
+        }
+        
+        .title-slide .author-name {
+            font-size: 24px;
+            margin-top: 1in;
+            padding-top: 0.3in;
+            border-top: 2px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        @media print {
+            .slide {
+                margin: 0;
+                border: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 標題頁 -->
+    <div class="slide title-slide">
+        <h1>eShopping 電商系統</h1>
+        <h2>面試專案簡報</h2>
+        <h2 style="margin-top: 0.5in; font-size: 24px;">基於 Spring Framework 的完整電商解決方案</h2>
+        <div class="author-name">[請在此處輸入您的姓名]</div>
+    </div>
+
+    <!-- 專案概述 -->
+    <div class="slide">
+        <div class="slide-title">專案概述</div>
+        <div class="slide-content">
+            <div class="slide-image">[請在此處插入專案架構圖或技術棧截圖]</div>
+            <div class="slide-text">
+                <ul>
+                    <li>技術架構：Spring Framework 5.3 + Spring Security + Hibernate + Thymeleaf</li>
+                    <li>資料庫：MySQL 8.0</li>
+                    <li>開發語言：Java 11</li>
+                    <li>專案類型：Web 應用程式（WAR）</li>
+                    <li>功能模組：用戶管理、商品管理、購物車、訂單管理、後台管理</li>
+                    <li>安全機制：Spring Security 認證授權、BCrypt 密碼加密、角色權限控制</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. 首頁 -->
+    <div class="slide">
+        <div class="slide-title">1. 首頁功能</div>
+        <div class="slide-content">
+            <div class="slide-image">[請在此處插入首頁截圖]</div>
+            <div class="slide-text">
+                <ul>
+                    <li>展示熱門商品、最新商品、推薦商品</li>
+                    <li>商品分類導航</li>
+                    <li>用戶登入狀態顯示</li>
+                    <li>購物車商品數量顯示</li>
+                    <li>響應式設計，支援多種裝置瀏覽</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 用戶認證 -->
+    <div class="slide">
+        <div class="slide-title">2. 用戶認證系統</div>
+        <div class="slide-content">
+            <div class="slide-image">[請在此處插入登入/註冊頁面截圖]</div>
+            <div class="slide-text">
+                <ul>
+                    <li>用戶註冊：帳號、Email、密碼驗證</li>
+                    <li>用戶登入：Spring Security 認證機制</li>
+                    <li>忘記密碼：Email 驗證與密碼重設功能</li>
+                    <li>密碼加密：BCrypt 加密儲存</li>
+                    <li>角色管理：ADMIN、USER 角色權限控制</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. 商品展示 -->
+    <div class="slide">
+        <div class="slide-title">3. 商品展示功能</div>
+        <div class="slide-content">
+            <div class="slide-image">[請在此處插入商品列表/詳情頁截圖]</div>
+            <div class="slide-text">
+                <ul>
+                    <li>商品列表：網格/列表視圖展示</li>
+                    <li>商品搜尋：關鍵字搜尋商品名稱與描述</li>
+                    <li>分類篩選：依商品類型篩選</li>
+                    <li>商品詳情：完整商品資訊、圖片、庫存狀態</li>
+                    <li>價格排序：支援價格升序/降序排序</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. 購物車 -->
+    <div class="slide">
+        <div class="slide-title">4. 購物車功能</div>
+        <div class="slide-content">
+            <div class="slide-image">[請在此處插入購物車頁面截圖]</div>
+            <div class="slide-text">
+                <ul>
+                    <li>添加商品：從商品列表或詳情頁加入購物車</li>
+                    <li>數量管理：增加、減少、移除商品</li>
+                    <li>庫存檢查：即時檢查商品庫存狀態</li>
+                    <li>總金額計算：自動計算購物車總金額</li>
+                    <li>購物車持久化：資料庫儲存購物車內容</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. 訂單管理 -->
+    <div class="slide">
+        <div class="slide-title">5. 訂單管理系統</div>
+        <div class="slide-content">
+            <div class="slide-image">[請在此處插入訂單列表/詳情頁截圖]</div>
+            <div class="slide-text">
+                <ul>
+                    <li>結帳流程：填寫收件資訊、選擇付款方式</li>
+                    <li>訂單建立：從購物車轉換為訂單</li>
+                    <li>訂單查詢：用戶可查看自己的訂單歷史</li>
+                    <li>訂單詳情：完整的訂單資訊與商品明細</li>
+                    <li>訂單狀態：PENDING、PROCESSING、SHIPPED、DELIVERED、CANCELLED</li>
+                    <li>付款狀態：UNPAID、PAID、REFUNDED</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. 商品管理（後台） -->
+    <div class="slide">
+        <div class="slide-title">6. 商品管理（後台）</div>
+        <div class="slide-content">
+            <div class="slide-image">[請在此處插入後台商品管理頁面截圖]</div>
+            <div class="slide-text">
+                <ul>
+                    <li>商品 CRUD：新增、編輯、刪除商品</li>
+                    <li>商品資訊：名稱、描述、價格、庫存、分類</li>
+                    <li>商品狀態：上架/下架管理</li>
+                    <li>庫存管理：庫存數量與最低庫存閾值設定</li>
+                    <li>圖片上傳：支援商品圖片上傳（Google Cloud Storage）</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. 用戶管理（後台） -->
+    <div class="slide">
+        <div class="slide-title">7. 用戶管理（後台）</div>
+        <div class="slide-content">
+            <div class="slide-image">[請在此處插入後台用戶管理頁面截圖]</div>
+            <div class="slide-text">
+                <ul>
+                    <li>用戶列表：查看所有註冊用戶</li>
+                    <li>用戶編輯：修改用戶資訊、角色、啟用狀態</li>
+                    <li>角色管理：ADMIN、USER 角色分配</li>
+                    <li>帳號啟用/停用：控制用戶帳號狀態</li>
+                    <li>用戶搜尋：依使用者名稱或 Email 搜尋</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 8. 客戶管理 -->
+    <div class="slide">
+        <div class="slide-title">8. 客戶管理</div>
+        <div class="slide-content">
+            <div class="slide-image">[請在此處插入客戶管理頁面截圖]</div>
+            <div class="slide-text">
+                <ul>
+                    <li>客戶資料：姓名、電話、地址等完整資訊</li>
+                    <li>客戶編輯：修改個人資料</li>
+                    <li>客戶列表：管理員可查看所有客戶</li>
+                    <li>客戶關聯：與 User 帳號一對一關聯</li>
+                    <li>訂單關聯：客戶與訂單的關聯管理</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 9. 訂單管理（後台） -->
+    <div class="slide">
+        <div class="slide-title">9. 訂單管理（後台）</div>
+        <div class="slide-content">
+            <div class="slide-image">[請在此處插入後台訂單管理頁面截圖]</div>
+            <div class="slide-text">
+                <ul>
+                    <li>訂單列表：查看所有訂單</li>
+                    <li>訂單篩選：依狀態、付款狀態、關鍵字搜尋</li>
+                    <li>訂單詳情：完整的訂單資訊與收件地址</li>
+                    <li>狀態更新：管理員可更新訂單狀態</li>
+                    <li>付款狀態：管理付款狀態</li>
+                    <li>分頁顯示：支援大量訂單的分頁瀏覽</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 10. 後台儀表板 -->
+    <div class="slide">
+        <div class="slide-title">10. 後台儀表板</div>
+        <div class="slide-content">
+            <div class="slide-image">[請在此處插入後台儀表板截圖]</div>
+            <div class="slide-text">
+                <ul>
+                    <li>統計資訊：總用戶數、商品數、訂單數</li>
+                    <li>訂單統計：待處理訂單、已付款訂單數量</li>
+                    <li>銷售統計：總銷售額計算</li>
+                    <li>快速入口：商品管理、訂單管理、用戶管理</li>
+                    <li>數據視覺化：關鍵指標一目了然</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 技術特色 -->
+    <div class="slide">
+        <div class="slide-title">技術特色</div>
+        <div class="slide-content">
+            <div class="slide-image">[請在此處插入程式碼或架構圖截圖]</div>
+            <div class="slide-text">
+                <ul>
+                    <li>Spring Security：完整的認證授權機制</li>
+                    <li>Hibernate ORM：物件關聯映射，簡化資料庫操作</li>
+                    <li>Thymeleaf 模板：服務端渲染，SEO 友善</li>
+                    <li>RESTful API：REST 風格的 URL 設計</li>
+                    <li>事務管理：@Transactional 確保資料一致性</li>
+                    <li>異常處理：完善的錯誤處理機制</li>
+                    <li>日誌記錄：SLF4J + Logback 日誌系統</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 資料庫設計 -->
+    <div class="slide">
+        <div class="slide-title">資料庫設計</div>
+        <div class="slide-content">
+            <div class="slide-image">[請在此處插入資料庫 ER 圖截圖]</div>
+            <div class="slide-text">
+                <ul>
+                    <li>User：用戶帳號資訊</li>
+                    <li>Customer：客戶詳細資料</li>
+                    <li>Product：商品資訊</li>
+                    <li>Cart / CartItem：購物車與購物車項目</li>
+                    <li>Order / OrderItem：訂單與訂單項目</li>
+                    <li>OrderAddress：訂單收件地址</li>
+                    <li>關聯設計：一對一、一對多、多對多關係完整設計</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 總結 -->
+    <div class="slide">
+        <div class="slide-title">專案總結</div>
+        <div class="slide-content">
+            <div class="slide-image">[請在此處插入專案總結圖或架構圖]</div>
+            <div class="slide-text">
+                <ul>
+                    <li>完整的電商系統功能實現</li>
+                    <li>前後台分離的架構設計</li>
+                    <li>完善的用戶認證與權限管理</li>
+                    <li>完整的購物車與訂單流程</li>
+                    <li>響應式設計，支援多裝置</li>
+                    <li>程式碼結構清晰，易於維護擴展</li>
+                    <li>遵循 Spring 最佳實踐</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

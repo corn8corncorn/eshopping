@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" font-family="Arial, 'Microsoft JhengHei', sans-serif">
+    <defs>
+        <linearGradient id="bgGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#f4f7fb"/>
+            <stop offset="100%" stop-color="#dfe7f3"/>
+        </linearGradient>
+    </defs>
+    <rect width="1200" height="800" fill="url(#bgGradient)"/>
+    <text x="600" y="60" font-size="32" fill="#0b3d91" text-anchor="middle" font-weight="bold">eShopping 系統架構圖</text>
+    <text x="600" y="95" font-size="18" fill="#1f4b8f" text-anchor="middle">Spring MVC • Spring Security • Hibernate • Thymeleaf • MySQL</text>
+
+    <!-- Client Layer -->
+    <rect x="80" y="140" width="1040" height="100" rx="12" fill="#ffffff" stroke="#5c6bc0" stroke-width="2"/>
+    <text x="100" y="175" font-size="18" fill="#3949ab" font-weight="bold">使用者端</text>
+    <rect x="120" y="190" width="220" height="40" rx="8" fill="#e8eaf6" stroke="#5c6bc0"/>
+    <text x="230" y="216" font-size="16" fill="#303f9f" text-anchor="middle">Browser / Mobile Client</text>
+    <text x="400" y="216" font-size="16" fill="#3949ab">• HTTPS • JWT Session • CSRF 防護</text>
+
+    <!-- Presentation Layer -->
+    <rect x="80" y="270" width="1040" height="120" rx="12" fill="#ffffff" stroke="#26a69a" stroke-width="2"/>
+    <text x="100" y="305" font-size="18" fill="#00796b" font-weight="bold">表示層 (Presentation Layer)</text>
+    <rect x="120" y="320" width="220" height="50" rx="8" fill="#e0f2f1" stroke="#26a69a"/>
+    <text x="230" y="350" font-size="16" fill="#00695c" text-anchor="middle">Spring MVC Controllers</text>
+    <rect x="380" y="320" width="220" height="50" rx="8" fill="#e0f2f1" stroke="#26a69a"/>
+    <text x="490" y="350" font-size="16" fill="#00695c" text-anchor="middle">Thymeleaf Views (JSP)</text>
+    <rect x="640" y="320" width="200" height="50" rx="8" fill="#e0f2f1" stroke="#26a69a"/>
+    <text x="740" y="350" font-size="16" fill="#00695c" text-anchor="middle">Taglibs / Fragments</text>
+    <rect x="870" y="320" width="200" height="50" rx="8" fill="#e0f2f1" stroke="#26a69a"/>
+    <text x="970" y="350" font-size="16" fill="#00695c" text-anchor="middle">Spring Security Filters</text>
+
+    <!-- Service Layer -->
+    <rect x="80" y="420" width="1040" height="140" rx="12" fill="#ffffff" stroke="#42a5f5" stroke-width="2"/>
+    <text x="100" y="455" font-size="18" fill="#1e88e5" font-weight="bold">服務層 (Service Layer)</text>
+    <rect x="120" y="470" width="220" height="70" rx="8" fill="#e3f2fd" stroke="#42a5f5"/>
+    <text x="230" y="495" font-size="15" fill="#1565c0" text-anchor="middle">UserService • AuthService</text>
+    <text x="230" y="515" font-size="14" fill="#1565c0" text-anchor="middle">Spring Security Integration</text>
+    <rect x="380" y="470" width="220" height="70" rx="8" fill="#e3f2fd" stroke="#42a5f5"/>
+    <text x="490" y="495" font-size="15" fill="#1565c0" text-anchor="middle">ProductService • Inventory</text>
+    <text x="490" y="515" font-size="14" fill="#1565c0" text-anchor="middle">Stock / Pricing Logic</text>
+    <rect x="640" y="470" width="220" height="70" rx="8" fill="#e3f2fd" stroke="#42a5f5"/>
+    <text x="750" y="495" font-size="15" fill="#1565c0" text-anchor="middle">CartService • OrderService</text>
+    <text x="750" y="515" font-size="14" fill="#1565c0" text-anchor="middle">Checkout / Payment Flow</text>
+    <rect x="900" y="470" width="180" height="70" rx="8" fill="#e3f2fd" stroke="#42a5f5"/>
+    <text x="990" y="495" font-size="15" fill="#1565c0" text-anchor="middle">CustomerService</text>
+    <text x="990" y="515" font-size="14" fill="#1565c0" text-anchor="middle">Profile • Address</text>
+
+    <!-- Data Layer -->
+    <rect x="80" y="590" width="1040" height="120" rx="12" fill="#ffffff" stroke="#ab47bc" stroke-width="2"/>
+    <text x="100" y="625" font-size="18" fill="#8e24aa" font-weight="bold">資料層 (Persistence &amp; Infrastructure)</text>
+    <rect x="120" y="640" width="220" height="50" rx="8" fill="#f3e5f5" stroke="#ab47bc"/>
+    <text x="230" y="662" font-size="15" fill="#4a148c" text-anchor="middle">
+        DAO 層
+        <tspan x="230" dy="18" font-size="13">(UserDAO • OrderDAO • ...)</tspan>
+    </text>
+    <rect x="380" y="640" width="220" height="50" rx="8" fill="#f3e5f5" stroke="#ab47bc"/>
+    <text x="490" y="667" font-size="15" fill="#4a148c" text-anchor="middle">Hibernate ORM + JPA</text>
+    <rect x="640" y="640" width="240" height="50" rx="8" fill="#f3e5f5" stroke="#ab47bc"/>
+    <text x="760" y="662" font-size="15" fill="#4a148c" text-anchor="middle">
+        MySQL 8.0
+        <tspan x="760" dy="18" font-size="13">(Users • Products • Orders • Cart)</tspan>
+    </text>
+    <rect x="910" y="640" width="180" height="50" rx="8" fill="#f3e5f5" stroke="#ab47bc"/>
+    <text x="1000" y="662" font-size="15" fill="#4a148c" text-anchor="middle">
+        Google Cloud Storage
+        <tspan x="1000" dy="18" font-size="13">(Images)</tspan>
+    </text>
+
+    <!-- Arrows -->
+    <line x1="600" y1="240" x2="600" y2="270" stroke="#546e7a" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="600" y1="390" x2="600" y2="420" stroke="#546e7a" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="600" y1="560" x2="600" y2="590" stroke="#546e7a" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <defs>
+        <marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#546e7a"/>
+        </marker>
+    </defs>
+</svg>
+
